@@ -27,7 +27,7 @@ const Search = ({setEntries}: any) => {
         axios.get(`/note?query=${query}`).then(resp => {
             setEntries(resp.data);
         });
-    }, [query]);
+    }, [query, setEntries]);
 
     return <div style={{textAlign: 'center', padding: 30}}><input type="text" style={{width: 500}} value={query} onChange={(e) => setQuery(e.target.value)}/></div>
 };
