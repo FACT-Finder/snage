@@ -48,6 +48,7 @@ describe('match', () => {
             const exp = parser(expression);
             if (!exp.status) {
                 fail('illegal expression ' + expression + ' ' + JSON.stringify(exp));
+                return;
             }
             expect(createMatcher(exp.value, fields)({id: 'nah', content: 'nah', ...note})).toBe(result);
         });

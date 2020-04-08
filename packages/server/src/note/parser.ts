@@ -1,7 +1,7 @@
 import {Field, Note} from '../../../shared/type';
 import {loadFront} from 'yaml-front-matter';
 import {Either, isLeft, left, map, right} from 'fp-ts/lib/Either';
-import {expectNever, ffVersionRegex, requiredFFVersionRegex} from '../util/util';
+import {expectNever, requiredFFVersionRegex} from '../util/util';
 import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
 

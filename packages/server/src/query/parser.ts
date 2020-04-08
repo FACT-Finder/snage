@@ -1,13 +1,12 @@
 import {Field} from '../../../shared/type';
 import P, {Language, Parser} from 'parsimmon';
-import semver from 'semver';
 import {expectNever, ffVersionRegex} from '../util/util';
 
 const whitespace = P.regexp(/\s*/m);
-function token(parser) {
+function token(parser): Parser<any> {
     return parser.skip(whitespace);
 }
-function word(str) {
+function word(str): Parser<any> {
     return P.string(str).thru(token);
 }
 
@@ -24,7 +23,7 @@ export type Expression = SingleExpression | [Expression, 'or' | 'and', Expressio
 export const createParser = (fields: Field[]): Parser<Expression>['parse'] => {
     const rules: any = {};
     fields.forEach((field) => {
-        const create = (r: Language, op: Parser<any>, value: Parser<any>) => {
+        const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> => {
             return P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]);
         };
         switch (field.type) {
@@ -32,7 +31,7 @@ export const createParser = (fields: Field[]): Parser<Expression>['parse'] => {
                 rules['field' + field.name] = (r: Language) => create(r, r.boolOp, P.alt(r.true, r.false));
                 break;
             case 'string':
-                const values = (r: Language) => (field.enum !== undefined ? P.alt(...field.enum.map(word)) : r.string);
+                const values = (r: Language): Parser<any> => (field.enum !== undefined ? P.alt(...field.enum.map(word)) : r.string);
                 rules['field' + field.name] = (r: Language) => create(r, r.stringOp, values(r));
                 break;
             case 'number':

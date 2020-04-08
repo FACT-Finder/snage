@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import {Config, exampleConfig, Note} from '../../shared/type';
 import * as fs from 'fs';
 import {parseNote} from './note/parser';
@@ -7,7 +8,7 @@ import {createMatcher} from './query/match';
 import path from 'path';
 import {isLeft} from 'fp-ts/lib/Either';
 
-function handleExitSignal() {
+function handleExitSignal(): void {
     process.exit(1);
 }
 
@@ -21,7 +22,7 @@ const parseNotes = (config: Config, folder: string): Note[] => {
             const filePath = path.join(folder, file);
             const note = parseNote(config.fields, fs.readFileSync(filePath, 'utf8'));
             if (isLeft(note)) {
-                throw {...note.left, file: filePath};
+                throw new Error(JSON.stringify({...note.left, file: filePath}));
             }
             notes.push(note.right);
         });
@@ -29,7 +30,7 @@ const parseNotes = (config: Config, folder: string): Note[] => {
     return notes;
 };
 
-export const startServer = ({port}) => {
+export const startServer = ({port}): http.Server => {
     const app = express();
     app.use(express.text({type: '*/*', limit: '10gb'}));
     app.disable('x-powered-by');
