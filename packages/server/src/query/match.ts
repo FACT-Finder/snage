@@ -1,4 +1,4 @@
-import {Field, Note} from '../../../type';
+import {Field, Note} from '../../../shared/type';
 import {Expression, Operator, SingleExpression} from './parser';
 import {expectNever, ffVersionRegex} from '../util/util';
 import semver from 'semver';

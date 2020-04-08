@@ -1,10 +1,11 @@
 {
-  "name": "compat-proxy",
+  "name": "snage-server",
   "version": "1.0.0",
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "debug": "nodemon --watch 'src/**/*.ts' --exec node --inspect-brk ./node_modules/.bin/ts-node --transpile-only src/index.ts",
     "test": "jest --coverage 'src/.*\\.test\\.ts'",
+    "build": "webpack",
     "format": "prettier '*.js' 'src/**/*.ts' --write",
     "format:check": "prettier '*.js' 'src/**/*.ts' --list-different"
   },
@@ -20,7 +21,8 @@
     "winston": "^3.2.1",
     "yaml": "^1.8.3",
     "yaml-front-matter": "^4.1.0",
-    "yargs": "^14.0.0"
+    "yargs": "^14.0.0",
+    "snage-ui": "*"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.1",

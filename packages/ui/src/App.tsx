@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import {Note} from "../../type";
+import {Note} from "../../shared/type";
 import Chip from '@material-ui/core/Chip';
 import ReactMarkdown from "react-markdown";
 import axios from 'axios';

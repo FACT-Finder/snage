@@ -1,0 +1,21 @@
+{
+  "name": "snage",
+  "private": true,
+  "version": "1.0.0",
+  "npmClient": "yarn",
+  "workspaces": {
+    "packages": [
+      "packages/server",
+      "packages/ui"
+    ],
+    "nohoist": [
+      "**/babel-loader"
+    ]
+  },
+  "engines": {
+    "yarn": ">1.4.2"
+  },
+  "devDependencies": {
+    "lerna": "^3.20.2"
+  }
+}

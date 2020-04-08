@@ -1,4 +1,4 @@
-import {Field, Note} from '../../../type';
+import {Field, Note} from '../../../shared/type';
 import {loadFront} from 'yaml-front-matter';
 import {Either, isLeft, left, map, right} from 'fp-ts/lib/Either';
 import {expectNever, ffVersionRegex, requiredFFVersionRegex} from '../util/util';
