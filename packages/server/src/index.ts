@@ -1,5 +1,5 @@
 import express from 'express';
-import {Config, exampleConfig, Note} from '../../type';
+import {Config, exampleConfig, Note} from '../../shared/type';
 import * as fs from 'fs';
 import {parseNote} from './note/parser';
 import {createParser} from './query/parser';

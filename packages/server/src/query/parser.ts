@@ -1,4 +1,4 @@
-import {Field} from '../../../type';
+import {Field} from '../../../shared/type';
 import P, {Language, Parser} from 'parsimmon';
 import semver from 'semver';
 import {expectNever, ffVersionRegex} from '../util/util';

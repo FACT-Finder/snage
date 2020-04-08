@@ -1,5 +1,5 @@
 import {parseField, parseNote} from './parser';
-import {Field, Note} from '../../../type';
+import {Field, Note} from '../../../shared/type';
 import {left, right} from 'fp-ts/lib/Either';
 import semver from 'semver';
 
