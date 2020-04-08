@@ -1,4 +1,4 @@
-# snage
+# snage ![.github/workflows/build.yml](https://github.com/FACT-Finder/snage/workflows/.github/workflows/build.yml/badge.svg?branch=master)
 
 ## Download dependencies
 
@@ -10,5 +10,5 @@ $ yarn lerna bootstrap
 ## Run tests
 
 ```bash
-$ lerna run test
+$ yarn lerna run test
 ```
