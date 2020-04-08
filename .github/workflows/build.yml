@@ -11,3 +11,4 @@ jobs:
       - run: yarn lerna run test
       - run: yarn lerna run format:check
       - run: yarn lerna run build
+      - uses: codecov/codecov-action@v1
