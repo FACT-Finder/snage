@@ -1,0 +1,13 @@
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - run: yarn
+      - run: yarn lerna bootstrap
+      - run: yarn lerna run test
+      - run: yarn lerna run format:check
+      - run: yarn lerna run build
