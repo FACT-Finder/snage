@@ -1,5 +1,4 @@
 import {createParser} from './parser';
-import semver from 'semver';
 
 const parser = createParser([
     {

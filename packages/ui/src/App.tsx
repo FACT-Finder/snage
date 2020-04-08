@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 import ReactMarkdown from "react-markdown";
 import axios from 'axios';
 
-function App() {
+const App: React.FC = () => {
     const [entries, setEntries] = React.useState<Note[]>([]);
 
 
@@ -20,22 +20,24 @@ function App() {
     );
 }
 
-const Search = ({setEntries}: any) => {
+const Search: React.FC<{ setEntries: (e: Note[]) => void }> = ({setEntries}) => {
     const [query, setQuery] = React.useState('');
 
     React.useEffect(() => {
         axios.get(`/note?query=${query}`).then(resp => {
             setEntries(resp.data);
+            return;
         });
     }, [query, setEntries]);
 
-    return <div style={{textAlign: 'center', padding: 30}}><input type="text" style={{width: 500}} value={query} onChange={(e) => setQuery(e.target.value)}/></div>
+    return <div style={{textAlign: 'center', padding: 30}}><input type="text" style={{width: 500}} value={query} onChange={(e) => setQuery(e.target.value)}/>
+    </div>
 };
 
-const Entry = React.memo(({entry: {name, content, ...other}}: {entry: Note}) => {
+const Entry = React.memo(({entry: {name, content, ...other}}: { entry: Note }) => {
     return <div style={{}}>
         <div>
-            {Object.entries(other).map(([key, value]) => <Chip key={key} style={{marginRight: 10}} label={key+ ': ' + value}/>)}
+            {Object.entries(other).map(([key, value]) => <Chip key={key} style={{marginRight: 10}} label={key + ': ' + value}/>)}
         </div>
         <ReactMarkdown source={content}/>
         <hr/>

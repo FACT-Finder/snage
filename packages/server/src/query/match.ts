@@ -58,7 +58,7 @@ export const checkValue = (left: any, right: any, type: Field['type'], operator:
         case '!=':
             return left !== right;
         case '~':
-            return left && left.includes(right);
+            return left?.includes(right);
         case '~~':
             if (!left || !right) {
                 return false;
@@ -76,7 +76,7 @@ export const checkValue = (left: any, right: any, type: Field['type'], operator:
     }
 };
 
-const checkFFVersion = (left: string, right: string, operator: Operator) => {
+const checkFFVersion = (left: string, right: string, operator: Operator): boolean => {
     if (left === undefined || right === undefined) {
         return false;
     }
