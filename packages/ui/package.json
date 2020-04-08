@@ -20,6 +20,8 @@
     "typescript": "~3.7.2"
   },
   "scripts": {
+    "lint-check": "eslint -c \"../../eslint.yaml\" \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "lint": "yarn run lint-check --fix",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
