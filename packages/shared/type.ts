@@ -25,6 +25,7 @@ export interface Field {
     enum?: string[];
     optional?: true;
     description?: string;
+    alias?: string;
 }
 
 export interface FilterPreset {
@@ -45,12 +46,12 @@ export interface Link {
 
 export const exampleConfig: Config = {
     fields: [
-        {name: "issue", type: "string"},
-        {name: "type", type: "string", enum: ["bugfix", "feature", "refactoring"]},
-        {name: "version", type: "ffversion"},
-        {name: "date", type: "date"},
-        {name: "audience", type: "string", enum: ["public", "technical", "internal"]},
-        {name: "components", type: "string", list: true, enum: ["backend", "ui", "config", "api"], optional: true},
+        {name: "issue", type: "string", alias: "i", description: "Issue in the project management system, eg FF-15000"},
+        {name: "type", type: "string", description: "Type of change done in the issue.", enum: ["bugfix", "feature", "refactoring"]},
+        {name: "version", alias: "v", description: "Major version of the changes target.", type: "ffversion"},
+        {name: "date", description: "Release date of the change.", type: "date"},
+        {name: "audience", description: "Who should be able to see the changes made.", type: "string", enum: ["public", "technical", "internal"]},
+        {name: "components", description: "List all components affected by the changes made.", type: "string", list: true, enum: ["backend", "ui", "config", "api"], optional: true},
     ],
     filterPresets: [],
     links: [],
