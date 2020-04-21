@@ -13,6 +13,9 @@ export interface Config {
         sort: Sort;
         query: string;
     }
+    filename: string;
+    fileTemplateText: string;
+    supportedDateFormats: string[];
 }
 
 export interface Field {
@@ -21,6 +24,7 @@ export interface Field {
     list?: boolean;
     enum?: string[];
     optional?: true;
+    description?: string;
 }
 
 export interface FilterPreset {
@@ -50,5 +54,8 @@ export const exampleConfig: Config = {
     ],
     filterPresets: [],
     links: [],
-    standard: {query: "", sort: {field: 'version', order: 'desc'}}
+    standard: {query: "", sort: {field: 'version', order: 'desc'}},
+    filename: "changelog/${issue}.${audience}.md",
+    fileTemplateText: "### Release Notes",
+    supportedDateFormats: ["YYYY-MM-DD"]
 };
