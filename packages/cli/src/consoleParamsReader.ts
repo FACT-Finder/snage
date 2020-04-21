@@ -34,11 +34,16 @@ const addType = (field: Field, yargs: yargs.Argv) => {
 
 const addDescription = (fields: Field[], yargs: yargs.Argv) => {
     let description = {};
-    fields.forEach(field => description['' + field.name] = field.description ? field.description : '');
+    fields.forEach(field => description[field.name] = field.description ? field.description : '');
     yargs.describe(description);
 };
 
-//TODO Add man page and abbreviations for cli parameters
+const addAlias = (fields: Field[], yargs: yargs.Argv) => {
+    let alias = {};
+    fields.filter(field => field.alias).map(field => alias[field.name] = field.alias);
+    yargs.alias(alias);
+};
+
 /**
  * Parses all parameters from the cli into the fields defined in the config. For fields defined in the config but missing in the cli,
  * an interactive wizard is started started in the terminal to fill in the missing field values
@@ -52,6 +57,7 @@ export const parseLogParameters = async (nodeArgV: string[], config: Config): Pr
     const builder = yargs(nodeArgV);
     config.fields.forEach(field => addType(field, builder));
     addDescription(config.fields, builder);
+    addAlias(config.fields, builder);
     const argv = builder.argv;
 
     return await buildLogParameters(config.fields, argv, config.supportedDateFormat);
