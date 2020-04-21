@@ -15,7 +15,7 @@ export interface Config {
     }
     filename: string;
     fileTemplateText: string;
-    supportedDateFormats: string[];
+    supportedDateFormat: string;
 }
 
 export interface Field {
@@ -57,5 +57,5 @@ export const exampleConfig: Config = {
     standard: {query: "", sort: {field: 'version', order: 'desc'}},
     filename: "changelog/${issue}.${audience}.md",
     fileTemplateText: "### Release Notes",
-    supportedDateFormats: ["YYYY-MM-DD"]
+    supportedDateFormat: "YYYY-MM-DD"
 };

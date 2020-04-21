@@ -1,8 +1,10 @@
+import moment from 'moment';
+
 /**
- * Creates a current date in the format YYYY-MM-DD
+ * Creates a current date in the provided
  *
- * @returns a date in the format YYYY-MM-DD
+ * @returns the created date
  */
-export const getCurrentDateInSupportedFormat = (): string => {
-    return new Date().toISOString().slice(0, 10);
+export const getCurrentDateInSupportedFormat = (dateFormat: string): string => {
+    return moment().format(dateFormat);
 };

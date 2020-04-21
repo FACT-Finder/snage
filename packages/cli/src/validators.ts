@@ -2,11 +2,8 @@ import moment from 'moment';
 import {Config, Field} from "../../shared/type";
 import {Either, left, right} from "fp-ts/lib/Either";
 
-//todo supported format into config
-export const supportedDateFormats = ['YYYY-MM-DD'];
-
-export const isValidDate = (date: string): boolean => {
-    return moment(date, supportedDateFormats).isValid();
+export const isValidDate = (date: string, dateFormat: string): boolean => {
+    return moment(date, [dateFormat]).isValid();
 };
 
 export const noBlankValuesValidator = (value: any, isOptional?: boolean): boolean | string => {
@@ -27,11 +24,11 @@ export const listSelectionValidator = (values: any[], isOptional?: boolean): boo
     return 'Please select at least one option from the list for non optional fields';
 };
 
-export const dateValidator = (value: any, isOptional?: boolean): boolean | string => {
-    if (isOptional || (!isBlank(value) && isValidDate(value))) {
+export const dateValidator = (value: any, dateFormat: string, isOptional?: boolean): boolean | string => {
+    if (isOptional || (!isBlank(value) && isValidDate(value, dateFormat))) {
         return true;
     }
-    return 'Please enter a date in one of the supported formats: ' + supportedDateFormats;
+    return 'Please enter a date in one of the supported formats: ' + dateFormat;
 };
 
 export const numberValidator = (value: any, isOptional?: boolean): boolean | string => {
@@ -64,7 +61,7 @@ export const stringSetValidator = (value: any, isOptional?: boolean): boolean | 
     return true;
 };
 
-export const dateSetValidator = (value: any, isOptional?: boolean): boolean | string => {
+export const dateSetValidator = (value: any, dateFormat: string, isOptional?: boolean): boolean | string => {
     const values = value.split(',');
     if (!hasNoDuplicate(values)) {
         return 'Duplicates are not allowed in sets';
@@ -73,7 +70,7 @@ export const dateSetValidator = (value: any, isOptional?: boolean): boolean | st
         return 'Non-optional lists are not supposed to be empty';
     }
     const valid = values.every(isValidDate);
-    return valid ? true : 'Must be a correct list of dates in one of the formats ' + supportedDateFormats + ', separated by \',\'.';
+    return valid ? true : 'Must be a correct list of dates in one of the formats ' + dateFormat + ', separated by \',\'.';
 };
 
 const hasNoDuplicate = (values: any[]): boolean => {
