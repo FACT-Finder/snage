@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import {Config, Field} from "../../shared/type";
 import {askUserForFieldValue} from "./consoleWizzard";
-import {isValidDate, supportedDateFormats} from "./validators";
+import {isValidDate} from "./validators";
 import {expectNever} from "../../server/src/util/util";
 import {Either, left, right} from "fp-ts/lib/Either";
 
@@ -54,19 +54,19 @@ export const parseLogParameters = async (nodeArgV: string[], config: Config): Pr
     addDescription(config.fields, builder);
     const argv = builder.argv;
 
-    return await buildLogParameters(config.fields, argv);
+    return await buildLogParameters(config.fields, argv, config.supportedDateFormat);
 };
 
-const buildLogParameters = async (fields: Field[], consoleArguments: {}): Promise<Either<string, {}>> => {
+const buildLogParameters = async (fields: Field[], consoleArguments: {}, supportedDateFormat: string): Promise<Either<string, {}>> => {
     let returnValues = {};
     for (let field of fields) {
         if (consoleArguments[field.name] != null) {
-            if (field.type == "date" && !isValidDate(consoleArguments[field.name])) {
-                return left('Error: Invalid date format. Please enter the date in one of the following formats: ' + supportedDateFormats);
+            if (field.type == "date" && !isValidDate(consoleArguments[field.name], supportedDateFormat)) {
+                return left('Error: Invalid date format. Please enter the date in the following format: ' + supportedDateFormat);
             }
             returnValues[field.name] = consoleArguments[field.name];
         } else {
-            let fieldValue = await askUserForFieldValue(field);
+            let fieldValue = await askUserForFieldValue(field, supportedDateFormat);
             if (fieldValue != null) {
                 returnValues[field.name] = fieldValue;
             }

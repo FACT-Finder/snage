@@ -8,8 +8,7 @@ import {
     noBlankValuesValidator,
     numberSetValidator,
     numberValidator,
-    stringSetValidator,
-    supportedDateFormats
+    stringSetValidator
 } from "./validators";
 import {getCurrentDateInSupportedFormat} from "./dateProvider";
 import {expectNever} from "../../server/src/util/util";
@@ -19,17 +18,18 @@ import {expectNever} from "../../server/src/util/util";
  * For optional fields, a prompt will ask the user if he wants to provide data
  *
  * @param field the user needs to provide a value for
+ * @param dateFormat represents the valid date format for user input
  *
  * @returns a Promise containing either the given value, or null if the field is optional and no value has been provided
  */
-export const askUserForFieldValue = (async (field: Field): Promise<any> => {
+export const askUserForFieldValue = (async (field: Field, dateFormat: string): Promise<any> => {
     if (field.optional && !await askYesNo('want to set a value for optional field ' + field.name)) {
         return null
     }
-    return await askForInputForFieldByTypes(field);
+    return await askForInputForFieldByTypes(field, dateFormat);
 });
 
-const askForInputForFieldByTypes = (async (field: Field) => {
+const askForInputForFieldByTypes = (async (field: Field, dateFormat: string) => {
     if (field.enum) {
         let type = 'rawlist';
         if (field.list) {
@@ -40,7 +40,7 @@ const askForInputForFieldByTypes = (async (field: Field) => {
     }
     switch (field.type) {
         case "date":
-            return await askForDateInput(field);
+            return await askForDateInput(field, dateFormat);
         case "semver": // intentional fallthrough since semver isn't supported by inquirer
         case "ffversion": // intentional fallthrough since ffversion isn't supported by inquirer
         case "string":
@@ -55,19 +55,19 @@ const askForInputForFieldByTypes = (async (field: Field) => {
     return null;
 });
 
-const askForDateInput = (async (field: Field) => {
+const askForDateInput = (async (field: Field, dateFormat: string) => {
     if (field.list) {
-        const value = await askForUserInput('input', 'Please enter unique dates for ' + field.name + ' in one of the supported date formats separated by' +
+        const value = await askForDateInputFromUser('input', 'Please enter unique dates for ' + field.name + ' in the supported date format separated by' +
             ' \',\'.' +
-            ' Supported formats: ' + supportedDateFormats, field.name, dateSetValidator, field.optional);
+            ' Supported format: ' + dateFormat, field.name, dateSetValidator, dateFormat, field.optional);
         const values = String(value).split(',');
         return replaceBlankAndEmptyWithNull(values);
     }
     if (await askYesNo('Do you want to set the current date for ' + field.name + '?')) {
-        return getCurrentDateInSupportedFormat();
+        return getCurrentDateInSupportedFormat(dateFormat);
     }
-    const dateValue = await askForUserInput('input', 'Please enter a valid date in one of the formats ' + supportedDateFormats + ' for ' + field.name,
-        field.name, dateValidator, field.optional);
+    const dateValue = await askForDateInputFromUser('input', 'Please enter a valid date in the format ' + dateFormat + ' for ' + field.name,
+        field.name, dateValidator, dateFormat, field.optional);
     return replaceBlankAndEmptyWithNull(dateValue);
 });
 
@@ -143,6 +143,16 @@ const askForUserInput = (async (type: inquirer.DistinctQuestion['type'], message
         message: message,
         name: name,
         validate: value => validator(value, isOptional)
+    });
+    return answer[name];
+});
+
+const askForDateInputFromUser = (async (type: inquirer.DistinctQuestion['type'], message: string, name: string, validator: (value: any, dateFormat:string, isOptional?: boolean) => boolean | string, dateFormat:string, isOptional?: boolean) => {
+    const answer = await inquirer.prompt({
+        type: type,
+        message: message,
+        name: name,
+        validate: value => validator(value, dateFormat, isOptional)
     });
     return answer[name];
 });
