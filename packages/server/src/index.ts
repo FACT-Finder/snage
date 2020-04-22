@@ -18,6 +18,9 @@ process.on('SIGTERM', handleExitSignal);
 const parseNotes = (config: Config, folder: string): Note[] => {
     const notes: Note[] = [];
     fs.readdir(folder, (err, files) => {
+        if (err) {
+            return;
+        }
         files.map((file) => {
             const filePath = path.join(folder, file);
             const note = parseNote(config.fields, fs.readFileSync(filePath, 'utf8'));
@@ -42,7 +45,7 @@ export const startServer = ({port}): http.Server => {
     const config = exampleConfig;
     const parser = createParser(config.fields);
 
-    const notes = parseNotes(config, '../notes');
+    const notes = parseNotes(config, '../../notes');
 
     app.get('/note', (req, res) => {
         if (!req.query.query) {
