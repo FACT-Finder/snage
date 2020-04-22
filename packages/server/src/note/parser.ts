@@ -1,16 +1,16 @@
 import {Field, Note} from '../../../shared/type';
-import {loadFront} from 'yaml-front-matter';
+import matter from 'gray-matter';
 import {Either, isLeft, left, map, right} from 'fp-ts/lib/Either';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
 import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
 
 export const parseNote = (fields: Field[], note: string): Either<ParseError, Note> => {
-    const {__content: content, ...meta} = loadFront(note);
+    const {content: content, ...meta} = matter(note);
 
-    let mutableMeta = meta;
+    let mutableMeta = meta.data;
     for (const field of fields) {
-        const eitherMeta: Either<ParseError, Record<string, unknown>> = parseField(field, meta);
+        const eitherMeta: Either<ParseError, Record<string, unknown>> = parseField(field, meta.data);
         if (isLeft(eitherMeta)) {
             return left(eitherMeta.left);
         }

@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@types/yaml": "^1.2.0",
-    "@types/yaml-front-matter": "^4.1.0",
     "express": "^4.17.1",
     "fp-ts": "^2.5.3",
     "node-fetch": "^2.6.0",
@@ -23,7 +22,7 @@
     "string-similarity": "^4.0.1",
     "winston": "^3.2.1",
     "yaml": "^1.8.3",
-    "yaml-front-matter": "^4.1.0",
+    "gray-matter": "^4.0.2",
     "yargs": "^14.0.0"
   },
   "devDependencies": {

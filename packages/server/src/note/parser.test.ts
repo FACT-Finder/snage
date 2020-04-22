@@ -23,7 +23,7 @@ date: "2019-03-03"
             issue: 'xyz',
             type: 'bugfix',
             date: Date.parse('2019-03-03'),
-            content: '\n# test\n',
+            content: '# test\n',
         };
         expect(parseNote(fields, mdFile)).toStrictEqual(right(expected));
     });
