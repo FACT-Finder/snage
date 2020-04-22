@@ -4,10 +4,9 @@
   "scripts": {
     "lint-check": "eslint -c \"../../eslint.yaml\" \"src/**/*.ts\"",
     "lint": "yarn run lint-check --fix",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "debug": "nodemon --watch 'src/**/*.ts' --exec node --inspect-brk ./node_modules/.bin/ts-node --transpile-only src/index.ts",
+    "dev": "webpack --config webpack.dev.js --watch",
     "test": "jest --coverage 'src/.*\\.test\\.ts'",
-    "build": "webpack",
+    "build": "webpack --config webpack.prod.js",
     "format": "prettier '*.js' 'src/**/*.ts' --write",
     "format-check": "prettier '*.js' 'src/**/*.ts' --list-different"
   },
@@ -40,6 +39,7 @@
     "@types/string-similarity": "^3.0.0",
     "@types/supertest": "^2.0.8",
     "@types/winston": "^2.4.4",
+    "copy-webpack-plugin": "^5.1.1",
     "get-port": "^5.0.0",
     "jest": "^24.9.0",
     "jest-junit": "^9.0.0",
@@ -56,6 +56,8 @@
     "tslint-sonarts": "^1.9.0",
     "typescript": "^3.8.3",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-shell-plugin": "^0.5.0"
   }
 }

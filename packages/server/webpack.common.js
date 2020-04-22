@@ -1,13 +1,17 @@
 const path = require('path');
-const {NODE_ENV = 'production'} = process.env;
-module.exports = {
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const config = {
     entry: './src/index.ts',
-    mode: NODE_ENV,
     target: 'node',
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'build'),
         filename: 'server.js',
     },
+    node: {
+        __dirname: false,
+    },
+    plugins: [new CopyWebpackPlugin([{from: '../ui/build', to: 'ui'}])],
     resolve: {
         extensions: ['.ts', '.js'],
     },
@@ -29,3 +33,5 @@ module.exports = {
         ],
     },
 };
+
+module.exports = config;
