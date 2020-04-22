@@ -1,0 +1,24 @@
+filename: "changelog/${issue}-${type}.md"
+fields:
+    - name: issue
+      type: string
+    - name: type
+      type: string
+      enum: [add, change, deprecate, remove, fix, security]
+    - name: version
+      type: semver
+      optional: true
+    - name: date
+      type: date
+    - name: components
+      type: string
+      list: true
+      enum: [server, ui, cli]
+      optional: true
+filterPresets: []
+links: []
+standard:
+    query: ""
+    sort:
+        field: version
+        order: desc
