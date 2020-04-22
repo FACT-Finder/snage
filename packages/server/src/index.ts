@@ -1,12 +1,15 @@
 import express from 'express';
 import http from 'http';
-import {Config, exampleConfig, Note} from '../../shared/type';
+import {Config, Note} from '../../shared/type';
 import * as fs from 'fs';
 import {parseNote} from './note/parser';
 import {createParser} from './query/parser';
 import {createMatcher} from './query/match';
 import path from 'path';
-import {isLeft} from 'fp-ts/lib/Either';
+import {Either, isLeft} from 'fp-ts/lib/Either';
+import YAML from 'yaml';
+import {parseConfig} from './config/parser';
+import {ErrorObject} from 'ajv';
 
 function handleExitSignal(): void {
     process.exit(1);
@@ -33,6 +36,22 @@ const parseNotes = (config: Config, folder: string): Note[] => {
     return notes;
 };
 
+const loadConfig = (filePath): Config => {
+    const rawConfig = fs.readFileSync(filePath, 'utf-8');
+    const config: Either<ErrorObject[], Config> = parseConfig(YAML.parse(rawConfig));
+    if (isLeft(config)) {
+        console.error(`Could not parse ${filePath}:\n ${JSON.stringify(config.left)}`);
+        process.exit(1);
+    }
+    return config.right;
+};
+
+const resolveChangelogDirectory = (config: Config, configFilePath: string): string => {
+    const configDir = path.dirname(configFilePath);
+    const changelogDir = path.dirname(config.filename);
+    return path.isAbsolute(changelogDir) ? changelogDir : path.join(configDir, changelogDir);
+};
+
 export const startServer = ({port}): http.Server => {
     const app = express();
     app.use(express.text({type: '*/*', limit: '10gb'}));
@@ -42,11 +61,13 @@ export const startServer = ({port}): http.Server => {
         next();
     });
 
-    const config = exampleConfig;
+    const configFilePath = process.env['CONFIG_FILE'] ?? '.snage.yaml';
+    const config = loadConfig(configFilePath);
+
+    const changelogDirectory = resolveChangelogDirectory(config, configFilePath);
+    const notes = parseNotes(config, changelogDirectory);
+
     const parser = createParser(config.fields);
-
-    const notes = parseNotes(config, '../../notes');
-
     app.get('/note', (req, res) => {
         if (!req.query.query) {
             res.json(notes);
