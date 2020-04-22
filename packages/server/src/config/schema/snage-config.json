@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/FACT-Finder/snage/tree/master/packages/server/src/config/schema/snage-config.json",
+  "title": "Snage Configuration",
+  "definitions": {
+    "field": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["string", "boolean", "date", "number", "semver", "ffversion"]
+        },
+        "enum": { "type": "array", "items": { "type": "string" } },
+        "list": { "type": "boolean" },
+        "optional": { "type": "boolean" },
+        "description": { "type": "string" },
+        "alias": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": ["name", "type"]
+    },
+    "filterPreset": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "filter": { "type": "string" },
+        "sort": { "$ref": "#/definitions/sort" }
+      },
+      "additionalProperties": false,
+      "required": ["name", "filter", "sort"]
+    },
+    "sort": {
+      "type": "object",
+      "properties": {
+        "field": { "type": "string" },
+        "order": { "type": "string", "enum": ["asc", "desc"] }
+      },
+      "additionalProperties": false,
+      "required": ["field", "order"]
+    },
+    "link": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "link": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": ["name", "link"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "filename": { "type":  "string" },
+    "fields": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/field" }
+    },
+    "filterPresets": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/filterPreset" }
+    },
+    "links": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/link" }
+    },
+    "standard": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string" },
+        "sort": { "$ref": "#/definitions/sort" }
+      },
+      "additionalProperties": false,
+      "required": ["query", "sort"]
+    },
+    "fileTemplateText": { "type": "string" },
+    "supportedDateFormat": { "type": "string" }
+  },
+  "additionalProperties": false,
+  "required": ["filename", "standard"]
+}
