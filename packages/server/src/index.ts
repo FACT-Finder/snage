@@ -59,7 +59,7 @@ export const startServer = ({port}): http.Server => {
             res.status(400).json(expression);
         }
     });
-    app.use(express.static('../ui/build'));
+    app.use(express.static(path.join(__dirname, 'ui')));
 
     return app.listen(port);
 };
