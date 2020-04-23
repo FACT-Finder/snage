@@ -51,25 +51,14 @@ const addAlias = (fields: Field[], yargs: yargs.Argv) => {
     yargs.alias(alias);
 };
 
-/**
- * Parses all parameters from the cli into the fields defined in the config. For fields defined in the config but missing in the cli,
- * an interactive wizard is started started in the terminal to fill in the missing field values
- *
- * @param nodeArgV command line arguments
- * @param config the configuration used to create the changelog files
- *
- * @returns a promise containing an Either with a dictionary in the style of {fieldName: fieldValue, ...} in right or an error message in left
- */
-export const parseLogParameters = async (nodeArgV: string[], config: Config): Promise<Either<string, {}>> => {
-    const builder = yargs(nodeArgV);
+export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     builder.string(NO_WIZARD_LABEL);
     config.fields.forEach(field => addType(field, builder));
     addDescription(config.fields, builder);
     addAlias(config.fields, builder);
-    const argv = builder.argv;
+    return builder
+}
 
-    return await buildLogParameters(config.fields, argv, config.supportedDateFormat);
-};
 
 const buildLogParameters = async (fields: Field[], consoleArguments: {}, supportedDateFormat: string): Promise<Either<string, {}>> => {
     let returnValues = {};

@@ -2,6 +2,7 @@ import yargs from 'yargs';
 import {serve} from './command/serve';
 import {init} from './command/init';
 import {lint} from './command/lint';
+import {create} from './command/create';
 
 const handleExitSignal = (): void => process.exit(1);
 
@@ -14,6 +15,7 @@ yargs
     .default('config', '.snage.yaml')
     .env('SNAGE')
     .command(serve)
+    .command(create)
     .command(init)
     .command(lint)
     .help()

@@ -17,6 +17,7 @@ fields:
       optional: true
 filterPresets: []
 links: []
+supportedDateFormat: 'YYYY-MM-DD'
 standard:
     query: ""
     sort:
