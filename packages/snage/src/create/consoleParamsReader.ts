@@ -5,7 +5,7 @@ import {isValidDate} from "./validators";
 import {expectNever} from "../util/util";
 import {Either, isLeft, left, right} from "fp-ts/lib/Either";
 
-const NO_WIZARD_LABEL:string = "noWizard";
+const NO_WIZARD_LABEL = "noWizard";
 
 const addType = (field: Field, yargs: yargs.Argv) => {
     if (field.list) {
@@ -35,7 +35,7 @@ const addType = (field: Field, yargs: yargs.Argv) => {
 };
 
 const addDescription = (fields: Field[], yargs: yargs.Argv) => {
-    let description = {};
+    const description = {};
     description[NO_WIZARD_LABEL] = "Prevents the wizard from starting when fields aren't set. Options are: \n" +
         "t - fills all missing required fields with the needed data type as placeholder\n" +
         "to - fills all missing required and optional fields with the needed data type as placeholder\n" +
@@ -45,7 +45,7 @@ const addDescription = (fields: Field[], yargs: yargs.Argv) => {
 };
 
 const addAlias = (fields: Field[], yargs: yargs.Argv) => {
-    let alias = {};
+    const alias = {};
     alias[NO_WIZARD_LABEL] = "nw";
     fields.filter(field => field.alias).map(field => alias[field.name] = field.alias);
     yargs.alias(alias);
@@ -59,10 +59,9 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder
 }
 
-
-const buildLogParameters = async (fields: Field[], consoleArguments: {}, supportedDateFormat: string): Promise<Either<string, {}>> => {
-    let returnValues = {};
-    for (let field of fields) {
+export const buildLogParameters = async (fields: Field[], consoleArguments: {}, supportedDateFormat: string): Promise<Either<string, {}>> => {
+    const returnValues = {};
+    for (const field of fields) {
         if (consoleArguments[field.name] != null) {
             if (field.type == "date" && !isValidDate(consoleArguments[field.name], supportedDateFormat)) {
                 return left('Error: Invalid date format. Please enter the date in the following format: ' + supportedDateFormat);
@@ -80,7 +79,7 @@ const buildLogParameters = async (fields: Field[], consoleArguments: {}, support
 
 const handleMissingValue = (async (field: Field, consoleArguments: {}, supportedDateFormat: string, returnValues: {}): Promise<Either<string, true>> => {
     if (consoleArguments[NO_WIZARD_LABEL] == null) {
-        let fieldValue = await askUserForFieldValue(field, supportedDateFormat);
+        const fieldValue = await askUserForFieldValue(field, supportedDateFormat);
         if (fieldValue != null) {
             returnValues[field.name] = fieldValue;
         }
@@ -104,7 +103,7 @@ const fillEmptyFieldWithDataType = (field: Field, supportedDateFormat: string, r
 };
 
 const getEnumString = (field: Field): string => {
-    let enumString: string = "";
+    let enumString = "";
     field.enum?.forEach(entry => enumString = enumString + entry + ' | ');
     return enumString.substr(0, enumString.length -3);
 };

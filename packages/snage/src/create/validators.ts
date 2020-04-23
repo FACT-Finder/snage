@@ -82,7 +82,7 @@ export const validateFileNameSchema = (config: Config, fields: string[]): Either
         return left("filename property in config must not be missing or empty");
     }
 
-    for (let fieldName of fields) {
+    for (const fieldName of fields) {
         const field = getFieldByName(config, fieldName);
         if (field != null) {
             if (field.optional || field.list) {
@@ -96,7 +96,7 @@ export const validateFileNameSchema = (config: Config, fields: string[]): Either
 };
 
 const getFieldByName = (config: Config, name: string): Field | null => {
-    for (let field of config.fields) {
+    for (const field of config.fields) {
         if (field.name == name) {
             return field;
         }

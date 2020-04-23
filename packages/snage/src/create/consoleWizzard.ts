@@ -147,7 +147,7 @@ const askForUserInput = (async (type: inquirer.DistinctQuestion['type'], message
     return answer[name];
 });
 
-const askForDateInputFromUser = (async (type: inquirer.DistinctQuestion['type'], message: string, name: string, validator: (value: any, dateFormat:string, isOptional?: boolean) => boolean | string, dateFormat:string, isOptional?: boolean) => {
+const askForDateInputFromUser = (async (type: inquirer.DistinctQuestion['type'], message: string, name: string, validator: (value: any, dateFormat: string, isOptional?: boolean) => boolean | string, dateFormat: string, isOptional?: boolean) => {
     const answer = await inquirer.prompt({
         type: type,
         message: message,
