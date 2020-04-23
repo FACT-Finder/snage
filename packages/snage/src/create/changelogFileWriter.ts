@@ -22,7 +22,7 @@ export const generateChangeLogFile = async (logParameters: {}, fields: string[],
 
 const createFileName = (logParameters: {}, fields: string[], fileNameTemplate: string): string => {
     let fileName: string = fileNameTemplate;
-    for (let field of fields) {
+    for (const field of fields) {
         fileName = fileName.split('${' + field + '}').join(logParameters[field])
     }
     return fileName;
