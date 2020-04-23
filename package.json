@@ -5,7 +5,7 @@
   "npmClient": "yarn",
   "workspaces": {
     "packages": [
-      "packages/server",
+      "packages/snage",
       "packages/ui"
     ],
     "nohoist": [
