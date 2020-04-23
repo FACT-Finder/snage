@@ -1,4 +1,4 @@
-import {Config} from "../../../shared/type";
+import {Config} from '../../../shared/type';
 
 export const extractFieldsFromFileName = (config: Config): string[] => {
     const regex = /[${][^}]+[}]/g;
@@ -7,7 +7,7 @@ export const extractFieldsFromFileName = (config: Config): string[] => {
     }
     const fieldsFoundRaw = config.filename.match(regex);
     const fieldsFound: string[] = [];
-    if(fieldsFoundRaw == null) {
+    if (fieldsFoundRaw == null) {
         return fieldsFound;
     }
     fieldsFoundRaw.forEach((field) => {

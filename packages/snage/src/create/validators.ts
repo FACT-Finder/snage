@@ -1,6 +1,6 @@
 import moment from 'moment';
-import {Config, Field} from "../../../shared/type";
-import {Either, left, right} from "fp-ts/lib/Either";
+import {Config, Field} from '../../../shared/type';
+import {Either, left, right} from 'fp-ts/lib/Either';
 
 export const isValidDate = (date: string, dateFormat: string): boolean => {
     return moment(date, [dateFormat]).isValid();
@@ -46,8 +46,8 @@ export const numberSetValidator = (value: any, isOptional?: boolean): boolean | 
     if (!isOptional && isBlank(value)) {
         return 'Non-optional lists are not supposed to be empty';
     }
-    const valid = values.every(value => numberValidator(value, isOptional));
-    return valid ? true : 'Must be a correct list of numbers separated by separated by \',\'.';
+    const valid = values.every((value) => numberValidator(value, isOptional));
+    return valid ? true : "Must be a correct list of numbers separated by separated by ','.";
 };
 
 export const stringSetValidator = (value: any, isOptional?: boolean): boolean | string => {
@@ -70,26 +70,26 @@ export const dateSetValidator = (value: any, dateFormat: string, isOptional?: bo
         return 'Non-optional lists are not supposed to be empty';
     }
     const valid = values.every(isValidDate);
-    return valid ? true : 'Must be a correct list of dates in one of the formats ' + dateFormat + ', separated by \',\'.';
+    return valid ? true : 'Must be a correct list of dates in one of the formats ' + dateFormat + ", separated by ','.";
 };
 
 const hasNoDuplicate = (values: any[]): boolean => {
-    return new Set(values).size === values.length
+    return new Set(values).size === values.length;
 };
 
 export const validateFileNameSchema = (config: Config, fields: string[]): Either<string, boolean> => {
     if (!config.filename) {
-        return left("filename property in config must not be missing or empty");
+        return left('filename property in config must not be missing or empty');
     }
 
     for (const fieldName of fields) {
         const field = getFieldByName(config, fieldName);
         if (field != null) {
             if (field.optional || field.list) {
-                return left("Fields used in the file name must not be optional or lists: " + fieldName);
+                return left('Fields used in the file name must not be optional or lists: ' + fieldName);
             }
         } else {
-            return left("You have defined a field with ${...} in the fieldname that is not in the actual field list: " + fieldName);
+            return left('You have defined a field with ${...} in the fieldname that is not in the actual field list: ' + fieldName);
         }
     }
     return right(true);
