@@ -1,6 +1,6 @@
 {
-  "name": "snage-server",
-  "version": "1.0.0",
+  "name": "snage",
+  "version": "0.0.1",
   "scripts": {
     "lint-check": "npm-run-all eslint-check snagelint",
     "lint": "npm-run-all eslint snagelint",
@@ -14,6 +14,11 @@
     "format": "prettier '*.js' 'src/**/*.ts' --write",
     "format-check": "prettier '*.js' 'src/**/*.ts' --list-different"
   },
+  "files": [
+    "build/**",
+    "package.json"
+  ],
+  "bin": "build/snage.js",
   "dependencies": {
     "@types/yaml": "^1.2.0",
     "ajv": "^6.12.2",
