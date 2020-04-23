@@ -1,8 +1,8 @@
 import yargs from 'yargs';
-import {Config, Field} from "../../shared/type";
+import {Config, Field} from "../../../shared/type";
 import {askUserForFieldValue} from "./consoleWizzard";
 import {isValidDate} from "./validators";
-import {expectNever} from "../../server/src/util/util";
+import {expectNever} from "../util/util";
 import {Either, isLeft, left, right} from "fp-ts/lib/Either";
 
 const NO_WIZARD_LABEL:string = "noWizard";

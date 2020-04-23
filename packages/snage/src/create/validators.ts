@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {Config, Field} from "../../shared/type";
+import {Config, Field} from "../../../shared/type";
 import {Either, left, right} from "fp-ts/lib/Either";
 
 export const isValidDate = (date: string, dateFormat: string): boolean => {

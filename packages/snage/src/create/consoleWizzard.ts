@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer';
-import {Field} from "../../shared/type";
+import {Field} from "../../../shared/type";
 import {
     dateSetValidator,
     dateValidator,
@@ -11,7 +11,7 @@ import {
     stringSetValidator
 } from "./validators";
 import {getCurrentDateInSupportedFormat} from "./dateProvider";
-import {expectNever} from "../../server/src/util/util";
+import {expectNever} from "../util/util";
 
 /**
  * Asks the user to provide a valid value for the given field in an interactive way on the cli
