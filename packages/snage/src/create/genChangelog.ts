@@ -1,6 +1,6 @@
 import {parseLogParameters} from "./consoleParamsReader";
 import {generateChangeLogFile} from "./changelogFileWriter";
-import {Config, exampleConfig} from "../../shared/type";
+import {Config} from "../../../shared/type";
 import {validateFileNameSchema} from "./validators";
 import {isLeft} from "fp-ts/lib/Either";
 
