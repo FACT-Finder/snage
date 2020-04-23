@@ -5,6 +5,9 @@ fields:
     - name: type
       type: string
       enum: [add, change, deprecate, remove, fix, security]
+    - name: audience
+      type: string
+      enum: [user, developer]
     - name: version
       type: semver
       optional: true
