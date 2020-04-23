@@ -4,7 +4,8 @@
   "scripts": {
     "lint-check": "eslint -c \"../../eslint.yaml\" \"src/**/*.ts\"",
     "lint": "yarn run lint-check --fix",
-    "dev": "cross-env CONFIG_FILE=../../.snage.yaml webpack --config webpack.dev.js --watch",
+    "dev-serve": "cross-env SNAGE_CONFIG=../../.snage.yaml webpack --config webpack.dev.js --watch",
+    "dev": "ts-node src/index.ts",
     "test": "jest --coverage 'src/.*\\.test\\.ts'",
     "build": "webpack --config webpack.prod.js",
     "format": "prettier '*.js' 'src/**/*.ts' --write",

@@ -1,9 +1,29 @@
-import {Field, Note} from '../../../shared/type';
+import {Config, Field, Note} from '../../../shared/type';
 import matter from 'gray-matter';
 import {Either, isLeft, left, map, right} from 'fp-ts/lib/Either';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
 import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
+import fs from 'fs';
+import path from 'path';
+
+export const parseNotes = (config: Config, folder: string): Note[] => {
+    const notes: Note[] = [];
+    fs.readdir(folder, (err, files) => {
+        if (err) {
+            return;
+        }
+        files.map((file) => {
+            const filePath = path.join(folder, file);
+            const note = parseNote(config.fields, fs.readFileSync(filePath, 'utf8'));
+            if (isLeft(note)) {
+                throw new Error(JSON.stringify({...note.left, file: filePath}));
+            }
+            notes.push(note.right);
+        });
+    });
+    return notes;
+};
 
 export const parseNote = (fields: Field[], note: string): Either<ParseError, Note> => {
     const {content: content, ...meta} = matter(note);
