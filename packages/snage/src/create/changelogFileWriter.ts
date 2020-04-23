@@ -1,6 +1,6 @@
 import * as matter from 'gray-matter';
 import * as fs from 'fs';
-import {Either, isLeft, left, right} from "fp-ts/lib/Either";
+import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
 
 /**
  * Creates change logs based on the given config in a front matter format. The file type will be MarkDown (.md)
@@ -13,7 +13,12 @@ import {Either, isLeft, left, right} from "fp-ts/lib/Either";
  *
  * @return an Either with the file creation error message in left or the success message in right
  */
-export const generateChangeLogFile = async (logParameters: {}, fields: string[], fileNameTemplate: string, fileTemplateText: string): Promise<Either<string, string>> => {
+export const generateChangeLogFile = async (
+    logParameters: {},
+    fields: string[],
+    fileNameTemplate: string,
+    fileTemplateText: string
+): Promise<Either<string, string>> => {
     const content: string = matter.stringify(fileTemplateText, logParameters);
     const fileName: string = createFileName(logParameters, fields, fileNameTemplate);
 
@@ -23,7 +28,7 @@ export const generateChangeLogFile = async (logParameters: {}, fields: string[],
 const createFileName = (logParameters: {}, fields: string[], fileNameTemplate: string): string => {
     let fileName: string = fileNameTemplate;
     for (const field of fields) {
-        fileName = fileName.split('${' + field + '}').join(logParameters[field])
+        fileName = fileName.split('${' + field + '}').join(logParameters[field]);
     }
     return fileName;
 };
@@ -32,25 +37,20 @@ const makeDirIfNotExisting = async (fileName: string): Promise<Either<string, tr
     const regex = /^.*[\\\/]/;
     const matches = fileName.match(regex);
     if (matches != null && matches.length > 0) {
-        await fs.promises.mkdir(matches[0], {recursive: true}).catch(
-            function(error) {
-                return left("Error while creating path " + matches[0] + ": " + error);
-            }
-        );
+        await fs.promises.mkdir(matches[0], {recursive: true}).catch(function(error) {
+            return left('Error while creating path ' + matches[0] + ': ' + error);
+        });
     }
     return right(true);
 };
 
 const createFile = async (fileName: string, content: string): Promise<Either<string, string>> => {
-
     const createPathResult = await makeDirIfNotExisting(fileName);
     if (isLeft(createPathResult)) {
         return left(createPathResult.left);
     }
-    await fs.promises.writeFile(fileName, content).catch(
-        function(error) {
-            return left("Error while writing file: " + error);
-        }
-    );
-    return right("Successfully created file: " + fileName);
+    await fs.promises.writeFile(fileName, content).catch(function(error) {
+        return left('Error while writing file: ' + error);
+    });
+    return right('Successfully created file: ' + fileName);
 };
