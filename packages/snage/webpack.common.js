@@ -6,7 +6,7 @@ const config = {
     target: 'node',
     output: {
         path: path.resolve(__dirname, 'build'),
-        filename: 'server.js',
+        filename: 'snage.js',
     },
     node: {
         __dirname: false,
