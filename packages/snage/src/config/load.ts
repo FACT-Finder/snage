@@ -6,7 +6,7 @@ import {parseConfig} from './parser';
 import YAML from 'yaml';
 import path from 'path';
 
-export const loadConfig = (filePath): Config => {
+export const loadConfig = (filePath: string): Config => {
     const rawConfig = fs.readFileSync(filePath, 'utf-8');
     const config: Either<ErrorObject[], Config> = parseConfig(YAML.parse(rawConfig));
     if (isLeft(config)) {

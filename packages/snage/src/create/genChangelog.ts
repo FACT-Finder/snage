@@ -1,10 +1,6 @@
-import {parseLogParameters} from "./consoleParamsReader";
-import {generateChangeLogFile} from "./changelogFileWriter";
 import {Config} from "../../../shared/type";
-import {validateFileNameSchema} from "./validators";
-import {isLeft} from "fp-ts/lib/Either";
 
-const extractFieldsFromFileName = (config: Config): string[] => {
+export const extractFieldsFromFileName = (config: Config): string[] => {
     const regex = /[${][^}]+[}]/g;
     if (config.filename == null) {
         return [];
@@ -20,24 +16,3 @@ const extractFieldsFromFileName = (config: Config): string[] => {
 
     return fieldsFound;
 };
-
-(async () => {
-    console.log("Generating changelog");
-    const fileNames: string[] = extractFieldsFromFileName(exampleConfig);
-    const fileNameIsValid = validateFileNameSchema(exampleConfig, fileNames);
-    if (isLeft(fileNameIsValid)) {
-        console.error("Validation error: " + fileNameIsValid);
-        return;
-    }
-    const params = await parseLogParameters(process.argv, exampleConfig);
-    if (isLeft(params)) {
-        console.error(params.left);
-        return;
-    }
-    const fileStatus = await generateChangeLogFile(params.right, fileNames, exampleConfig.filename, exampleConfig.fileTemplateText);
-    if (isLeft(fileStatus)) {
-        console.error(fileStatus.left);
-        return;
-    }
-    console.log(fileStatus.right);
-})();
