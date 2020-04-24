@@ -8,7 +8,6 @@ const fieldsWithDefaults = {
     links: [],
     filterPresets: [],
     fileTemplateText: '',
-    supportedDateFormat: '',
 };
 
 export const parseConfig = (config: any): Either<ErrorObject[], Config> => {

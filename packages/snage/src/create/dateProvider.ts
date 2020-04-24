@@ -1,10 +1,5 @@
-import moment from 'moment';
+import {format} from 'date-fns';
 
-/**
- * Creates a current date in the provided
- *
- * @returns the created date
- */
-export const getCurrentDateInSupportedFormat = (dateFormat: string): string => {
-    return moment().format(dateFormat);
+export const getCurrentDate = (): string => {
+    return format(new Date(), 'yyyy-MM-dd');
 };

@@ -8,7 +8,6 @@ export interface Config {
         query: string;
     };
     fileTemplateText: string;
-    supportedDateFormat: string;
 }
 
 export interface Field {

@@ -16,11 +16,10 @@ fields:
     - name: components
       type: string
       list: true
-      enum: [server, ui, cli, api]
+      enum: [server, ui, cli, api, config]
       optional: true
 filterPresets: []
 links: []
-supportedDateFormat: 'YYYY-MM-DD'
 standard:
     query: ""
     sort:

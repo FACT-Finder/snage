@@ -73,8 +73,7 @@
       "additionalProperties": false,
       "required": ["query", "sort"]
     },
-    "fileTemplateText": { "type": "string" },
-    "supportedDateFormat": { "type": "string" }
+    "fileTemplateText": { "type": "string" }
   },
   "additionalProperties": false,
   "required": ["filename", "standard"]

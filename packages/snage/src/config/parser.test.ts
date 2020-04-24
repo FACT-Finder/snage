@@ -23,7 +23,6 @@ describe('parseConfig', () => {
                 fileTemplateText: '',
                 filterPresets: [],
                 links: [],
-                supportedDateFormat: '',
             })
         );
     });
