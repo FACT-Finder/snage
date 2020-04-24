@@ -43,6 +43,10 @@ describe('parser', () => {
     });
     test('string', () => {
         expect(parser('stringName = abcde')).toEqual({status: true, value: {field: 'stringName', op: '=', value: 'abcde'}});
+        expect(parser('stringName = ,.><=+\\|!@#$%^&*{}+_-?')).toEqual({
+            status: true,
+            value: {field: 'stringName', op: '=', value: ',.><=+\\|!@#$%^&*{}+_-?'},
+        });
         expect(parser('stringName = 555')).toEqual({status: true, value: {field: 'stringName', op: '=', value: '555'}});
         expect(parser('stringName = "multi word"')).toEqual({status: true, value: {field: 'stringName', op: '=', value: 'multi word'}});
     });

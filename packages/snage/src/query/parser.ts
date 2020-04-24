@@ -76,7 +76,7 @@ export const createParser = (fields: Field[]): Parser<Expression>['parse'] => {
                 .map(Date.parse),
         true: () => word('true').result(true),
         false: () => word('false').result(false),
-        stringWithoutWhiteSpace: () => P.regex(/([\w-\\/A,]*)/, 1).desc('string'),
+        stringWithoutWhiteSpace: () => P.regex(/([^\s()]+)/, 1).desc('string'),
         stringWhiteSpace: () => P.regex(/["']([^'"]*)['"]/, 1).desc('string'),
         string: (r) => P.alt(r.stringWhiteSpace, r.stringWithoutWhiteSpace),
 
