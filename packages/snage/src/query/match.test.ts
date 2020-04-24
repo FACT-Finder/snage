@@ -56,6 +56,12 @@ describe('match', () => {
     };
 
     [
+        createTest('booleanName absent', {booleanName: true}, false),
+        createTest('booleanName present', {booleanName: true}, true),
+
+        createTest('booleanName absent', {}, true),
+        createTest('booleanName present', {}, false),
+
         createTest('booleanName = true', {booleanName: true}, true),
         createTest('booleanName = false', {booleanName: true}, false),
         createTest('enumName = abc', {enumName: 'abc'}, true),
