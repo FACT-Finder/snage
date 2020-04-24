@@ -4,10 +4,10 @@ import semver from 'semver';
 import stringsimi from 'string-similarity';
 import {zip} from 'fp-ts/lib/Array';
 import {Field} from '../config/type';
-import {Note} from '../note/note';
+import {NoteValues} from '../note/note';
 
 interface Matcher {
-    (n: Note): boolean;
+    (n: NoteValues): boolean;
 }
 
 export const createMatcher = (e: Expression, fields: Field[]): Matcher => {

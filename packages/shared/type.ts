@@ -1,8 +1,8 @@
 export interface ApiNote {
-    __id: string;
-    __content: string;
-    __summary: string;
+    id: string;
+    content: string;
+    summary: string;
 
-    [key: string]: string | string[];
+    values: {[key: string]: string | string[]};
 }
 

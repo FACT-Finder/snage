@@ -5,20 +5,21 @@ import {format} from 'date-fns';
 import {expectNever} from '../util/util';
 
 export interface Note {
-    __id: string;
-    __content: string;
-    __summary: string;
+    id: string;
+    content: string;
+    summary: string;
 
-    [key: string]: unknown;
+    values: NoteValues;
 }
+export type NoteValues = Record<string, unknown>;
 
 export const convertToApiNote = (note: Note, fields: Field[]): ApiNote => {
-    const {__id, __content, __summary, ...values} = note;
+    const {values} = note;
     const convertedValues = Object.entries(values).reduce(
         (acc, [key, value]) => ({...acc, [key]: convertField(fields.find((f) => f.name === key)!, value)}),
         {}
     );
-    return {__id, __content, __summary, ...convertedValues};
+    return {...note, values: convertedValues};
 };
 
 export const convertField = (field: Field, value: unknown): string | string[] => {

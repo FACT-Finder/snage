@@ -38,7 +38,8 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
             }
             const expression = parser(req.query.query);
             if (expression.status) {
-                const filteredNotes = notes.filter(createMatcher(expression.value, config.fields));
+                const matcher = createMatcher(expression.value, config.fields);
+                const filteredNotes = notes.filter((note) => matcher(note.values));
                 const apiNotes = filteredNotes.map((note) => convertToApiNote(note, config.fields));
                 res.json(apiNotes);
             } else {

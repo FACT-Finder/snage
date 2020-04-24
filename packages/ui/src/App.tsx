@@ -15,7 +15,7 @@ const App: React.FC = () => {
             <Search setEntries={setEntries} />
             <div>
                 {entries.map((entry) => (
-                    <Entry key={entry.__id} entry={entry} />
+                    <Entry key={entry.id} entry={entry} />
                 ))}
             </div>
         </div>
@@ -39,22 +39,22 @@ const Search: React.FC<{setEntries: (e: ApiNote[]) => void}> = ({setEntries}) =>
     );
 };
 
-const Entry = React.memo(({entry: {__content, __summary, __id, ...other}}: {entry: ApiNote}) => {
+const Entry = React.memo(({entry: {content, summary, values}}: {entry: ApiNote}) => {
     const classes = useStyles();
     return (
         <ExpansionPanel>
             <ExpansionPanelSummary>
                 <div>
                     <Typography variant="h5" component="div" className={classes.header}>
-                        <ReactMarkdown source={__summary} />
+                        <ReactMarkdown source={summary} />
                     </Typography>
-                    {Object.entries(other).map(([key, value]) => (
+                    {Object.entries(values).map(([key, value]) => (
                         <Chip key={key} style={{marginRight: 10}} label={key + ': ' + value} />
                     ))}
                 </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <div>{__content === '' ? '-- no content --' : <ReactMarkdown source={__content} />}</div>
+                <div>{content === '' ? '-- no content --' : <ReactMarkdown source={content} />}</div>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );
