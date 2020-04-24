@@ -16,7 +16,7 @@ fields:
     - name: components
       type: string
       list: true
-      enum: [server, ui, cli]
+      enum: [server, ui, cli, api]
       optional: true
 filterPresets: []
 links: []

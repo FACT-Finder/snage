@@ -6,6 +6,7 @@ import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
 import path from 'path';
 import {DefaultCli} from './common';
+import {convertToApiNote} from '../note/note';
 
 export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}> = {
     command: 'serve',
@@ -37,7 +38,9 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
             }
             const expression = parser(req.query.query);
             if (expression.status) {
-                res.json(notes.filter(createMatcher(expression.value, config.fields)));
+                const filteredNotes = notes.filter(createMatcher(expression.value, config.fields));
+                const apiNotes = filteredNotes.map((note) => convertToApiNote(note, config.fields));
+                res.json(apiNotes);
             } else {
                 res.status(400).json(expression);
             }

@@ -1,8 +1,8 @@
 import {createMatcher} from './match';
 import {createParser} from './parser';
-import {Note} from '../../../shared/type';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
+import {Note} from '../note/note';
 
 const fields: Field[] = [
     {
@@ -44,7 +44,7 @@ const fields: Field[] = [
 
 describe('match', () => {
     const parser = createParser(fields);
-    const createTest = (expression: string, note: Omit<Note, 'id'>, result: boolean) => () => {
+    const createTest = (expression: string, note: Omit<Note, '__id'>, result: boolean) => () => {
         test(`${expression} + ${JSON.stringify(note)} => ${result ? 'true' : 'false'}`, () => {
             const exp = parser(expression);
             if (!exp.status) {
