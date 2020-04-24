@@ -11,8 +11,8 @@
     "dev": "ts-node src/index.ts",
     "test": "jest --coverage 'src/.*\\.test\\.ts'",
     "build": "webpack --config webpack.prod.js",
-    "format": "prettier '*.js' 'src/**/*.ts' --write",
-    "format-check": "prettier '*.js' 'src/**/*.ts' --list-different"
+    "format": "prettier --config \"../../prettier.config.js\" \"*.js\" \"src/**/*.ts\" --write",
+    "format-check": "prettier --config \"../../prettier.config.js\" \"*.js\" \"src/**/*.ts\" --list-different"
   },
   "files": [
     "build/**",
