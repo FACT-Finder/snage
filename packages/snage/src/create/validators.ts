@@ -78,29 +78,11 @@ const hasNoDuplicate = (values: any[]): boolean => {
     return new Set(values).size === values.length;
 };
 
-export const validateFileNameSchema = (config: Config, fields: string[]): Either<string, boolean> => {
-    if (!config.filename) {
-        return left('filename property in config must not be missing or empty');
-    }
-
-    for (const fieldName of fields) {
-        const field = getFieldByName(config, fieldName);
-        if (field != null) {
-            if (field.optional || field.list) {
-                return left('Fields used in the file name must not be optional or lists: ' + fieldName);
-            }
-        } else {
-            return left('You have defined a field with ${...} in the fieldname that is not in the actual field list: ' + fieldName);
+export const validateFileNameSchema = (config: Config, fields: Field[]): Either<string, boolean> => {
+    for (const field of fields) {
+        if (field.optional || field.list) {
+            return left('Fields used in the file name must not be optional or lists: ' + field.name);
         }
     }
     return right(true);
-};
-
-const getFieldByName = (config: Config, name: string): Field | null => {
-    for (const field of config.fields) {
-        if (field.name == name) {
-            return field;
-        }
-    }
-    return null;
 };
