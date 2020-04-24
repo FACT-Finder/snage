@@ -16,10 +16,11 @@ jobs:
       - if: startsWith(github.ref, 'refs/tags/v')
         run: |
           echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > $HOME/.npmrc
           docker build -t snage/snage:${GITHUB_REF/refs\/tags\/v/} packages/snage
           docker push     snage/snage:${GITHUB_REF/refs\/tags\/v/}
           (cd packages/snage && yarn publish --new-version "${GITHUB_REF/refs\/tags\/v/}" --no-git-tag-version)
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
