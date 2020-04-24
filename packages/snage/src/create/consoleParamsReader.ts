@@ -60,16 +60,16 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder;
 };
 
-export const buildLogParameters = async (fields: Field[], consoleArguments: {}, supportedDateFormat: string): Promise<Either<string, {}>> => {
+export const buildLogParameters = async (fields: Field[], consoleArguments: {}): Promise<Either<string, {}>> => {
     const returnValues = {};
     for (const field of fields) {
         if (consoleArguments[field.name] != null) {
-            if (field.type == 'date' && !isValidDate(consoleArguments[field.name], supportedDateFormat)) {
-                return left('Error: Invalid date format. Please enter the date in the following format: ' + supportedDateFormat);
+            if (field.type == 'date' && !isValidDate(consoleArguments[field.name])) {
+                return left("Error: Invalid date format. Please enter the date in format 'YYYY-MM-DD'");
             }
             returnValues[field.name] = consoleArguments[field.name];
         } else {
-            const result = await handleMissingValue(field, consoleArguments, supportedDateFormat, returnValues);
+            const result = await handleMissingValue(field, consoleArguments, returnValues);
             if (isLeft(result)) {
                 return left(result.left);
             }
@@ -78,19 +78,14 @@ export const buildLogParameters = async (fields: Field[], consoleArguments: {}, 
     return right(returnValues);
 };
 
-const handleMissingValue = async (
-    field: Field,
-    consoleArguments: {},
-    supportedDateFormat: string,
-    returnValues: {}
-): Promise<Either<string, true>> => {
+const handleMissingValue = async (field: Field, consoleArguments: {}, returnValues: {}): Promise<Either<string, true>> => {
     if (consoleArguments[NO_WIZARD_LABEL] == null) {
-        const fieldValue = await askUserForFieldValue(field, supportedDateFormat);
+        const fieldValue = await askUserForFieldValue(field);
         if (fieldValue != null) {
             returnValues[field.name] = fieldValue;
         }
     } else if (consoleArguments[NO_WIZARD_LABEL] == 'to' || (consoleArguments[NO_WIZARD_LABEL] == 't' && !field.optional)) {
-        fillEmptyFieldWithDataType(field, supportedDateFormat, returnValues);
+        fillEmptyFieldWithDataType(field, returnValues);
     } else if (
         consoleArguments[NO_WIZARD_LABEL] != null &&
         !(consoleArguments[NO_WIZARD_LABEL] == 'to' || consoleArguments[NO_WIZARD_LABEL] == 't')
@@ -100,11 +95,11 @@ const handleMissingValue = async (
     return right(true);
 };
 
-const fillEmptyFieldWithDataType = (field: Field, supportedDateFormat: string, returnValues: {}) => {
+const fillEmptyFieldWithDataType = (field: Field, returnValues: {}) => {
     if (field.enum) {
         returnValues[field.name] = getEnumString(field);
     } else {
-        returnValues[field.name] = field.type == 'date' ? supportedDateFormat : field.type;
+        returnValues[field.name] = field.type == 'date' ? 'YYYY-MM-DD' : field.type;
     }
     if (field.list) {
         returnValues[field.name] = [returnValues[field.name]];

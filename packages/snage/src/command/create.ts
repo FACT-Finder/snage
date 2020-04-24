@@ -37,7 +37,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     handler: async ({config: configFile, ...other}) => {
         const config = loadConfigOrExit(configFile);
         const fileNames: string[] = extractFieldsFromFileName(config);
-        const fieldValues = await buildLogParameters(config.fields, other, config.supportedDateFormat);
+        const fieldValues = await buildLogParameters(config.fields, other);
 
         if (isLeft(fieldValues)) {
             console.error(fieldValues.left);

@@ -9,7 +9,7 @@ import {
     numberValidator,
     stringSetValidator,
 } from './validators';
-import {getCurrentDateInSupportedFormat} from './dateProvider';
+import {getCurrentDate} from './dateProvider';
 import {expectNever} from '../util/util';
 import {Field} from '../config/type';
 
@@ -18,18 +18,17 @@ import {Field} from '../config/type';
  * For optional fields, a prompt will ask the user if he wants to provide data
  *
  * @param field the user needs to provide a value for
- * @param dateFormat represents the valid date format for user input
  *
  * @returns a Promise containing either the given value, or null if the field is optional and no value has been provided
  */
-export const askUserForFieldValue = async (field: Field, dateFormat: string): Promise<any> => {
+export const askUserForFieldValue = async (field: Field): Promise<any> => {
     if (field.optional && !(await askYesNo('want to set a value for optional field ' + field.name))) {
         return null;
     }
-    return await askForInputForFieldByTypes(field, dateFormat);
+    return await askForInputForFieldByTypes(field);
 };
 
-const askForInputForFieldByTypes = async (field: Field, dateFormat: string) => {
+const askForInputForFieldByTypes = async (field: Field) => {
     if (field.enum) {
         let type = 'rawlist';
         if (field.list) {
@@ -39,7 +38,7 @@ const askForInputForFieldByTypes = async (field: Field, dateFormat: string) => {
     }
     switch (field.type) {
         case 'date':
-            return await askForDateInput(field, dateFormat);
+            return await askForDateInput(field);
         case 'semver': // intentional fallthrough since semver isn't supported by inquirer
         case 'ffversion': // intentional fallthrough since ffversion isn't supported by inquirer
         case 'string':
@@ -54,33 +53,26 @@ const askForInputForFieldByTypes = async (field: Field, dateFormat: string) => {
     return null;
 };
 
-const askForDateInput = async (field: Field, dateFormat: string) => {
+const askForDateInput = async (field: Field) => {
     if (field.list) {
         const value = await askForDateInputFromUser(
             'input',
-            'Please enter unique dates for ' +
-                field.name +
-                ' in the supported date format separated by' +
-                " ','." +
-                ' Supported format: ' +
-                dateFormat,
+            `Please enter unique dates for ${field.name} in format 'YYYY-MM-DD'`,
             field.name,
             dateSetValidator,
-            dateFormat,
             field.optional
         );
         const values = String(value).split(',');
         return replaceBlankAndEmptyWithNull(values);
     }
     if (await askYesNo('Do you want to set the current date for ' + field.name + '?')) {
-        return getCurrentDateInSupportedFormat(dateFormat);
+        return getCurrentDate();
     }
     const dateValue = await askForDateInputFromUser(
         'input',
-        'Please enter a valid date in the format ' + dateFormat + ' for ' + field.name,
+        "Please enter a valid date in the format 'YYYY-MM-DD' for " + field.name,
         field.name,
         dateValidator,
-        dateFormat,
         field.optional
     );
     return replaceBlankAndEmptyWithNull(dateValue);
@@ -188,15 +180,14 @@ const askForDateInputFromUser = async (
     type: inquirer.DistinctQuestion['type'],
     message: string,
     name: string,
-    validator: (value: any, dateFormat: string, isOptional?: boolean) => boolean | string,
-    dateFormat: string,
+    validator: (value: any, isOptional?: boolean) => boolean | string,
     isOptional?: boolean
 ) => {
     const answer = await inquirer.prompt({
         type: type,
         message: message,
         name: name,
-        validate: (value) => validator(value, dateFormat, isOptional),
+        validate: (value) => validator(value, isOptional),
     });
     return answer[name];
 };
