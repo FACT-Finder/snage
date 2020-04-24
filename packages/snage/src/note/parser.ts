@@ -13,13 +13,13 @@ export const parseNotes = (config: Config, folder: string): Note[] => {
         const filePath = path.join(folder, file);
         const note = parseNote(config.fields, fs.readFileSync(filePath, 'utf8'), filePath);
         if (isLeft(note)) {
-            throw new Error(JSON.stringify({...note.left, file: filePath}));
+            throw new Error(JSON.stringify(note.left));
         }
         return note.right;
     });
 };
 
-export const parseNote = (fields: Field[], note: string): Either<ParseError, Note> => {
+export const parseNote = (fields: Field[], note: string, fileName = 'unset'): Either<ParseError, Note> => {
     const {content: content, ...meta} = matter(note);
 
     let mutableMeta = meta.data;
@@ -31,7 +31,7 @@ export const parseNote = (fields: Field[], note: string): Either<ParseError, Not
         mutableMeta = {...mutableMeta, ...eitherMeta.right};
     }
     const [first, ...other] = content.split('\n\n');
-    return right({...mutableMeta, __id: '', __content: other.join('\n\n'), __summary: first.replace(/^\s*#\s*/, '')});
+    return right({values: mutableMeta, id: fileName, content: other.join('\n\n'), summary: first.replace(/^\s*#\s*/, '')});
 };
 
 type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion';

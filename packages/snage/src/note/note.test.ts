@@ -5,15 +5,18 @@ import {Field} from '../config/type';
 describe('convert', () => {
     it('converts whole note', () => {
         const note: Note = {
-            __content: '',
-            __id: '',
-            __summary: '',
-            version: semver.parse('1.0.5'),
-            ffversion: '1.0.5-15',
-            date: Date.parse('2020-04-24'),
-            bool: true,
-            number: 1.53,
-            list: [true, false],
+            content: '',
+            id: '',
+            file: '',
+            summary: '',
+            values: {
+                version: semver.parse('1.0.5'),
+                ffversion: '1.0.5-15',
+                date: Date.parse('2020-04-24'),
+                bool: true,
+                number: 1.53,
+                list: [true, false],
+            },
         };
         const fields: Field[] = [
             {name: 'version', type: 'semver'},
@@ -25,15 +28,17 @@ describe('convert', () => {
         ];
 
         expect(convertToApiNote(note, fields)).toStrictEqual({
-            __content: '',
-            __id: '',
-            __summary: '',
-            version: '1.0.5',
-            ffversion: '1.0.5-15',
-            date: '2020-04-24',
-            bool: 'true',
-            number: '1.53',
-            list: ['true', 'false'],
+            content: '',
+            id: '',
+            summary: '',
+            values: {
+                version: '1.0.5',
+                ffversion: '1.0.5-15',
+                date: '2020-04-24',
+                bool: 'true',
+                number: '1.53',
+                list: ['true', 'false'],
+            },
         });
     });
 });

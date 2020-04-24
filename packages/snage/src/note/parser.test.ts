@@ -24,14 +24,16 @@ body text
 `;
     it('works', () => {
         const expected: Note = {
-            __id: '',
-            __summary: 'cool summary line',
-            __content: 'body text\n\n**test**\n',
-            issue: 'xyz',
-            type: 'bugfix',
-            date: Date.parse('2019-03-03'),
+            id: 'filename',
+            summary: 'cool summary line',
+            content: 'body text\n\n**test**\n',
+            values: {
+                issue: 'xyz',
+                type: 'bugfix',
+                date: Date.parse('2019-03-03'),
+            },
         };
-        expect(parseNote(fields, mdFile)).toStrictEqual(right(expected));
+        expect(parseNote(fields, mdFile, 'filename')).toStrictEqual(right(expected));
     });
     it('returns first found failure', () => {
         const noIssue = `---
