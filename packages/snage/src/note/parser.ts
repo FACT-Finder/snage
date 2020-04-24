@@ -36,7 +36,8 @@ export const parseNote = (fields: Field[], note: string): Either<ParseError, Not
         }
         mutableMeta = {...mutableMeta, ...eitherMeta.right};
     }
-    return right({...mutableMeta, id: '', content});
+    const [first, ...other] = content.split('\n\n');
+    return right({...mutableMeta, __id: '', __content: other.join('\n\n'), __summary: first.replace(/^\s*#\s*/, '')});
 };
 
 type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion';

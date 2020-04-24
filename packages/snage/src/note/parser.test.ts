@@ -15,15 +15,20 @@ issue: xyz
 type: bugfix
 date: "2019-03-03"
 ---
-# test
+# cool summary line
+
+body text
+
+**test**
 `;
     it('works', () => {
         const expected: Note = {
-            id: '',
+            __id: '',
+            __summary: 'cool summary line',
+            __content: 'body text\n\n**test**\n',
             issue: 'xyz',
             type: 'bugfix',
             date: Date.parse('2019-03-03'),
-            content: '# test\n',
         };
         expect(parseNote(fields, mdFile)).toStrictEqual(right(expected));
     });
