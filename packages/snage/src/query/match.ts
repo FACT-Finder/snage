@@ -1,4 +1,4 @@
-import {Expression, Operator, SingleExpression} from './parser';
+import {Expression, Operator, SingleExpression, StatusOP, StatusValue} from './parser';
 import {expectNever, ffVersionRegex} from '../util/util';
 import semver from 'semver';
 import stringsimi from 'string-similarity';
@@ -38,40 +38,50 @@ export const createSimpleExpression = (e: SingleExpression, fields: Field[]): Ma
     return (note) => checkValue(note[field], value, conf.type, op);
 };
 
-export const checkValue = (left: any, right: any, type: Field['type'], operator: Operator): boolean => {
+export const checkValue = (noteValue: any, queryValue: any, type: Field['type'], operator: Operator): boolean => {
     if (type === 'semver') {
-        return semver.satisfies(left, `${operator}${right}`);
+        return semver.satisfies(noteValue, `${operator}${queryValue}`);
     }
     if (type === 'ffversion') {
-        return checkFFVersion(left, right, operator);
+        return checkFFVersion(noteValue, queryValue, operator);
     }
     switch (operator) {
         case '<':
-            return left < right;
+            return noteValue < queryValue;
         case '<=':
-            return left <= right;
+            return noteValue <= queryValue;
         case '>=':
-            return left >= right;
+            return noteValue >= queryValue;
         case '>':
-            return left > right;
+            return noteValue > queryValue;
         case '=':
-            return left === right;
+            return noteValue === queryValue;
         case '!=':
-            return left !== right;
+            return noteValue !== queryValue;
         case '~':
-            return left?.includes(right);
+            return noteValue?.includes(queryValue);
         case '~~':
-            if (!left || !right) {
+            if (!noteValue || !queryValue) {
                 return false;
             }
-            const rightParts = right.split(' ');
-            const leftParts = left.split(' ');
+            const rightParts = queryValue.split(' ');
+            const leftParts = noteValue.split(' ');
             for (const rightPart of rightParts) {
                 if (!leftParts.some((leftPart) => stringsimi.compareTwoStrings(leftPart, rightPart) > 0.4)) {
                     return false;
                 }
             }
             return true;
+        case StatusOP:
+            const status = queryValue as StatusValue;
+            switch (status) {
+                case StatusValue.Absent:
+                    return noteValue === undefined || noteValue === null;
+                case StatusValue.Present:
+                    return noteValue !== undefined && noteValue !== null;
+                default:
+                    return expectNever(status);
+            }
         default:
             return expectNever(operator);
     }

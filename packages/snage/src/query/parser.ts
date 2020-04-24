@@ -16,15 +16,24 @@ export type SingleExpression = {
     value: unknown;
 };
 
-export type Operator = '=' | '<=' | '>=' | '!=' | '<' | '>' | '~' | '~~';
+export const StatusOP = '__status__' as const;
+export type Operator = '=' | '<=' | '>=' | '!=' | '<' | '>' | '~' | '~~' | typeof StatusOP;
 
 export type Expression = SingleExpression | [Expression, 'or' | 'and', Expression];
+
+export enum StatusValue {
+    Present = 'present',
+    Absent = 'absent',
+}
 
 export const createParser = (fields: Field[]): Parser<Expression>['parse'] => {
     const rules: any = {};
     fields.forEach((field) => {
         const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> => {
-            return P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]);
+            return P.alt(
+                P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]),
+                P.seqMap(word(field.name), r.status, (field, status): SingleExpression => ({field, op: StatusOP, value: status}))
+            );
         };
         switch (field.type) {
             case 'boolean':
@@ -58,6 +67,7 @@ export const createParser = (fields: Field[]): Parser<Expression>['parse'] => {
         stringOp: (r) => P.alt(r.eq, r.neq, r.fuzzy, r.contains).thru((p) => whitespace.then(p)),
         lbrace: () => word('('),
         rbrace: () => word(')'),
+        status: () => P.alt(word('present').result(StatusValue.Present), word('absent').result(StatusValue.Absent)),
         eq: () => word('='),
         neq: () => word('!='),
         contains: () => word('~'),

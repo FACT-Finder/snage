@@ -1,4 +1,4 @@
-import {createParser} from './parser';
+import {createParser, StatusOP, StatusValue} from './parser';
 
 const parser = createParser([
     {
@@ -33,6 +33,16 @@ const parser = createParser([
 ]);
 
 describe('parser', () => {
+    test('status', () => {
+        expect(parser('booleanName absent')).toEqual({status: true, value: {field: 'booleanName', op: StatusOP, value: StatusValue.Absent}});
+        expect(parser('booleanName present')).toEqual({status: true, value: {field: 'booleanName', op: StatusOP, value: StatusValue.Present}});
+        expect(parser('booleanName woot')).toEqual({
+            status: false,
+            expected: ["'!='", "'='", "'absent'", "'present'"],
+            index: {column: 13, line: 1, offset: 12},
+        });
+        expect(parser('booleanName = xxx')).toEqual({status: false, expected: ["'false'", "'true'"], index: {column: 15, line: 1, offset: 14}});
+    });
     test('boolean', () => {
         expect(parser('booleanName = false')).toEqual({status: true, value: {field: 'booleanName', op: '=', value: false}});
         expect(parser('booleanName = xxx')).toEqual({status: false, expected: ["'false'", "'true'"], index: {column: 15, line: 1, offset: 14}});
