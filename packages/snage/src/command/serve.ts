@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import express from 'express';
-import {loadConfig, resolveChangelogDirectory} from '../config/load';
+import {loadConfigOrExit, resolveChangelogDirectory} from '../config/load';
 import {parseNotes} from '../note/parser';
 import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
@@ -24,7 +24,7 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
             next();
         });
 
-        const config = loadConfig(configFilePath);
+        const config = loadConfigOrExit(configFilePath);
 
         const changelogDirectory = resolveChangelogDirectory(config, configFilePath);
         const notes = parseNotes(config, changelogDirectory);
