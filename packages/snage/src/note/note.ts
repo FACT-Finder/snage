@@ -6,6 +6,7 @@ import {expectNever} from '../util/util';
 
 export interface Note {
     id: string;
+    file: string;
     content: string;
     summary: string;
 
@@ -14,12 +15,12 @@ export interface Note {
 export type NoteValues = Record<string, unknown>;
 
 export const convertToApiNote = (note: Note, fields: Field[]): ApiNote => {
-    const {values} = note;
+    const {id, content, summary, values} = note;
     const convertedValues = Object.entries(values).reduce(
         (acc, [key, value]) => ({...acc, [key]: convertField(fields.find((f) => f.name === key)!, value)}),
         {}
     );
-    return {...note, values: convertedValues};
+    return {id, content, summary, values: convertedValues};
 };
 
 export const convertField = (field: Field, value: unknown): string | string[] => {

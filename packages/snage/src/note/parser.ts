@@ -31,7 +31,7 @@ export const parseNote = (fields: Field[], note: string, fileName = 'unset'): Ei
         mutableMeta = {...mutableMeta, ...eitherMeta.right};
     }
     const [first, ...other] = content.split('\n\n');
-    return right({values: mutableMeta, id: fileName, content: other.join('\n\n'), summary: first.replace(/^\s*#\s*/, '')});
+    return right({values: mutableMeta, id: fileName, file: fileName, content: other.join('\n\n'), summary: first.replace(/^\s*#\s*/, '')});
 };
 
 type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion';
