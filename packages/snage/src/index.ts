@@ -11,6 +11,7 @@ process.on('SIGINT', handleExitSignal);
 process.on('SIGTERM', handleExitSignal);
 
 yargs
+    .version(process.env.BUILD_VERSION ?? 'development')
     .string(ConfigParameterName)
     .describe(ConfigParameterName, 'Path to the snage config.')
     .default(ConfigParameterName, DefaultSnageConfig)
