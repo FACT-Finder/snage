@@ -1,4 +1,3 @@
-import {Config, Field, Note} from '../../../shared/type';
 import matter from 'gray-matter';
 import {Either, isLeft, left, map, right} from 'fp-ts/lib/Either';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
@@ -6,6 +5,8 @@ import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
 import fs from 'fs';
 import path from 'path';
+import {Config, Field} from '../config/type';
+import {Note} from '../../../shared/type';
 
 export const parseNotes = (config: Config, folder: string): Note[] => {
     const notes: Note[] = [];

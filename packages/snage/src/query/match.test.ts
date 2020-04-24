@@ -1,7 +1,8 @@
 import {createMatcher} from './match';
 import {createParser} from './parser';
-import {Field, Note} from '../../../shared/type';
+import {Note} from '../../../shared/type';
 import semver from 'semver/preload';
+import {Field} from '../config/type';
 
 const fields: Field[] = [
     {
