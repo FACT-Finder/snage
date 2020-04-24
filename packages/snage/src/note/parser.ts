@@ -9,21 +9,14 @@ import {Config, Field} from '../config/type';
 import {Note} from './note';
 
 export const parseNotes = (config: Config, folder: string): Note[] => {
-    const notes: Note[] = [];
-    fs.readdir(folder, (err, files) => {
-        if (err) {
-            return;
+    return fs.readdirSync(folder).map((file) => {
+        const filePath = path.join(folder, file);
+        const note = parseNote(config.fields, fs.readFileSync(filePath, 'utf8'), filePath);
+        if (isLeft(note)) {
+            throw new Error(JSON.stringify({...note.left, file: filePath}));
         }
-        files.map((file) => {
-            const filePath = path.join(folder, file);
-            const note = parseNote(config.fields, fs.readFileSync(filePath, 'utf8'));
-            if (isLeft(note)) {
-                throw new Error(JSON.stringify({...note.left, file: filePath}));
-            }
-            notes.push(note.right);
-        });
+        return note.right;
     });
-    return notes;
 };
 
 export const parseNote = (fields: Field[], note: string): Either<ParseError, Note> => {
