@@ -26,7 +26,9 @@
     "build": "react-scripts build",
     "postbuild": "rimraf build/**/*.map",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format": "prettier --config \"../../prettier.config.js\" \"src/**/*.{ts,tsx}\" --write",
+    "format-check": "prettier --config \"../../prettier.config.js\" \"src/**/*.{ts,tsx}\" --list-different"
   },
   "proxy": "http://localhost:8081",
   "eslintConfig": {
@@ -45,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "prettier": "^2.0.5",
     "rimraf": "^3.0.2"
   }
 }
