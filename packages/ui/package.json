@@ -31,7 +31,7 @@
     "format": "prettier --config \"../../prettier.config.js\" \"src/**/*.{ts,tsx}\" --write",
     "format-check": "prettier --config \"../../prettier.config.js\" \"src/**/*.{ts,tsx}\" --list-different"
   },
-  "proxy": "http://localhost:8081",
+  "proxy": "http://localhost:8080",
   "eslintConfig": {
     "extends": "react-app"
   },
