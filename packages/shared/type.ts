@@ -1,8 +1,8 @@
-export interface Note {
+export interface ApiNote {
     __id: string;
     __content: string;
     __summary: string;
 
-    [key: string]: unknown;
+    [key: string]: string | string[];
 }
 

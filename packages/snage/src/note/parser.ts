@@ -6,7 +6,7 @@ import {pipe} from 'fp-ts/lib/pipeable';
 import fs from 'fs';
 import path from 'path';
 import {Config, Field} from '../config/type';
-import {Note} from '../../../shared/type';
+import {Note} from './note';
 
 export const parseNotes = (config: Config, folder: string): Note[] => {
     const notes: Note[] = [];

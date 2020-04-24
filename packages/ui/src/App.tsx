@@ -1,13 +1,13 @@
 import React from 'react';
 import './App.css';
-import {Note} from '../../shared/type';
+import {ApiNote} from '../../shared/type';
 import Chip from '@material-ui/core/Chip';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 import {Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, makeStyles} from '@material-ui/core';
 
 const App: React.FC = () => {
-    const [entries, setEntries] = React.useState<Note[]>([]);
+    const [entries, setEntries] = React.useState<ApiNote[]>([]);
 
     return (
         <div className="App">
@@ -22,7 +22,7 @@ const App: React.FC = () => {
     );
 };
 
-const Search: React.FC<{setEntries: (e: Note[]) => void}> = ({setEntries}) => {
+const Search: React.FC<{setEntries: (e: ApiNote[]) => void}> = ({setEntries}) => {
     const [query, setQuery] = React.useState('');
 
     React.useEffect(() => {
@@ -39,7 +39,7 @@ const Search: React.FC<{setEntries: (e: Note[]) => void}> = ({setEntries}) => {
     );
 };
 
-const Entry = React.memo(({entry: {__content, __summary, __id, ...other}}: {entry: Note}) => {
+const Entry = React.memo(({entry: {__content, __summary, __id, ...other}}: {entry: ApiNote}) => {
     const classes = useStyles();
     return (
         <ExpansionPanel>
