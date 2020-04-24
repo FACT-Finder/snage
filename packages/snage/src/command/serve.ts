@@ -33,7 +33,7 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
         const parser = createParser(config.fields);
         app.get('/note', (req, res) => {
             if (!req.query.query) {
-                res.json(notes);
+                res.json(notes.map((note) => convertToApiNote(note, config.fields)));
                 return;
             }
             const expression = parser(req.query.query);
