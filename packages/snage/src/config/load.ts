@@ -1,10 +1,10 @@
-import {chain, Either, isLeft, mapLeft, tryCatch} from 'fp-ts/lib/Either';
-import {pipe} from 'fp-ts/lib/pipeable';
 import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
-import {Config} from '../../../shared/type';
 import {parseConfig} from './parser';
+import {Config} from './type';
+import {chain, Either, isLeft, mapLeft, tryCatch} from 'fp-ts/lib/Either';
+import {pipe} from 'fp-ts/lib/pipeable';
 
 export const loadConfig = (filePath: string): Either<string, Config> => {
     const resolvePath = path.resolve(filePath);

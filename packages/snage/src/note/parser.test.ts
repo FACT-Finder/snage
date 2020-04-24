@@ -1,7 +1,8 @@
 import {parseField, parseNote} from './parser';
-import {Field, Note} from '../../../shared/type';
+import {Note} from '../../../shared/type';
 import {left, right} from 'fp-ts/lib/Either';
 import semver from 'semver';
+import {Field} from '../config/type';
 
 describe('parseNote', () => {
     const fields: Field[] = [

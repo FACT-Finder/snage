@@ -1,4 +1,4 @@
-import {Config} from '../../../shared/type';
+import {Config} from '../config/type';
 
 export const extractFieldsFromFileName = (config: Config): string[] => {
     const regex = /[${][^}]+[}]/g;

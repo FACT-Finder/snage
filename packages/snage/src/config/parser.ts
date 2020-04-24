@@ -1,7 +1,7 @@
 import Ajv, {ErrorObject} from 'ajv';
 import configSchema from './schema/snage-config.json';
-import {Config} from '../../../shared/type';
 import {Either, left, right} from 'fp-ts/lib/Either';
+import {Config} from './type';
 
 const fieldsWithDefaults = {
     fields: [],

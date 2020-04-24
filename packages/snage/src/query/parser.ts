@@ -1,6 +1,6 @@
-import {Field} from '../../../shared/type';
 import P, {Language, Parser} from 'parsimmon';
 import {expectNever, ffVersionRegex} from '../util/util';
+import {Field} from '../config/type';
 
 const whitespace = P.regexp(/\s*/m);
 function token(parser): Parser<any> {
