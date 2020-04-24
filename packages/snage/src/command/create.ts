@@ -5,7 +5,7 @@ import {isLeft} from 'fp-ts/lib/Either';
 import {addToYargs, buildLogParameters} from '../create/consoleParamsReader';
 import {generateChangeLogFile} from '../create/changelogFileWriter';
 import {extractFieldsFromFileName} from '../create/genChangelog';
-import {loadConfig} from '../config/load';
+import {loadConfigOrExit, loadConfig} from '../config/load';
 
 // We cannot use yargs.argv because it will abort the building of the parameters.
 // Sadly we need the config from the parameters to build the arguments.
@@ -23,28 +23,30 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     describe: 'Create a change log file.',
     builder: (y) => {
         const config = loadConfig(uglyGetConfig());
-        const fileNames: string[] = extractFieldsFromFileName(config);
-        const fileNameIsValid = validateFileNameSchema(config, fileNames);
+        if (isLeft(config)) {
+            y.epilog(config.left);
+            return y;
+        }
+        const fileNames: string[] = extractFieldsFromFileName(config.right);
+        const fileNameIsValid = validateFileNameSchema(config.right, fileNames);
         if (isLeft(fileNameIsValid)) {
             throw new Error('Validation error: ' + fileNameIsValid);
         }
-        return addToYargs(y, config) as yargs.Argv<DefaultCli>;
+        return addToYargs(y, config.right) as yargs.Argv<DefaultCli>;
     },
     handler: async ({config: configFile, ...other}) => {
-        const config = loadConfig(configFile);
+        const config = loadConfigOrExit(configFile);
         const fileNames: string[] = extractFieldsFromFileName(config);
         const fieldValues = await buildLogParameters(config.fields, other, config.supportedDateFormat);
 
         if (isLeft(fieldValues)) {
             console.error(fieldValues.left);
             process.exit(1);
-            return;
         }
         const fileStatus = await generateChangeLogFile(fieldValues.right, fileNames, config.filename, config.fileTemplateText);
         if (isLeft(fileStatus)) {
             console.error(fileStatus.left);
             process.exit(1);
-            return;
         }
         console.log(fileStatus.right);
     },
