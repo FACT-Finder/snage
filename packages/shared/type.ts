@@ -1,6 +1,7 @@
 export interface Note {
-    id: string;
-    content: string;
+    __id: string;
+    __content: string;
+    __summary: string;
 
     [key: string]: unknown;
 }

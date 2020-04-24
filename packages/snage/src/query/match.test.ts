@@ -50,7 +50,7 @@ describe('match', () => {
                 fail('illegal expression ' + expression + ' ' + JSON.stringify(exp));
                 return;
             }
-            expect(createMatcher(exp.value, fields)({id: 'nah', content: 'nah', ...note})).toBe(result);
+            expect(createMatcher(exp.value, fields)({__id: 'nah', __content: 'nah', __summary: 'nah', ...note})).toBe(result);
         });
     };
 
