@@ -118,16 +118,12 @@ const askForNumberInput = async (field: Field) => {
             field.optional
         );
         const values = String(value).split(',');
-        return replaceBlankAndEmptyWithNull(castStringsInListToNumbers(values));
+        return values.map(Number).map(replaceBlankAndEmptyWithNull);
     }
     //work around till NaN-problem is fixed: https://github.com/SBoudrias/Inquirer.js/pull/706
     value = await askForUserInput('input', 'Please enter value for ' + field.name, field.name, numberValidator, field.optional);
     value = replaceBlankAndEmptyWithNull(value);
     return value == null ? null : Number(value);
-};
-
-const castStringsInListToNumbers = (values: any[]): number[] => {
-    return values.map(Number);
 };
 
 const replaceBlankAndEmptyWithNull = (value: any) => {

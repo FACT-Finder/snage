@@ -1,56 +1,62 @@
 import * as matter from 'gray-matter';
 import * as fs from 'fs';
-import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
+import {Either, chain, left, right} from 'fp-ts/lib/Either';
+import {Field} from "../../../shared/type";
+import path from "path";
+import {pipe} from "fp-ts/lib/pipeable";
+
+export interface FileWriteError {
+    msg?: string;
+}
 
 /**
  * Creates change logs based on the given config in a front matter format. The file type will be MarkDown (.md)
  * and contain a YAML-header with all fields from the config the user provided data for
  *
- * @param logParameters contains all fieldNames as key with the corresponding value the user provided
+ * @param metaValues contains all fieldNames as key with the corresponding value the user provided
  * @param fields that should be used to create the file name
  * @param fileNameTemplate that may contains the field placeholders, eg. path/${foo}-${bar}.md
  * @param fileTemplateText represents the placeholder content that is below the front matter header
  *
- * @return an Either with the file creation error message in left or the success message in right
+ * @return an Either with a FileWriteError in left or true in right on success
  */
-export const generateChangeLogFile = async (
-    logParameters: {},
-    fields: string[],
+export const generateChangeLogFile = (
+    metaValues: Record<string, unknown>,
+    fields: Field[],
     fileNameTemplate: string,
     fileTemplateText: string
-): Promise<Either<string, string>> => {
-    const content: string = matter.stringify(fileTemplateText, logParameters);
-    const fileName: string = createFileName(logParameters, fields, fileNameTemplate);
+): Either<FileWriteError, boolean> => {
+    const content: string = matter.stringify(fileTemplateText, metaValues);
+    const fileName: string = createFileName(metaValues, fields, fileNameTemplate);
 
     return createFile(fileName, content);
 };
 
-const createFileName = (logParameters: {}, fields: string[], fileNameTemplate: string): string => {
-    let fileName: string = fileNameTemplate;
-    for (const field of fields) {
-        fileName = fileName.split('${' + field + '}').join(logParameters[field]);
-    }
-    return fileName;
+const createFileName = (metaValues: Record<string, unknown>, fields: Field[], fileNameTemplate: string): string => {
+    return fields
+        .filter(field => !field.optional)
+        .filter(field => !field.list)
+        .reduce((name, field) => name.replace(`\${${field.name}}`, metaValues[field.name] as string), fileNameTemplate)
 };
 
-const makeDirIfNotExisting = async (fileName: string): Promise<Either<string, true>> => {
-    const regex = /^.*[\\\/]/;
-    const matches = fileName.match(regex);
-    if (matches != null && matches.length > 0) {
-        await fs.promises.mkdir(matches[0], {recursive: true}).catch(function(error) {
-            return left('Error while creating path ' + matches[0] + ': ' + error);
-        });
+const ensureDirExists = (fileName: string): Either<FileWriteError, true> => {
+    try {
+        fs.mkdirSync(path.dirname(fileName), {recursive: true})
+        return right(true);
+    } catch(error) {
+        return left({msg: `Error while creating path ${fileName}: ${error}`});
     }
-    return right(true);
 };
 
-const createFile = async (fileName: string, content: string): Promise<Either<string, string>> => {
-    const createPathResult = await makeDirIfNotExisting(fileName);
-    if (isLeft(createPathResult)) {
-        return left(createPathResult.left);
-    }
-    await fs.promises.writeFile(fileName, content).catch(function(error) {
-        return left('Error while writing file: ' + error);
-    });
-    return right('Successfully created file: ' + fileName);
+const createFile = (fileName: string, content: string): Either<FileWriteError, boolean> => {
+    const createPathResult = ensureDirExists(fileName);
+    return pipe(createPathResult, chain(() => {
+        try {
+            fs.writeFileSync(fileName, content)
+            console.log("Successfully created file: " + fileName);
+            return right(true);
+        } catch(error) {
+            return left({msg: `Error while writing file: ${error}`});
+        }
+    }))
 };

@@ -1,11 +1,15 @@
 import yargs from 'yargs';
 import {askUserForFieldValue} from './consoleWizzard';
-import {isValidDate} from './validators';
+import {isValidDate, numberValidator} from './validators';
 import {expectNever} from '../util/util';
 import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
 import {Config, Field} from '../config/type';
 
 const NO_WIZARD_LABEL = 'noWizard';
+
+export interface ConsoleParamsError {
+    msg?: string;
+}
 
 const addType = (field: Field, yargs: yargs.Argv) => {
     if (field.list) {
@@ -35,14 +39,13 @@ const addType = (field: Field, yargs: yargs.Argv) => {
 };
 
 const addDescription = (fields: Field[], yargs: yargs.Argv) => {
-    const description = {};
-    description[NO_WIZARD_LABEL] =
-        "Prevents the wizard from starting when fields aren't set. Options are: \n" +
-        't - fills all missing required fields with the needed data type as placeholder\n' +
-        'to - fills all missing required and optional fields with the needed data type as placeholder\n' +
-        'if no option is provided, the fields will simply be missing, but must be added per hand to obtain a valid change log';
-    fields.forEach((field) => (description[field.name] = field.description ? field.description : ''));
-    yargs.describe(description);
+    const interactiveDescription = "Prevents the wizard from starting when fields aren't set. Options are: \n" +
+        "t - fills all missing required fields with the needed data type as placeholder\n" +
+        "to - fills all missing required and optional fields with the needed data type as placeholder\n" +
+        "if no option is provided, the fields will simply be missing, but must be added per hand to obtain a valid change log";
+    const description = fields.reduce((all, field) => ({...all, [field.name]: field.description ?? ''}), {});
+    description[NO_WIZARD_LABEL] = interactiveDescription;
+    yargs.describe(description)
 };
 
 const addAlias = (fields: Field[], yargs: yargs.Argv) => {
@@ -60,12 +63,15 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder;
 };
 
-export const buildLogParameters = async (fields: Field[], consoleArguments: {}): Promise<Either<string, {}>> => {
+export const buildLogParameters = async (fields: Field[], consoleArguments: {}): Promise<Either<ConsoleParamsError, Record<string, any>>> => {
     const returnValues = {};
     for (const field of fields) {
         if (consoleArguments[field.name] != null) {
             if (field.type == 'date' && !isValidDate(consoleArguments[field.name])) {
                 return left("Error: Invalid date format. Please enter the date in format 'YYYY-MM-DD'");
+            }
+            if( field.type == 'number' && !numberValidator(consoleArguments[field.name], field.optional)) {
+                return left({msg: `Error: Invalid number for field:  ${field.name}`});
             }
             returnValues[field.name] = consoleArguments[field.name];
         } else {
@@ -78,7 +84,7 @@ export const buildLogParameters = async (fields: Field[], consoleArguments: {}):
     return right(returnValues);
 };
 
-const handleMissingValue = async (field: Field, consoleArguments: {}, returnValues: {}): Promise<Either<string, true>> => {
+const handleMissingValue = async (field: Field, consoleArguments: {}, returnValues: {}): Promise<Either<ConsoleParamsError, true>> => {
     if (consoleArguments[NO_WIZARD_LABEL] == null) {
         const fieldValue = await askUserForFieldValue(field);
         if (fieldValue != null) {
@@ -90,7 +96,7 @@ const handleMissingValue = async (field: Field, consoleArguments: {}, returnValu
         consoleArguments[NO_WIZARD_LABEL] != null &&
         !(consoleArguments[NO_WIZARD_LABEL] == 'to' || consoleArguments[NO_WIZARD_LABEL] == 't')
     ) {
-        return left('Invalid usage of --' + NO_WIZARD_LABEL + ': ' + consoleArguments[NO_WIZARD_LABEL] + '. Check --help for more info.');
+        return left({msg: `Error: Invalid usage of --${NO_WIZARD_LABEL}: ${consoleArguments[NO_WIZARD_LABEL]}. Check --help for more info.`});
     }
     return right(true);
 };
