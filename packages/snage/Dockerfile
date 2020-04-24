@@ -3,5 +3,5 @@ WORKDIR /snage
 COPY build/snage.js /snage
 COPY build/ui /snage/ui
 RUN chmod +x /snage/snage.js
-EXPOSE 8081
+EXPOSE 8080
 ENTRYPOINT ["/snage/snage.js"]

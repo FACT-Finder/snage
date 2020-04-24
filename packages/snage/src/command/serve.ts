@@ -12,7 +12,7 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
     builder: (yargs) =>
         yargs
             .number('port')
-            .default('port', 8081)
+            .default('port', 8080)
             .describe('port', 'The port snage should listen on'),
     describe: 'Start the snage web server.',
     handler: ({config: configFilePath, port}) => {
