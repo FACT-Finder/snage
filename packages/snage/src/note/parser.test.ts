@@ -27,6 +27,7 @@ body text
             id: 'filename',
             summary: 'cool summary line',
             content: 'body text\n\n**test**\n',
+            file: 'filename',
             values: {
                 issue: 'xyz',
                 type: 'bugfix',
