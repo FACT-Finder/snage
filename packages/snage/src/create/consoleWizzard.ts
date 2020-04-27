@@ -32,7 +32,14 @@ const askForInputForFieldByTypes = async (field: Field) => {
         if (field.list) {
             type = 'checkbox';
         }
-        return await askForUserInputWithChoices(type, prefix + 'Select ' + field.name, field.name, field.enum, listSelectionValidator, field.optional);
+        return await askForUserInputWithChoices(
+            type,
+            prefix + 'Select ' + field.name,
+            field.name,
+            field.enum,
+            listSelectionValidator,
+            field.optional
+        );
     }
     switch (field.type) {
         case 'date':
@@ -55,7 +62,13 @@ const askForStringInput = async (field: Field) => {
     let value;
     const prefix = field.optional ? '[OPTIONAL] ' : '';
     if (field.list) {
-        value = await askForUserInput('input', +prefix + 'Please enter unique values for ' + field.name, field.name, stringSetValidator, field.optional);
+        value = await askForUserInput(
+            'input',
+            prefix + 'Please enter unique values for ' + field.name,
+            field.name,
+            stringSetValidator,
+            field.optional
+        );
         const values = String(value).split(',');
         return replaceBlankAndEmptyWithNull(values);
     }
