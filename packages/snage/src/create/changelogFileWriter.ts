@@ -1,9 +1,9 @@
-import * as matter from 'gray-matter';
 import * as fs from 'fs';
 import {Either, chain, left, right} from 'fp-ts/lib/Either';
 import {Field} from "../../../shared/type";
 import path from "path";
 import {pipe} from "fp-ts/lib/pipeable";
+import {keys} from "fp-ts/lib/Record";
 
 export interface FileWriteError {
     msg?: string;
@@ -26,11 +26,24 @@ export const generateChangeLogFile = (
     fileNameTemplate: string,
     fileTemplateText: string
 ): Either<FileWriteError, boolean> => {
-    const content: string = matter.stringify(fileTemplateText, metaValues);
+    const content: string = generateFrontMatterFileContent(metaValues, fileTemplateText);
     const fileName: string = createFileName(metaValues, fields, fileNameTemplate);
 
     return createFile(fileName, content);
 };
+
+const generateFrontMatterFileContent = (metaValues: Record<string, unknown>, fileTemplateText: string): string => {
+    let content = "---\n";
+    keys(metaValues).map(value => {
+        content = content + value + ': ';
+        if(metaValues[value] != null){
+            content = content + metaValues[value];
+        }
+        content = content + '\n'
+    });
+    content = content + "---\n\n" + fileTemplateText;
+    return content;
+}
 
 const createFileName = (metaValues: Record<string, unknown>, fields: Field[], fileNameTemplate: string): string => {
     return fields
