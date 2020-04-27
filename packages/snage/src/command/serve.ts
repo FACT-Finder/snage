@@ -6,13 +6,14 @@ import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
 import path from 'path';
 import {DefaultCli, printAndExit} from './common';
-import {convertToApiNote, Note} from '../note/note';
+import {Note} from '../note/note';
 import {pipe} from 'fp-ts/lib/pipeable';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import * as B from 'fp-ts/lib/boolean';
 import {identity} from 'fp-ts/lib/function';
 import {Config} from '../config/type';
+import {convertToApiNote} from '../note/convertapi';
 
 interface Response {
     status: number;
