@@ -22,19 +22,17 @@ import {Field} from '../config/type';
  * @returns a Promise containing either the given value, or null if the field is optional and no value has been provided
  */
 export const askUserForFieldValue = async (field: Field): Promise<any> => {
-    if (field.optional && !(await askYesNo('want to set a value for optional field ' + field.name))) {
-        return null;
-    }
     return await askForInputForFieldByTypes(field);
 };
 
 const askForInputForFieldByTypes = async (field: Field) => {
+    const prefix = field.optional ? '[OPTIONAL] ' : '';
     if (field.enum) {
         let type = 'rawlist';
         if (field.list) {
             type = 'checkbox';
         }
-        return await askForUserInputWithChoices(type, 'Select ' + field.name, field.name, field.enum, listSelectionValidator, field.optional);
+        return await askForUserInputWithChoices(type, prefix + 'Select ' + field.name, field.name, field.enum, listSelectionValidator, field.optional);
     }
     switch (field.type) {
         case 'date':
@@ -51,6 +49,71 @@ const askForInputForFieldByTypes = async (field: Field) => {
             expectNever(field.type);
     }
     return null;
+};
+
+const askForStringInput = async (field: Field) => {
+    let value;
+    const prefix = field.optional ? '[OPTIONAL] ' : '';
+    if (field.list) {
+        value = await askForUserInput('input', +prefix + 'Please enter unique values for ' + field.name, field.name, stringSetValidator, field.optional);
+        const values = String(value).split(',');
+        return replaceBlankAndEmptyWithNull(values);
+    }
+    value = await askForUserInput('input', prefix + 'Please enter value for ' + field.name, field.name, noBlankValuesValidator, field.optional);
+    return replaceBlankAndEmptyWithNull(value);
+};
+
+const askForNumberInput = async (field: Field) => {
+    const prefix = field.optional ? '[OPTIONAL] ' : '';
+    if (field.list) {
+        const value = await askForUserInput(
+            'input',
+            prefix + 'Please enter unique values for ' + field.name + ", separated by ','.",
+            field.name,
+            numberSetValidator,
+            field.optional
+        );
+        const values = String(value).split(',');
+        return values.map(Number).map(replaceBlankAndEmptyWithNull);
+    }
+    //work around till NaN-problem is fixed: https://github.com/SBoudrias/Inquirer.js/pull/706
+    let value = await askForUserInput('input', prefix + 'Please enter value for ' + field.name, field.name, numberValidator, field.optional);
+    value = replaceBlankAndEmptyWithNull(value);
+    return value == null ? null : Number(value);
+};
+
+const askForUserInput = async (
+    type: inquirer.DistinctQuestion['type'],
+    message: string,
+    name: string,
+    validator: (value: any, isOptional?: boolean) => boolean | string,
+    isOptional?: boolean
+) => {
+    const answer = await inquirer.prompt({
+        type: type,
+        message: message,
+        name: name,
+        validate: (value) => validator(value, isOptional),
+    });
+    return answer[name];
+};
+
+const askForBooleanInput = async (field: Field) => {
+    let type = 'rawlist';
+    if (field.list) {
+        type = 'checkbox';
+    }
+    return await askForUserInputWithChoices(
+        type,
+        'Select ' + field.name,
+        field.name,
+        [
+            {name: 'true', value: true},
+            {name: 'false', value: false},
+        ],
+        listSelectionValidator,
+        field.optional
+    );
 };
 
 const askForDateInput = async (field: Field) => {
@@ -78,54 +141,6 @@ const askForDateInput = async (field: Field) => {
     return replaceBlankAndEmptyWithNull(dateValue);
 };
 
-const askForBooleanInput = async (field: Field) => {
-    let type = 'rawlist';
-    if (field.list) {
-        type = 'checkbox';
-    }
-    return await askForUserInputWithChoices(
-        type,
-        'Select ' + field.name,
-        field.name,
-        [
-            {name: 'true', value: true},
-            {name: 'false', value: false},
-        ],
-        listSelectionValidator,
-        field.optional
-    );
-};
-
-const askForStringInput = async (field: Field) => {
-    let value;
-    if (field.list) {
-        value = await askForUserInput('input', 'Please enter unique values for ' + field.name, field.name, stringSetValidator, field.optional);
-        const values = String(value).split(',');
-        return replaceBlankAndEmptyWithNull(values);
-    }
-    value = await askForUserInput('input', 'Please enter value for ' + field.name, field.name, noBlankValuesValidator, field.optional);
-    return replaceBlankAndEmptyWithNull(value);
-};
-
-const askForNumberInput = async (field: Field) => {
-    let value;
-    if (field.list) {
-        value = await askForUserInput(
-            'input',
-            'Please enter unique values for ' + field.name + ", separated by ','.",
-            field.name,
-            numberSetValidator,
-            field.optional
-        );
-        const values = String(value).split(',');
-        return values.map(Number).map(replaceBlankAndEmptyWithNull);
-    }
-    //work around till NaN-problem is fixed: https://github.com/SBoudrias/Inquirer.js/pull/706
-    value = await askForUserInput('input', 'Please enter value for ' + field.name, field.name, numberValidator, field.optional);
-    value = replaceBlankAndEmptyWithNull(value);
-    return value == null ? null : Number(value);
-};
-
 const replaceBlankAndEmptyWithNull = (value: any) => {
     //special case that only occurs when the user entered blank value(s) for an optional field. That should be treated as no value for that field
     //because it is most likely that the user changed his mind or misclicked when asked if he wants to set the optional value
@@ -151,22 +166,6 @@ const askForUserInputWithChoices = async (
         message: message,
         name: name,
         choices: choices,
-        validate: (value) => validator(value, isOptional),
-    });
-    return answer[name];
-};
-
-const askForUserInput = async (
-    type: inquirer.DistinctQuestion['type'],
-    message: string,
-    name: string,
-    validator: (value: any, isOptional?: boolean) => boolean | string,
-    isOptional?: boolean
-) => {
-    const answer = await inquirer.prompt({
-        type: type,
-        message: message,
-        name: name,
         validate: (value) => validator(value, isOptional),
     });
     return answer[name];
