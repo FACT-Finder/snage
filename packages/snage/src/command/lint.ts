@@ -1,14 +1,18 @@
 import yargs from 'yargs';
-import {loadConfigOrExit, resolveChangelogDirectory} from '../config/load';
-import {parseNotes} from '../note/parser';
-import {DefaultCli} from './common';
+import {loadConfig, resolveChangelogDirectory} from '../config/load';
+import {errorToString, parseNotes} from '../note/parser';
+import * as E from 'fp-ts/lib/Either';
+import {DefaultCli, printAndExit} from './common';
+import {pipe} from 'fp-ts/lib/pipeable';
 
 export const lint: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'lint',
     describe: 'Lint all change log files.',
     handler: ({config: configFilePath}) => {
-        const config = loadConfigOrExit(configFilePath);
-        const changelogDirectory = resolveChangelogDirectory(config, configFilePath);
-        parseNotes(config, changelogDirectory);
+        pipe(
+            loadConfig(configFilePath),
+            E.chain((config) => pipe(parseNotes(config, resolveChangelogDirectory(config, configFilePath)), E.mapLeft(errorToString))),
+            E.fold(printAndExit, () => console.log('All good :D'))
+        );
     },
 };

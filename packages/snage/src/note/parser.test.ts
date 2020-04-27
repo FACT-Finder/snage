@@ -36,14 +36,19 @@ body text
         };
         expect(parseNote(fields, mdFile, 'filename')).toStrictEqual(right(expected));
     });
-    it('returns first found failure', () => {
+    it('returns all errors', () => {
         const noIssue = `---
-type: bugfix
+type: bugfixi
 date: "2019-03-03"
 ---
 # test
 `;
-        expect(parseNote(fields, noIssue)).toStrictEqual(left({error: 'missingField', field: 'issue'}));
+        expect(parseNote(fields, noIssue, 'fileName')).toStrictEqual(
+            left([
+                {file: 'fileName', error: 'missingField', field: 'issue'},
+                {file: 'fileName', error: 'invalidEnum', field: 'type', msg: "expected one of [bugfix, feature, refactoring], got 'bugfixi'"},
+            ])
+        );
     });
 });
 

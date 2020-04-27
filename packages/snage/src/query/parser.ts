@@ -1,6 +1,7 @@
 import P, {Language, Parser} from 'parsimmon';
 import {expectNever, ffVersionRegex} from '../util/util';
 import {Field} from '../config/type';
+import {Either, left, right} from 'fp-ts/lib/Either';
 
 const whitespace = P.regexp(/\s*/m);
 function token(parser): Parser<any> {
@@ -26,7 +27,15 @@ export enum StatusValue {
     Absent = 'absent',
 }
 
-export const createParser = (fields: Field[]): Parser<Expression>['parse'] => {
+export interface ParseError {
+    index: {
+        column: number;
+        line: number;
+        offset: number;
+    };
+    expected: string[];
+}
+export const createParser = (fields: Field[]): ((q: string) => Either<ParseError, Expression>) => {
     const rules: any = {};
     fields.forEach((field) => {
         const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> => {
@@ -102,5 +111,11 @@ export const createParser = (fields: Field[]): Parser<Expression>['parse'] => {
         braceExpression: (r) => P.seqMap(r.lbrace, P.alt(r.expression), r.rbrace, (_1, e) => e),
         expression: (r) => P.alt(r.orAndExpression, r.braceExpression, r.singleExpression),
     }).expression;
-    return (s) => expression.parse(s);
+    return (s) => {
+        const result = expression.parse(s);
+        if (result.status) {
+            return right(result.value);
+        }
+        return left({expected: result.expected, index: result.index});
+    };
 };

@@ -3,6 +3,8 @@ import {createParser} from './parser';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
 import {NoteValues} from '../note/note';
+import {fold} from 'fp-ts/lib/Either';
+import {pipe} from 'fp-ts/lib/pipeable';
 
 const fields: Field[] = [
     {
@@ -46,12 +48,15 @@ describe('match', () => {
     const parser = createParser(fields);
     const createTest = (expression: string, note: NoteValues, result: boolean) => () => {
         test(`${expression} + ${JSON.stringify(note)} => ${result ? 'true' : 'false'}`, () => {
-            const exp = parser(expression);
-            if (!exp.status) {
-                fail('illegal expression ' + expression + ' ' + JSON.stringify(exp));
-                return;
-            }
-            expect(createMatcher(exp.value, fields)(note)).toBe(result);
+            pipe(
+                parser(expression),
+                fold(
+                    (err) => fail(`illegal expression ${expression} ${JSON.stringify(err)}`),
+                    (parsed) => {
+                        expect(createMatcher(parsed, fields)(note)).toBe(result);
+                    }
+                )
+            );
         });
     };
 
