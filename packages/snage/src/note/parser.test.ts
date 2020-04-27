@@ -71,10 +71,13 @@ describe('parseField', () => {
     it('parses numbers', () => {
         expect(parseField({name: 'version', type: 'number'}, {version: 50.5})).toStrictEqual(right({version: 50.5}));
         expect(parseField({name: 'version', type: 'number'}, {version: ''})).toMatchObject(left({error: 'wrongType'}));
+        expect(parseField({name: 'version', type: 'number'}, {version: '50'})).toMatchObject(left({error: 'wrongType'}));
+        expect(parseField({name: 'version', type: 'number'}, {version: '50'}, false)).toMatchObject(right({version: 50}));
     });
     it('parses booleans', () => {
         expect(parseField({name: 'released', type: 'boolean'}, {released: true})).toStrictEqual(right({released: true}));
         expect(parseField({name: 'released', type: 'boolean'}, {released: 'true'})).toMatchObject(left({error: 'wrongType'}));
+        expect(parseField({name: 'released', type: 'boolean'}, {released: 'true'}, false)).toStrictEqual(right({released: true}));
     });
     it('parses date', () => {
         expect(parseField({name: 'date', type: 'date'}, {date: '2018-01-05'})).toStrictEqual(right({date: Date.parse('2018-01-05')}));

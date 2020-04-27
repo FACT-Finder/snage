@@ -5,6 +5,7 @@ import {lint} from './command/lint';
 import {create} from './command/create';
 import {DefaultSnageConfig, ConfigParameterName, EnvPrefix} from './command/common';
 import {find} from './command/find';
+import {set} from './command/set';
 
 const handleExitSignal = (): void => process.exit(1);
 
@@ -22,6 +23,7 @@ yargs
     .command(init)
     .command(find)
     .command(lint)
+    .command(set)
     .help()
     .demandCommand()
     .recommendCommands().argv;

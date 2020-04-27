@@ -52,7 +52,7 @@ export const parseNote = (fields: Field[], note: string, fileName: string): E.Ei
     let mutableMeta = meta.data;
     const errors: FileParseError[] = [];
     for (const field of fields) {
-        const eitherMeta: E.Either<ParseError, Record<string, unknown>> = parseField(field, meta.data);
+        const eitherMeta: E.Either<ParseError, Record<string, unknown>> = parseField(field, meta.data, true);
         if (E.isLeft(eitherMeta)) {
             errors.push({...eitherMeta.left, file: fileName});
             continue;
@@ -95,18 +95,26 @@ const parseString = (value: unknown, field: Field): E.Either<ParseError, string>
     return E.right(value);
 };
 
-const parseBoolean = (value: unknown, field: Field): E.Either<ParseError, boolean> => {
-    if (typeof value !== 'boolean') {
-        return E.left(typeError(field.name, 'boolean', value));
+const parseBoolean = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, boolean> => {
+    if (!strict && typeof value === 'string' && (value === 'true' || value === 'false')) {
+        return E.right(value === 'true');
     }
-    return E.right(value);
+    if (typeof value === 'boolean') {
+        return E.right(value);
+    }
+    return E.left(typeError(field.name, 'boolean', value));
 };
 
-const parseNumber = (value: unknown, field: Field): E.Either<ParseError, number> => {
-    if (typeof value !== 'number') {
-        return E.left(typeError(field.name, 'number', value));
+const parseNumber = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, number> => {
+    if (typeof value === 'number') {
+        return E.right(value);
     }
-    return E.right(value);
+
+    if (!strict && typeof value === 'string' && /^-?\d+(.\d+)?$/.exec(value)) {
+        return E.right(parseFloat(value));
+    }
+
+    return E.left(typeError(field.name, 'number', value));
 };
 
 const parseDate = (value: unknown, field: Field): E.Either<ParseError, number> => {
@@ -136,16 +144,16 @@ const parseFFVersion = (value: unknown, field: Field): E.Either<ParseError, stri
     return E.right(value);
 };
 
-const parseSingleValue = (value: unknown, field: Field): E.Either<ParseError, unknown> => {
+const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, unknown> => {
     switch (field.type) {
         case 'string':
             return parseString(value, field);
         case 'boolean':
-            return parseBoolean(value, field);
+            return parseBoolean(value, field, strict);
         case 'date':
             return parseDate(value, field);
         case 'number':
-            return parseNumber(value, field);
+            return parseNumber(value, field, strict);
         case 'semver':
             return parseSemver(value, field);
         case 'ffversion':
@@ -155,12 +163,12 @@ const parseSingleValue = (value: unknown, field: Field): E.Either<ParseError, un
     }
 };
 
-const parseList = (value: unknown, field: Field): E.Either<ParseError, unknown[]> => {
+const parseList = (value: unknown, field: Field, strict): E.Either<ParseError, unknown[]> => {
     if (!Array.isArray(value)) {
         return E.left(typeError(field.name, 'array', value));
     }
 
-    const parsed: Array<E.Either<ParseError, unknown>> = value.map((x) => parseSingleValue(x, field));
+    const parsed: Array<E.Either<ParseError, unknown>> = value.map((x) => parseSingleValue(x, field, strict));
     const result: unknown[] = [];
     for (const x of parsed) {
         if (E.isLeft(x)) {
@@ -172,12 +180,12 @@ const parseList = (value: unknown, field: Field): E.Either<ParseError, unknown[]
     return E.right(result);
 };
 
-export const parseField = (field: Field, meta: Record<string, unknown>): E.Either<ParseError, Record<string, unknown>> => {
+export const parseField = (field: Field, meta: Record<string, unknown>, strict = true): E.Either<ParseError, Record<string, unknown>> => {
     if (!(field.name in meta)) {
         return field.optional ? E.right({}) : E.left({error: 'missingField', field: field.name});
     }
 
-    const parsed = field.list === true ? parseList(meta[field.name], field) : parseSingleValue(meta[field.name], field);
+    const parsed = field.list === true ? parseList(meta[field.name], field, strict) : parseSingleValue(meta[field.name], field, strict);
     return pipe(
         parsed,
         E.map((x) => ({[field.name]: x}))
