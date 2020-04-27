@@ -5,7 +5,7 @@ import {expectNever} from '../util/util';
 import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
 import {Config, Field} from '../config/type';
 
-const NO_WIZARD_LABEL = 'noWizard';
+const INTERACTIVE_LABEL = 'interactive';
 
 export interface ConsoleParamsError {
     msg?: string;
@@ -39,24 +39,22 @@ const addType = (field: Field, yargs: yargs.Argv) => {
 };
 
 const addDescription = (fields: Field[], yargs: yargs.Argv) => {
-    const interactiveDescription = "Prevents the wizard from starting when fields aren't set. Options are: \n" +
-        "t - fills all missing required fields with the needed data type as placeholder\n" +
-        "to - fills all missing required and optional fields with the needed data type as placeholder\n" +
-        "if no option is provided, the fields will simply be missing, but must be added per hand to obtain a valid change log";
+    const interactiveDescription = "Starts a wizard asking for all field values not already added within the call of this script. \n" +
+        "Defaults to true, can be called with --no-interactive to prevent the wizard from starting. In this case, all fields you didn't provide a value for" +
+        "will have empty values in the generated file. Optional fields will be commented out in the file.";
     const description = fields.reduce((all, field) => ({...all, [field.name]: field.description ?? ''}), {});
-    description[NO_WIZARD_LABEL] = interactiveDescription;
+    description[INTERACTIVE_LABEL] = interactiveDescription;
     yargs.describe(description)
 };
 
 const addAlias = (fields: Field[], yargs: yargs.Argv) => {
     const alias = {};
-    alias[NO_WIZARD_LABEL] = 'nw';
     fields.filter((field) => field.alias).map((field) => (alias[field.name] = field.alias));
     yargs.alias(alias);
 };
 
 export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
-    builder.string(NO_WIZARD_LABEL);
+    builder.boolean(INTERACTIVE_LABEL);
     config.fields.forEach((field) => addType(field, builder));
     addDescription(config.fields, builder);
     addAlias(config.fields, builder);
@@ -81,39 +79,29 @@ export const buildLogParameters = async (fields: Field[], consoleArguments: {}):
             }
         }
     }
-    return right(returnValues);
+    return right(getAdjustedMetaData(returnValues, fields));
 };
 
 const handleMissingValue = async (field: Field, consoleArguments: {}, returnValues: {}): Promise<Either<ConsoleParamsError, true>> => {
-    if (consoleArguments[NO_WIZARD_LABEL] == null) {
+    if (consoleArguments[INTERACTIVE_LABEL] == null || consoleArguments[INTERACTIVE_LABEL]) {
         const fieldValue = await askUserForFieldValue(field);
         if (fieldValue != null) {
             returnValues[field.name] = fieldValue;
         }
-    } else if (consoleArguments[NO_WIZARD_LABEL] == 'to' || (consoleArguments[NO_WIZARD_LABEL] == 't' && !field.optional)) {
-        fillEmptyFieldWithDataType(field, returnValues);
-    } else if (
-        consoleArguments[NO_WIZARD_LABEL] != null &&
-        !(consoleArguments[NO_WIZARD_LABEL] == 'to' || consoleArguments[NO_WIZARD_LABEL] == 't')
-    ) {
-        return left({msg: `Error: Invalid usage of --${NO_WIZARD_LABEL}: ${consoleArguments[NO_WIZARD_LABEL]}. Check --help for more info.`});
+    } else {
+        returnValues[field.name] = '';
     }
     return right(true);
 };
 
-const fillEmptyFieldWithDataType = (field: Field, returnValues: {}) => {
-    if (field.enum) {
-        returnValues[field.name] = getEnumString(field);
-    } else {
-        returnValues[field.name] = field.type == 'date' ? 'YYYY-MM-DD' : field.type;
-    }
-    if (field.list) {
-        returnValues[field.name] = [returnValues[field.name]];
-    }
-};
-
-const getEnumString = (field: Field): string => {
-    let enumString = '';
-    field.enum?.forEach((entry) => (enumString = enumString + entry + ' | '));
-    return enumString.substr(0, enumString.length - 3);
-};
+const getAdjustedMetaData = (metaValues: Record<string, unknown>, fields: Field[]): Record<string, unknown> => {
+    const adjustedRecords: Record<string, unknown> = {};
+    fields.filter(field => field.name in metaValues).map(field => {
+        if(field.optional && metaValues[field.name] == '') {
+            adjustedRecords["# " + field.name] = null;
+        } else {
+            adjustedRecords[field.name] = metaValues[field.name];
+        }
+    });
+    return adjustedRecords;
+}
