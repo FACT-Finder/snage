@@ -39,12 +39,13 @@ const addType = (field: Field, yargs: yargs.Argv) => {
 };
 
 const addDescription = (fields: Field[], yargs: yargs.Argv) => {
-    const interactiveDescription = "Starts a wizard asking for all field values not already added within the call of this script. \n" +
+    const interactiveDescription =
+        'Starts a wizard asking for all field values not already added within the call of this script. \n' +
         "Defaults to true, can be called with --no-interactive to prevent the wizard from starting. In this case, all fields you didn't provide a value for" +
-        "will have empty values in the generated file. Optional fields will be commented out in the file.";
+        'will have empty values in the generated file. Optional fields will be commented out in the file.';
     const description = fields.reduce((all, field) => ({...all, [field.name]: field.description ?? ''}), {});
     description[INTERACTIVE_LABEL] = interactiveDescription;
-    yargs.describe(description)
+    yargs.describe(description);
 };
 
 const addAlias = (fields: Field[], yargs: yargs.Argv) => {
@@ -61,14 +62,14 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder;
 };
 
-export const buildLogParameters = async (fields: Field[], consoleArguments: {}): Promise<Either<ConsoleParamsError, Record<string, any>>> => {
+export const buildLogParameters = async (fields: Field[], consoleArguments: {}): Promise<Either<ConsoleParamsError, FieldForOutput[]>> => {
     const returnValues = {};
     for (const field of fields) {
         if (consoleArguments[field.name] != null) {
             if (field.type == 'date' && !isValidDate(consoleArguments[field.name])) {
-                return left("Error: Invalid date format. Please enter the date in format 'YYYY-MM-DD'");
+                return left({msg: "Error: Invalid date format. Please enter the date in format 'YYYY-MM-DD'"});
             }
-            if( field.type == 'number' && !numberValidator(consoleArguments[field.name], field.optional)) {
+            if (field.type == 'number' && !numberValidator(consoleArguments[field.name], field.optional)) {
                 return left({msg: `Error: Invalid number for field:  ${field.name}`});
             }
             returnValues[field.name] = consoleArguments[field.name];
@@ -79,7 +80,7 @@ export const buildLogParameters = async (fields: Field[], consoleArguments: {}):
             }
         }
     }
-    return right(getAdjustedMetaData(returnValues, fields));
+    return right(getAdjustedData(returnValues, fields));
 };
 
 const handleMissingValue = async (field: Field, consoleArguments: {}, returnValues: {}): Promise<Either<ConsoleParamsError, true>> => {
@@ -89,19 +90,25 @@ const handleMissingValue = async (field: Field, consoleArguments: {}, returnValu
             returnValues[field.name] = fieldValue;
         }
     } else {
-        returnValues[field.name] = '';
+        returnValues[field.name] = null;
     }
     return right(true);
 };
 
-const getAdjustedMetaData = (metaValues: Record<string, unknown>, fields: Field[]): Record<string, unknown> => {
-    const adjustedRecords: Record<string, unknown> = {};
-    fields.filter(field => field.name in metaValues).map(field => {
-        if(field.optional && metaValues[field.name] == '') {
-            adjustedRecords["# " + field.name] = null;
-        } else {
-            adjustedRecords[field.name] = metaValues[field.name];
-        }
-    });
+const getAdjustedData = (metaValues: Record<string, unknown>, fields: Field[]):FieldForOutput[]  => {
+    const adjustedRecords: FieldForOutput[] = [];
+    fields
+        .filter((field) => field.name in metaValues)
+        .forEach((field) => {
+            adjustedRecords.push({optional: !!field.optional, list: !!field.list, name: field.name, value: metaValues[field.name]});
+        });
     return adjustedRecords;
+};
+
+//FIXME I'm not happy with that name since it bleeds the purpose for later down the line instead of accurately describing it. Any suggestions?
+export interface FieldForOutput {
+    optional: boolean;
+    list: boolean;
+    name: string;
+    value: unknown;
 }
