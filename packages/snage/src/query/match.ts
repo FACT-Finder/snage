@@ -39,6 +39,17 @@ export const createSimpleExpression = (e: SingleExpression, fields: Field[]): Ma
 };
 
 export const checkValue = (noteValue: any, queryValue: any, type: Field['type'], operator: Operator): boolean => {
+    if (operator === StatusOP) {
+        const status = queryValue as StatusValue;
+        switch (status) {
+            case StatusValue.Absent:
+                return noteValue === undefined || noteValue === null;
+            case StatusValue.Present:
+                return noteValue !== undefined && noteValue !== null;
+            default:
+                return expectNever(status);
+        }
+    }
     if (type === 'semver') {
         return semver.satisfies(noteValue, `${operator}${queryValue}`);
     }
@@ -72,16 +83,6 @@ export const checkValue = (noteValue: any, queryValue: any, type: Field['type'],
                 }
             }
             return true;
-        case StatusOP:
-            const status = queryValue as StatusValue;
-            switch (status) {
-                case StatusValue.Absent:
-                    return noteValue === undefined || noteValue === null;
-                case StatusValue.Present:
-                    return noteValue !== undefined && noteValue !== null;
-                default:
-                    return expectNever(status);
-            }
         default:
             return expectNever(operator);
     }
