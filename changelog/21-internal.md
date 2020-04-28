@@ -3,9 +3,10 @@ issue: '#21'
 date: '2020-04-23'
 audience: developer
 type: change
-components: [cli]
+components:
+  - cli
+version: 0.0.2
 ---
-
 # Use `yarn dev-serve` and `yarn dev` for developing cli/server
 
 Bundling the snage cli required the change of start scripts inside `packages/snage`.
