@@ -3,9 +3,10 @@ issue: '#7'
 date: '2020-04-22'
 audience: user
 type: add
-components: [server]
+components:
+  - server
+version: 0.0.2
 ---
-
 # Load and validate configuration from `.snage.yml`
 
 By default snage loads the configuration from `.snage.yml` in the working
