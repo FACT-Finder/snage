@@ -49,3 +49,24 @@ jobs:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to Archlinux User Repository
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          mkdir $HOME/.ssh
+          echo "$SSH_KEY" > $HOME/.ssh/id_rsa
+          chmod 700 $HOME/.ssh && chmod 600 $HOME/.ssh/id_rsa
+          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts
+          git clone ssh://aur@aur.archlinux.org/snage.git aur-snage
+          (
+            cd aur-snage;
+            sed -i -E 's/pkgrel=[0-9]+/pkgrel=1/g' PKGBUILD;
+            sed -i -E "s/pkgver=[0-9.]+/pkgver=${VERSION}/g" PKGBUILD;
+            bash updpkgsums-printsrcinfo-build.sh;
+            git config user.email "ff-dev@omikron.net";
+            git config user.name "SnageCI";
+            git add PKGBUILD .SRCINFO;
+            git commit -m "Update Version";
+            git push;
+          )
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
