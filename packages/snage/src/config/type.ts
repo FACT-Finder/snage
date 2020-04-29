@@ -18,6 +18,7 @@ export interface Field {
     list?: boolean;
     enum?: string[];
     optional?: true;
+    provided?: Provider;
     description?: string;
     alias?: string;
 }
@@ -36,6 +37,11 @@ export interface Sort {
 export interface Link {
     name: string;
     link: string;
+}
+
+export interface Provider {
+    by: string;
+    arguments?: Record<string, unknown>;
 }
 
 export type PrimitiveFieldValue = string | number | boolean | semver.SemVer;
