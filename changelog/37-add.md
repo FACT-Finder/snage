@@ -5,6 +5,7 @@ audience: user
 date: '2020-04-27'
 components:
   - cli
+version: 1.0.0
 ---
 # Allow setting change log field values via `snage set`
 
