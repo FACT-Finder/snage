@@ -22,13 +22,14 @@ jobs:
           git config user.name "SnageCI"
 
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/FACT-Finder/snage.git
+          git fetch origin $GIT_BRANCH
           git checkout $GIT_BRANCH
 
           yarn --cwd packages/snage dev --config $PWD/.snage.yaml set --on 'version absent' version $VERSION
           yarn --cwd packages/snage dev --config $PWD/.snage.yaml set --on 'date absent' date `date +%F`
 
           git add changelog
-          git diff --staged --quiet || (git commit -m "SnageCI: Update changelog"; git push origin $GIT_BRANCH)
+          git diff --staged --quiet || (git commit -m "Update changelog"; git push origin $GIT_BRANCH)
         env:
           VERSION: ${GITHUB_REF/refs\/tags\/v/}
           GIT_BRANCH: 'master'
