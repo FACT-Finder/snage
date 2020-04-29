@@ -14,6 +14,7 @@
         "enum": { "type": "array", "items": { "type": "string" } },
         "list": { "type": "boolean" },
         "optional": { "type": "boolean" },
+        "provided": { "$ref": "#/definitions/provider" },
         "description": { "type": "string" },
         "alias": { "type": "string" }
       },
@@ -47,6 +48,15 @@
       },
       "additionalProperties": false,
       "required": ["name", "link"]
+    },
+    "provider": {
+      "type": "object",
+      "properties": {
+        "by": {"type": "string"},
+        "arguments": { "type": "object" }
+      },
+      "additionalItems": false,
+      "required": ["by"]
     }
   },
   "type": "object",
