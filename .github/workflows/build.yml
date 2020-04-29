@@ -18,23 +18,21 @@ jobs:
         env:
           BUILD_VERSION: ${{ env.VERSION }}
       - name: Update changelog
-        if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          git config user.email "snage@snage"
-          git config user.name "SnageCI"
-
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/FACT-Finder/snage.git
-          git fetch origin $GIT_BRANCH
-          git checkout $GIT_BRANCH
-
-          yarn --cwd packages/snage dev --config $PWD/.snage.yaml set --on 'version absent' version $VERSION
+          yarn --cwd packages/snage dev --config $PWD/.snage.yaml set --on 'version absent' version 1.0.0
           yarn --cwd packages/snage dev --config $PWD/.snage.yaml set --on 'date absent' date `date +%F`
-
-          git add changelog
-          git diff --staged --quiet || (git commit -m "Update changelog"; git push origin $GIT_BRANCH)
         env:
           GIT_BRANCH: 'master'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@340e629
+        with:
+          commit-message: 'Update Changelog'
+          title: 'Update Changelog'
+          branch-suffix: 'short-commit-hash'
+          branch: 'actions/update-changelog'
+          base: 'test-build'
       - name: Publish to Docker and NPM
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
