@@ -1,7 +1,7 @@
 import Ajv, {ErrorObject} from 'ajv';
 import configSchema from './schema/snage-config.json';
 import {Either, left, right} from 'fp-ts/lib/Either';
-import {Config} from './type';
+import {RawConfig} from './type';
 
 const fieldsWithDefaults = {
     fields: [],
@@ -10,7 +10,7 @@ const fieldsWithDefaults = {
     fileTemplateText: '',
 };
 
-export const parseConfig = (config: any): Either<ErrorObject[], Config> => {
+export const parseConfig = (config: any): Either<ErrorObject[], RawConfig> => {
     const ajv = Ajv();
     const validate = ajv.compile(configSchema);
     const valid = validate(config);
@@ -18,5 +18,5 @@ export const parseConfig = (config: any): Either<ErrorObject[], Config> => {
         return left(validate.errors as ErrorObject[]);
     }
 
-    return right({...fieldsWithDefaults, ...config} as Config);
+    return right({...fieldsWithDefaults, ...config});
 };

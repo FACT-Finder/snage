@@ -1,8 +1,11 @@
 import semver from 'semver';
+import {ValueProvider} from '../provider/provider';
 
-export interface Config {
+export type Config = Omit<RawConfig, 'fields'> & {fields: Field[]};
+
+export interface RawConfig {
     filename: string;
-    fields: Field[];
+    fields: RawField[];
     links: Link[];
     filterPresets: FilterPreset[];
     standard: {
@@ -12,7 +15,9 @@ export interface Config {
     fileTemplateText: string;
 }
 
-export interface Field {
+export type Field = RawField & {provider?: ValueProvider};
+
+export interface RawField {
     name: string;
     type: 'string' | 'boolean' | 'date' | 'number' | 'semver' | 'ffversion';
     list?: boolean;
@@ -22,6 +27,9 @@ export interface Field {
     description?: string;
     alias?: string;
 }
+
+type RequiredProperty<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
+export type RawProvidedField = RequiredProperty<RawField, 'provided'>;
 
 export interface FilterPreset {
     name: string;
