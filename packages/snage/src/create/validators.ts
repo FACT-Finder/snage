@@ -1,7 +1,7 @@
 import {isValid} from 'date-fns';
 import {parseFromTimeZone} from 'date-fns-timezone';
 import {Either, left, right} from 'fp-ts/lib/Either';
-import {Config, Field} from '../config/type';
+import {Field, Config} from '../config/type';
 
 export const isValidDate = (date: string): boolean => {
     return isValid(parseFromTimeZone(date, {timeZone: 'UTC'}));

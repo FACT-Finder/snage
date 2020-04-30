@@ -177,7 +177,7 @@ const parseListValue = (values: unknown, field: Field, strict): E.Either<ParseEr
 
 export const parseFieldValue = (field: Field, meta: Record<string, unknown>, strict = true): E.Either<ParseError, FieldValue | undefined> => {
     if (!(field.name in meta)) {
-        return field.optional ? E.right(undefined) : E.left({error: 'missingField', field: field.name});
+        return field.optional || field.provided ? E.right(undefined) : E.left({error: 'missingField', field: field.name});
     }
 
     return field.list === true ? parseListValue(meta[field.name], field, strict) : parseSingleValue(meta[field.name], field, strict);
