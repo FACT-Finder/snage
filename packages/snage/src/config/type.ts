@@ -1,3 +1,5 @@
+import semver from 'semver';
+
 export interface Config {
     filename: string;
     fields: Field[];
@@ -35,3 +37,7 @@ export interface Link {
     name: string;
     link: string;
 }
+
+export type PrimitiveFieldValue = string | number | boolean | semver.SemVer;
+export type ArrayFieldValue = PrimitiveFieldValue[];
+export type FieldValue = PrimitiveFieldValue | ArrayFieldValue;

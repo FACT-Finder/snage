@@ -6,8 +6,9 @@ import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
 import fs from 'fs';
 import path from 'path';
-import {Config, Field} from '../config/type';
+import {ArrayFieldValue, Config, Field, FieldValue, PrimitiveFieldValue} from '../config/type';
 import {Note} from './note';
+import {sequenceKeepAllLefts} from '../fp/fp';
 
 export const parseNotes = (config: Config, folder: string): E.Either<Array<FileParseError | string>, Note[]> => {
     return pipe(
@@ -48,22 +49,24 @@ export const errorToString = (errors: Array<FileParseError | string>): string =>
 
 export const parseNote = (fields: Field[], note: string, fileName: string): E.Either<FileParseError[], Note> => {
     const {content: content, ...meta} = matter(note);
-
-    let mutableMeta = meta.data;
-    const errors: FileParseError[] = [];
-    for (const field of fields) {
-        const eitherMeta: E.Either<ParseError, Record<string, unknown>> = parseField(field, meta.data, true);
-        if (E.isLeft(eitherMeta)) {
-            errors.push({...eitherMeta.left, file: fileName});
-            continue;
-        }
-        mutableMeta = {...mutableMeta, ...eitherMeta.right};
-    }
-    if (errors.length) {
-        return E.left(errors);
-    }
     const [first, ...other] = content.split('\n\n');
-    return E.right({values: mutableMeta, id: fileName, file: fileName, content: other.join('\n\n'), summary: first.replace(/^\s*#\s*/, '')});
+
+    type FieldWithValue = [string, FieldValue | undefined];
+
+    return pipe(
+        fields,
+        A.map(
+            (field): E.Either<FileParseError, FieldWithValue> =>
+                pipe(
+                    parseFieldValue(field, meta.data, true),
+                    E.map((value): FieldWithValue => [field.name, value]),
+                    E.mapLeft((parseError: ParseError): FileParseError => ({...parseError, file: fileName}))
+                )
+        ),
+        sequenceKeepAllLefts,
+        E.map((fieldsWithValue) => Object.fromEntries(fieldsWithValue.filter(([, value]) => typeof value !== 'undefined'))),
+        E.map((values) => ({values, id: fileName, file: fileName, content: other.join('\n\n'), summary: first.replace(/^\s*#\s*/, '')}))
+    );
 };
 
 export type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion';
@@ -73,6 +76,7 @@ export interface ParseError {
     msg?: string;
     field: string;
 }
+
 export interface FileParseError extends ParseError {
     file: string;
 }
@@ -144,7 +148,7 @@ const parseFFVersion = (value: unknown, field: Field): E.Either<ParseError, stri
     return E.right(value);
 };
 
-const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, unknown> => {
+const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, PrimitiveFieldValue> => {
     switch (field.type) {
         case 'string':
             return parseString(value, field);
@@ -163,31 +167,18 @@ const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Eith
     }
 };
 
-const parseList = (value: unknown, field: Field, strict): E.Either<ParseError, unknown[]> => {
-    if (!Array.isArray(value)) {
-        return E.left(typeError(field.name, 'array', value));
+const parseListValue = (values: unknown, field: Field, strict): E.Either<ParseError, ArrayFieldValue> => {
+    if (!Array.isArray(values)) {
+        return E.left(typeError(field.name, 'array', values));
     }
 
-    const parsed: Array<E.Either<ParseError, unknown>> = value.map((x) => parseSingleValue(x, field, strict));
-    const result: unknown[] = [];
-    for (const x of parsed) {
-        if (E.isLeft(x)) {
-            return x;
-        } else {
-            result.push(x.right);
-        }
-    }
-    return E.right(result);
+    return A.array.traverse(E.either)(values, (value) => parseSingleValue(value, field, strict));
 };
 
-export const parseField = (field: Field, meta: Record<string, unknown>, strict = true): E.Either<ParseError, Record<string, unknown>> => {
+export const parseFieldValue = (field: Field, meta: Record<string, unknown>, strict = true): E.Either<ParseError, FieldValue | undefined> => {
     if (!(field.name in meta)) {
-        return field.optional ? E.right({}) : E.left({error: 'missingField', field: field.name});
+        return field.optional ? E.right(undefined) : E.left({error: 'missingField', field: field.name});
     }
 
-    const parsed = field.list === true ? parseList(meta[field.name], field, strict) : parseSingleValue(meta[field.name], field, strict);
-    return pipe(
-        parsed,
-        E.map((x) => ({[field.name]: x}))
-    );
+    return field.list === true ? parseListValue(meta[field.name], field, strict) : parseSingleValue(meta[field.name], field, strict);
 };
