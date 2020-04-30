@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import {DefaultCli, printAndExit} from './common';
 import {loadConfig, resolveChangelogDirectory} from '../config/load';
-import {errorToString, parseField, parseNotes} from '../note/parser';
+import {errorToString, parseFieldValue, parseNotes} from '../note/parser';
 import matter from 'gray-matter';
 import fs from 'fs';
 import {createParser} from '../query/parser';
@@ -11,7 +11,7 @@ import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import {convertToYamlValues} from '../note/convertyaml';
 import {Note} from '../note/note';
-import {Field} from '../config/type';
+import {Field, FieldValue} from '../config/type';
 
 interface Options {
     fields: Field[];
@@ -53,7 +53,7 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
     },
 };
 
-const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): E.Either<string, unknown> => {
+const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): E.Either<string, FieldValue | undefined> => {
     const field = fields.find((field) => field.name === fieldName);
     if (!field) {
         return E.left(`Field ${fieldName} does not exist`);
@@ -70,11 +70,8 @@ const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): 
     }
     const value = field?.list ? stringValue : stringValue[0];
     return pipe(
-        parseField(field, {[fieldName]: value}, false),
-        E.bimap(
-            (err) => `${value} is not valid: ${JSON.stringify(err)}`,
-            (parsed) => parsed[fieldName]
-        )
+        parseFieldValue(field, {[fieldName]: value}, false),
+        E.mapLeft((err) => `${value} is not valid: ${JSON.stringify(err)}`)
     );
 };
 
