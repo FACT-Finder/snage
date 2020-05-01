@@ -3,15 +3,19 @@ import {DefaultCli, printAndExit} from './common';
 import {loadConfig, resolveChangelogDirectory} from '../config/load';
 import {errorToString, parseFieldValue, parseNotes} from '../note/parser';
 import matter from 'gray-matter';
-import fs from 'fs';
 import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
 import {pipe} from 'fp-ts/lib/pipeable';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as IO from 'fp-ts/lib/IO';
+import * as IOE from 'fp-ts/lib/IOEither';
+import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import {convertToYamlValues} from '../note/convertyaml';
 import {Note} from '../note/note';
 import {Field, FieldValue} from '../config/type';
+import {writeFile} from '../fp/fp';
 
 interface Options {
     fields: Field[];
@@ -38,18 +42,18 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
             .describe('on', 'Condition for setting values')
             .positional('field', {type: 'string', describe: 'The field name'})
             .positional('value', {array: true, type: 'string', describe: 'The field values (Empty if unset)'}) as any,
-    handler: ({config: configFile, field: fieldName, value: stringValue, on}) => {
-        pipe(
-            loadConfig(configFile),
-            E.chain((config) =>
+    handler: async ({config: configFile, field: fieldName, value: stringValue, on}) => {
+        return pipe(
+            TE.fromEither(loadConfig(configFile)),
+            TE.chain((config) =>
                 pipe(
                     parseNotes(config, resolveChangelogDirectory(config, configFile)),
-                    E.mapLeft(errorToString),
-                    E.chain((notes) => updateNotes({fields: config.fields, notes, condition: on, stringValue, fieldName}))
+                    TE.mapLeft(errorToString),
+                    TE.chainEitherK((notes) => updateNotes({fields: config.fields, notes, condition: on, stringValue, fieldName}))
                 )
             ),
-            E.fold(printAndExit, writeNotes)
-        );
+            TE.fold(T.fromIOK(printAndExit), writeNotes)
+        )();
     },
 };
 
@@ -123,19 +127,34 @@ const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({file,
     return {file: file, content: result};
 };
 
-const writeNotes = (files: FileResult[]): void => {
-    const err = files.reduce((hasError, f) => {
-        try {
-            fs.writeFileSync(f.file, f.content);
-            console.log(`${f.file}`);
-            return hasError;
-        } catch (e) {
-            console.error(`Error: ${f.file}: ${e}`);
-            return true;
-        }
-    }, false);
-    if (err) {
-        console.error('Could not write all files :/');
-        process.exit(1);
-    }
+const writeNotes = (files: FileResult[]): T.Task<string[]> => {
+    return pipe(
+        A.array.traverse(T.task)(files, writeNote),
+        T.map((results) => T.fromIO(A.array.traverse(IO.io)(results, reportResult))),
+        T.flatten,
+        T.map((results) => A.array.sequence(E.either)(results)),
+        TE.getOrElse(() => T.fromIO<string[]>(printAndExit('Could not write all files :/')))
+    );
 };
+
+const writeNote = (file: FileResult): TE.TaskEither<string, string> => {
+    return pipe(
+        writeFile(file.file, file.content),
+        TE.map(() => `${file.file}`)
+    );
+};
+
+const reportResult = (result: E.Either<string, string>): IOE.IOEither<string, string> => () =>
+    pipe(
+        result,
+        E.bimap(
+            (error) => {
+                console.error(error);
+                return error;
+            },
+            (writtenFile) => {
+                console.log(writtenFile);
+                return writtenFile;
+            }
+        )
+    );

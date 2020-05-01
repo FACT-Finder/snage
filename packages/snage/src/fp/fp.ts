@@ -1,5 +1,9 @@
-import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as E from 'fp-ts/lib/Either';
+import fs from 'fs';
+import path from 'path';
+import {pipe} from 'fp-ts/lib/pipeable';
 
 export function assertRight<L, R>(either: E.Either<L, R>): asserts either is E.Right<R> {
     if (E.isLeft(either)) {
@@ -17,3 +21,22 @@ export const sequenceKeepAllLefts = <L, R>(eithers: Array<E.Either<L, R>>): E.Ei
     const {left, right} = A.separate(eithers);
     return left.length ? E.left(left) : E.right(right);
 };
+
+export const readdir = (directory: string): TE.TaskEither<string, string[]> =>
+    pipe(
+        TE.taskify<string, NodeJS.ErrnoException, string[]>(fs.readdir)(directory),
+        TE.mapLeft((e) => `Could not read directory ${directory}: ${e}`),
+        TE.map(A.map((file) => path.join(directory, file)))
+    );
+
+export const readFile = (fileName: string): TE.TaskEither<string, string> =>
+    pipe(
+        TE.taskify<string, string, NodeJS.ErrnoException, string>(fs.readFile)(fileName, 'utf8'),
+        TE.mapLeft((e: NodeJS.ErrnoException): string => `Could not read file ${fileName}: ${e}`)
+    );
+
+export const writeFile = (fileName: string, content: string): TE.TaskEither<string, string> =>
+    pipe(
+        TE.taskify<string, string, NodeJS.ErrnoException, string>(fs.writeFile)(fileName, content),
+        TE.mapLeft((e: NodeJS.ErrnoException): string => `Could not write file ${fileName}: ${e}`)
+    );

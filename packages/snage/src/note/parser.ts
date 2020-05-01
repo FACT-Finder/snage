@@ -1,38 +1,37 @@
 import matter from 'gray-matter';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
 import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
-import fs from 'fs';
-import path from 'path';
 import {ArrayFieldValue, Config, Field, FieldValue, PrimitiveFieldValue} from '../config/type';
 import {Note} from './note';
-import {sequenceKeepAllLefts} from '../fp/fp';
+import {readdir, readFile, sequenceKeepAllLefts} from '../fp/fp';
 
-export const parseNotes = (config: Config, folder: string): E.Either<Array<FileParseError | string>, Note[]> => {
+export const parseNotes = (config: Config, folder: string): TE.TaskEither<Array<FileParseError | string>, Note[]> => {
     return pipe(
-        E.tryCatch(
-            () => fs.readdirSync(folder),
-            (e) => [`Could not read directory ${folder}: ${e}`]
-        ),
-        E.map(A.map((file) => path.join(folder, file))),
-        E.map(
-            A.map((filePath) =>
-                pipe(
-                    E.tryCatch(
-                        () => fs.readFileSync(filePath, 'utf8'),
-                        (e) => [`Could not read file ${filePath}: ${e}`]
-                    ),
-                    E.chain((content): E.Either<Array<string | FileParseError>, Note> => parseNote(config.fields, content, filePath))
-                )
-            )
-        ),
-        E.chain((e) => {
-            const l = A.flatten(A.lefts(e));
-            const r = A.rights(e);
-            return l.length ? E.left(l) : E.right(r);
-        })
+        readdir(folder),
+        TE.mapLeft((e): Array<FileParseError | string> => [e]),
+        TE.map((files) => readNotes(config.fields, files)),
+        TE.flatten
+    );
+};
+
+const readNotes = (fields: Field[], files: string[]): TE.TaskEither<Array<FileParseError | string>, Note[]> => {
+    return pipe(
+        A.array.traverse(T.task)(files, (file) => readNote(fields, file)),
+        T.map(sequenceKeepAllLefts),
+        TE.mapLeft(A.flatten)
+    );
+};
+
+export const readNote = (fields: Field[], fileName: string): TE.TaskEither<Array<FileParseError | string>, Note> => {
+    return pipe(
+        readFile(fileName),
+        TE.mapLeft((e) => [e]),
+        TE.chainEitherK((rawNote): E.Either<Array<FileParseError | string>, Note> => parseNote(fields, rawNote, fileName))
     );
 };
 
