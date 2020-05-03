@@ -31,7 +31,7 @@ export const readNote = (fields: Field[], fileName: string): TE.TaskEither<Array
     return pipe(
         readFile(fileName),
         TE.mapLeft((e) => [e]),
-        TE.chainEitherK((rawNote): E.Either<Array<FileParseError | string>, Note> => parseNote(fields, rawNote, fileName))
+        TE.chainEitherK((fileContent): E.Either<Array<FileParseError | string>, Note> => parseNote(fields, parseRawNote(fileContent, fileName)))
     );
 };
 
@@ -46,10 +46,20 @@ export const errorToString = (errors: Array<FileParseError | string>): string =>
         .join('\n');
 };
 
-export const parseNote = (fields: Field[], note: string, fileName: string): E.Either<FileParseError[], Note> => {
-    const {content: content, ...meta} = matter(note);
-    const [first, ...other] = content.split('\n\n');
+export interface RawNote {
+    file: string;
+    header: Record<string, unknown>;
+    summary: string;
+    content: string;
+}
 
+const parseRawNote = (note: string, fileName: string): RawNote => {
+    const {content, ...meta} = matter(note);
+    const [head, ...rest] = content.split('\n\n');
+    return {file: fileName, header: meta.data, summary: head, content: rest.join('\n\n')};
+};
+
+export const parseNote = (fields: Field[], rawNote: RawNote): E.Either<FileParseError[], Note> => {
     type FieldWithValue = [string, FieldValue | undefined];
 
     return pipe(
@@ -57,14 +67,20 @@ export const parseNote = (fields: Field[], note: string, fileName: string): E.Ei
         A.map(
             (field): E.Either<FileParseError, FieldWithValue> =>
                 pipe(
-                    parseFieldValue(field, meta.data, true),
+                    parseFieldValue(field, rawNote.header, true),
                     E.map((value): FieldWithValue => [field.name, value]),
-                    E.mapLeft((parseError: ParseError): FileParseError => ({...parseError, file: fileName}))
+                    E.mapLeft((parseError: ParseError): FileParseError => ({...parseError, file: rawNote.file}))
                 )
         ),
         sequenceKeepAllLefts,
         E.map((fieldsWithValue) => Object.fromEntries(fieldsWithValue.filter(([, value]) => typeof value !== 'undefined'))),
-        E.map((values) => ({values, id: fileName, file: fileName, content: other.join('\n\n'), summary: first.replace(/^\s*#\s*/, '')}))
+        E.map((values) => ({
+            values,
+            id: rawNote.file,
+            file: rawNote.file,
+            content: rawNote.content,
+            summary: rawNote.summary.replace(/^\s*#\s*/, ''),
+        }))
     );
 };
 

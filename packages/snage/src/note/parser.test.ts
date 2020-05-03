@@ -1,4 +1,4 @@
-import {parseFieldValue, parseNote} from './parser';
+import {parseFieldValue, parseNote, RawNote} from './parser';
 import {left, right} from 'fp-ts/lib/Either';
 import semver from 'semver';
 import {Field} from '../config/type';
@@ -12,18 +12,18 @@ describe('parseNote', () => {
         {name: 'optional', type: 'string', optional: true},
     ];
 
-    const mdFile = `---
-issue: xyz
-type: bugfix
-date: "2019-03-03"
----
-# cool summary line
-
-body text
-
-**test**
-`;
     it('works', () => {
+        const rawNote: RawNote = {
+            file: 'filename',
+            header: {
+                issue: 'xyz',
+                type: 'bugfix',
+                date: '2019-03-03',
+            },
+            summary: '# cool summary line',
+            content: 'body text\n\n**test**\n',
+        };
+
         const expected: Note = {
             id: 'filename',
             summary: 'cool summary line',
@@ -35,19 +35,22 @@ body text
                 date: Date.parse('2019-03-03'),
             },
         };
-        expect(parseNote(fields, mdFile, 'filename')).toStrictEqual(right(expected));
+        expect(parseNote(fields, rawNote)).toStrictEqual(right(expected));
     });
     it('returns all errors', () => {
-        const noIssue = `---
-type: bugfixi
-date: "2019-03-03"
----
-# test
-`;
-        expect(parseNote(fields, noIssue, 'fileName')).toStrictEqual(
+        const noIssue: RawNote = {
+            file: 'filename',
+            header: {
+                type: 'bugfixi',
+                date: '2019-03-03',
+            },
+            summary: '# test',
+            content: '',
+        };
+        expect(parseNote(fields, noIssue)).toStrictEqual(
             left([
-                {file: 'fileName', error: 'missingField', field: 'issue'},
-                {file: 'fileName', error: 'invalidEnum', field: 'type', msg: "expected one of [bugfix, feature, refactoring], got 'bugfixi'"},
+                {file: 'filename', error: 'missingField', field: 'issue'},
+                {file: 'filename', error: 'invalidEnum', field: 'type', msg: "expected one of [bugfix, feature, refactoring], got 'bugfixi'"},
             ])
         );
     });
