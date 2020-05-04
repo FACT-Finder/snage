@@ -1,11 +1,8 @@
 import yargs from 'yargs';
 import {DefaultCli} from './common';
 import {isLeft} from 'fp-ts/lib/Either';
-import {addToYargs, buildLogParameters} from '../create/consoleParamsReader';
+import {addToYargs, handleFieldValues} from '../create/consoleParamsReader';
 import {generateChangeLogFile} from '../create/changelogFileWriter';
-import {loadConfig} from '../config/load';
-import {Config, Field} from "../../../shared/type";
-
 import {getConfig, getConfigOrExit} from '../config/load';
 import {extractFieldsFromFileName} from '../util/fieldExtractor';
 
@@ -22,14 +19,18 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     },
     handler: async (args) => {
         const config = getConfigOrExit();
-        const fileNames: Field[] = extractFieldsFromFileName(config);
-        const fieldValues = await buildLogParameters(config.fields, args);
+        const fieldsForFileName = extractFieldsFromFileName(config);
+        if (isLeft(fieldsForFileName)) {
+            console.error(fieldsForFileName.left);
+            process.exit(1);
+        }
+        const fieldValues = await handleFieldValues(config.fields, args);
 
         if (isLeft(fieldValues)) {
             console.error(fieldValues.left.msg);
             process.exit(1);
         }
-        const fileStatus = generateChangeLogFile(fieldValues.right, fileNames, config.filename, config.fileTemplateText);
+        const fileStatus = generateChangeLogFile(fieldValues.right, config.fields, fieldsForFileName.right, config.filename, config.fileTemplateText);
         if (isLeft(fileStatus)) {
             console.error(fileStatus.left.msg);
             process.exit(1);
@@ -37,5 +38,3 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
         console.log(fileStatus.right);
     },
 };
-
-
