@@ -1,19 +1,17 @@
-import {FrontMatterBuilder} from "./frontMatterBuilder";
-import matter from "gray-matter";
-
+import {FrontMatterBuilder} from './frontMatterBuilder';
+import matter from 'gray-matter';
 
 describe('generateCorrectFrontMatter', () => {
-
-    const contentToSave: string = "Did you ever hear the Tragedy of Darth Plagueis the Wise?";
-    const list: string[] = ["A New Hope", "The Empire Strikes Back", "Return of the Jedi"];
-    const listKey: string = "Original Trilogy";
+    const contentToSave: string = 'Did you ever hear the Tragedy of Darth Plagueis the Wise?';
+    const list: string[] = ['A New Hope', 'The Empire Strikes Back', 'Return of the Jedi'];
+    const listKey: string = 'Original Trilogy';
     const bool: boolean = true;
-    const boolKey: string = "JarJar sucks";
+    const boolKey: string = 'JarJar sucks';
     const num: number = 2;
-    const numKey: string = "Number of Sith";
-    const str: string = "Death Star/Planet";
-    const strKey: string = "Default Empire Power Fantasy";
-    const comment: string = "May the force be with you";
+    const numKey: string = 'Number of Sith';
+    const str: string = 'Death Star/Planet';
+    const strKey: string = 'Default Empire Power Fantasy';
+    const comment: string = 'May the force be with you';
 
     const frontMatter: string = new FrontMatterBuilder()
         .appendYamlComment(comment)
@@ -39,6 +37,6 @@ describe('generateCorrectFrontMatter', () => {
         expect(lines[6 + list.length]).toEqual('---');
     });
     it('header contains comment', () => {
-        expect(lines[1]).toEqual('#' + comment);
+        expect(lines[8]).toEqual('#' + comment);
     });
 });

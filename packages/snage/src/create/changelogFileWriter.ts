@@ -1,11 +1,9 @@
 import * as fs from 'fs';
-import {Either, chain, left, right} from 'fp-ts/lib/Either';
+import {chain, Either, left, right} from 'fp-ts/lib/Either';
 import path from 'path';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {Field} from '../config/type';
-import {FieldForOutput} from "./consoleParamsReader";
-import YAML from "yaml";
-import {FrontMatterBuilder} from "./frontMatterBuilder";
+import {FrontMatterBuilder} from './frontMatterBuilder';
 
 export interface FileWriteError {
     msg: string;
@@ -16,43 +14,45 @@ export interface FileWriteError {
  * and contain a YAML-header with all fields from the config the user provided data for
  *
  * @param fieldValues contains all fieldNames as key with the corresponding value the user provided
- * @param fields that should be used to create the file name
+ * @param fields used in the config
+ * @param fieldsForFileName that should be used to create the file name
  * @param fileNameTemplate that may contains the field placeholders, eg. path/${foo}-${bar}.md
  * @param fileTemplateText represents the placeholder content that is below the front matter header
  *
  * @return an Either with a FileWriteError in left or true in right on success
  */
 export const generateChangeLogFile = (
-    fieldValues: FieldForOutput[],
+    fieldValues: Record<string, unknown>,
     fields: Field[],
+    fieldsForFileName: Field[],
     fileNameTemplate: string,
     fileTemplateText: string
 ): Either<FileWriteError, boolean> => {
-    const content: string = generateFrontMatterFileContent(fieldValues, fileTemplateText);
-    const fileName: string = createFileName(fieldValues, fields, fileNameTemplate);
+    const content: string = generateFrontMatterFileContent(fieldValues, fields, fileTemplateText);
+    const fileName: string = createFileName(fieldValues, fieldsForFileName, fileNameTemplate);
 
     return createFile(fileName, content);
 };
 
-const generateFrontMatterFileContent = (fieldValues: FieldForOutput[], fileText: string): string => {
-    let builder:FrontMatterBuilder = new FrontMatterBuilder();
-    fieldValues.forEach(value => {
-        if (value.value != null) {
-            builder.appendYamlPair(value.name, value.value);
-        } else if (!value.optional) {
-            builder.appendYamlComment(value.name);
+const generateFrontMatterFileContent = (fieldValues: Record<string, unknown>, fields: Field[], fileText: string): string => {
+    let builder: FrontMatterBuilder = new FrontMatterBuilder();
+    fields.forEach((field) => {
+        if (field.name in fieldValues) {
+            if (fieldValues[field.name] != null) {
+                builder.appendYamlPair(field.name, fieldValues[field.name]);
+            } else if (!field.optional) {
+                builder.appendYamlComment(field.name);
+            }
         }
-    })
+    });
     return builder.appendContent(fileText).build();
 };
 
-const createFileName = (fieldValues: FieldForOutput[], fields: Field[], fileNameTemplate: string): string => {
-    const values: Record<string, unknown> = {};
-    fieldValues.forEach(value => values[value.name] = value.value);
+const createFileName = (fieldValues: Record<string, unknown>, fields: Field[], fileNameTemplate: string): string => {
     return fields
         .filter((field) => !field.optional)
         .filter((field) => !field.list)
-        .reduce((name, field) => name.replace(`\${${field.name}}`, String(values[field.name])), fileNameTemplate);
+        .reduce((name, field) => name.replace(`\${${field.name}}`, String(fieldValues[field.name])), fileNameTemplate);
 };
 
 const ensureDirExists = (fileName: string): Either<FileWriteError, true> => {

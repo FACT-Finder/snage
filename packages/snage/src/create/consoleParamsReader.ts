@@ -1,6 +1,17 @@
 import yargs from 'yargs';
 import {askUserForFieldValue} from './consoleWizzard';
-import {isValidDate, numberValidator} from './validators';
+import {
+    booleanSetValidator,
+    booleanValidator,
+    dateSetValidator,
+    dateValidator,
+    noBlankValuesValidator,
+    numberSetValidator,
+    numberValidator,
+    semverSetValidator,
+    semverValidator,
+    stringSetValidator,
+} from './validators';
 import {expectNever} from '../util/util';
 import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
 import {Config, Field} from '../config/type';
@@ -8,7 +19,7 @@ import {Config, Field} from '../config/type';
 const INTERACTIVE_LABEL = 'interactive';
 
 export interface ConsoleParamsError {
-    msg?: string;
+    msg: string;
 }
 
 const addType = (field: Field, yargs: yargs.Argv) => {
@@ -62,15 +73,13 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder;
 };
 
-export const buildLogParameters = async (fields: Field[], consoleArguments: {}): Promise<Either<ConsoleParamsError, FieldForOutput[]>> => {
+export const handleFieldValues = async (fields: Field[], consoleArguments: {}): Promise<Either<ConsoleParamsError, Record<string, unknown>>> => {
     const returnValues = {};
     for (const field of fields) {
         if (consoleArguments[field.name] != null) {
-            if (field.type == 'date' && !isValidDate(consoleArguments[field.name])) {
-                return left({msg: "Error: Invalid date format. Please enter the date in format 'YYYY-MM-DD'"});
-            }
-            if (field.type == 'number' && !numberValidator(consoleArguments[field.name], field.optional)) {
-                return left({msg: `Error: Invalid number for field:  ${field.name}`});
+            const isValid = validateInput(field, consoleArguments[field.name]);
+            if (isLeft(isValid)) {
+                return left(isValid.left);
             }
             returnValues[field.name] = consoleArguments[field.name];
         } else {
@@ -80,7 +89,43 @@ export const buildLogParameters = async (fields: Field[], consoleArguments: {}):
             }
         }
     }
-    return right(getAdjustedData(returnValues, fields));
+    return right(returnValues);
+};
+
+//FIXME - extract validation and unify it with code from consoleWizzard.ts : https://github.com/FACT-Finder/snage/issues/50
+const validateInput = (field: Field, consoleArgument: unknown): Either<ConsoleParamsError, true> => {
+    let validation;
+    switch (field.type) {
+        case 'date':
+            validation = field.list
+                ? dateSetValidator(String(consoleArgument), field.optional)
+                : dateValidator(String(consoleArgument), field.optional);
+            break;
+        case 'semver':
+            validation = field.list ? semverSetValidator(consoleArgument, field.optional) : semverValidator(consoleArgument, field.optional);
+            break;
+        case 'ffversion': // intentional fallthrough
+        case 'string': {
+            validation = field.list ? stringSetValidator(consoleArgument, field.optional) : noBlankValuesValidator(consoleArgument, field.optional);
+            break;
+        }
+        case 'boolean': {
+            validation = field.list ? booleanSetValidator(consoleArgument, field.optional) : booleanValidator(consoleArgument, field.optional);
+            break;
+        }
+        case 'number': {
+            validation = field.list ? numberSetValidator(consoleArgument, field.optional) : numberValidator(consoleArgument, field.optional);
+            break;
+        }
+        default: {
+            expectNever(field.type);
+        }
+    }
+
+    if (validation !== true) {
+        return left({msg: `Invalid value provided for field ${field.name}: ${validation}`});
+    }
+    return right(true);
 };
 
 const handleMissingValue = async (field: Field, consoleArguments: {}, returnValues: {}): Promise<Either<ConsoleParamsError, true>> => {
@@ -94,21 +139,3 @@ const handleMissingValue = async (field: Field, consoleArguments: {}, returnValu
     }
     return right(true);
 };
-
-const getAdjustedData = (metaValues: Record<string, unknown>, fields: Field[]):FieldForOutput[]  => {
-    const adjustedRecords: FieldForOutput[] = [];
-    fields
-        .filter((field) => field.name in metaValues)
-        .forEach((field) => {
-            adjustedRecords.push({optional: !!field.optional, list: !!field.list, name: field.name, value: metaValues[field.name]});
-        });
-    return adjustedRecords;
-};
-
-//FIXME I'm not happy with that name since it bleeds the purpose for later down the line instead of accurately describing it. Any suggestions?
-export interface FieldForOutput {
-    optional: boolean;
-    list: boolean;
-    name: string;
-    value: unknown;
-}
