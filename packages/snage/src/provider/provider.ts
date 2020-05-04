@@ -1,18 +1,20 @@
-import {RawProvidedField} from '../config/type';
+import {FieldValue, RawProvidedField} from '../config/type';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
-import {ParseError} from '../note/parser';
-import {Note} from '../note/note';
+import {FileParseError} from '../note/parser';
+import {providerFactory as GitVersion} from './git-version';
 
 export interface ValueProvider {
-    (note: Note): TE.TaskEither<ParseError, unknown>;
+    (file: string): TE.TaskEither<FileParseError, FieldValue | undefined>;
 }
 
 export interface ProviderFactory {
     (field: RawProvidedField): E.Either<string, ValueProvider>;
 }
 
-const providerFactories: Record<string, ProviderFactory> = {};
+const providerFactories: Record<string, ProviderFactory> = {
+    'git-version': GitVersion,
+};
 
 export const getValueProvider = (field: RawProvidedField): E.Either<string, ValueProvider> => {
     const providerFactory = providerFactories[field.provided.by];

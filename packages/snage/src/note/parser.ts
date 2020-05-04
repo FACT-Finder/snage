@@ -31,7 +31,7 @@ export const readNote = (fields: Field[], fileName: string): TE.TaskEither<Array
     return pipe(
         readFile(fileName),
         TE.mapLeft((e) => [e]),
-        TE.chainEitherK((fileContent): E.Either<Array<FileParseError | string>, Note> => parseNote(fields, parseRawNote(fileContent, fileName)))
+        TE.chain((fileContent): TE.TaskEither<Array<FileParseError | string>, Note> => parseNote(fields, parseRawNote(fileContent, fileName)))
     );
 };
 
@@ -59,23 +59,26 @@ const parseRawNote = (note: string, fileName: string): RawNote => {
     return {file: fileName, header: meta.data, summary: head, content: rest.join('\n\n')};
 };
 
-export const parseNote = (fields: Field[], rawNote: RawNote): E.Either<FileParseError[], Note> => {
+export const parseNote = (fields: Field[], rawNote: RawNote): TE.TaskEither<FileParseError[], Note> => {
     type FieldWithValue = [string, FieldValue | undefined];
 
     return pipe(
-        fields,
-        A.map(
-            (field): E.Either<FileParseError, FieldWithValue> =>
-                pipe(
-                    parseFieldValue(field, rawNote.header, true),
-                    E.map((value): FieldWithValue => [field.name, value]),
-                    E.mapLeft((parseError: ParseError): FileParseError => ({...parseError, file: rawNote.file}))
-                )
+        A.array.traverse(T.task)(fields, (field) =>
+            pipe(
+                parseFieldValue(field, rawNote.header, true),
+                E.mapLeft((e: ParseError): FileParseError => ({...e, file: rawNote.file})),
+                TE.fromEither,
+                TE.chain((value) => (typeof value === 'undefined' && field.provider ? field.provider(rawNote.file) : TE.right(value))),
+                TE.filterOrElse(
+                    (value) => typeof value !== 'undefined' || !!field.optional,
+                    (): FileParseError => ({file: rawNote.file, error: 'missingField', field: field.name})
+                ),
+                TE.map((value): FieldWithValue => [field.name, value])
+            )
         ),
-        sequenceKeepAllLefts,
-        E.map((fieldsWithValue) => Object.fromEntries(fieldsWithValue.filter(([, value]) => typeof value !== 'undefined'))),
-        E.map((values) => ({
-            values,
+        T.map(sequenceKeepAllLefts),
+        TE.map((fieldsWithValue) => ({
+            values: Object.fromEntries(fieldsWithValue.filter(([, value]) => typeof value !== 'undefined')),
             id: rawNote.file,
             file: rawNote.file,
             content: rawNote.content,
@@ -84,7 +87,7 @@ export const parseNote = (fields: Field[], rawNote: RawNote): E.Either<FileParse
     );
 };
 
-export type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion';
+export type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion' | 'providerError';
 
 export interface ParseError {
     error: ParseErrorType;
@@ -163,7 +166,7 @@ const parseFFVersion = (value: unknown, field: Field): E.Either<ParseError, stri
     return E.right(value);
 };
 
-const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, PrimitiveFieldValue> => {
+export const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, PrimitiveFieldValue> => {
     switch (field.type) {
         case 'string':
             return parseString(value, field);

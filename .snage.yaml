@@ -11,6 +11,10 @@ fields:
     - name: version
       type: semver
       optional: true
+      provided:
+          by: 'git-version'
+          arguments:
+              version-regex: '^v(.*)$'
     - name: date
       type: date
     - name: components

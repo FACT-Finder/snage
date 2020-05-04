@@ -12,7 +12,7 @@ describe('parseNote', () => {
         {name: 'optional', type: 'string', optional: true},
     ];
 
-    it('works', () => {
+    it('works', async () => {
         const rawNote: RawNote = {
             file: 'filename',
             header: {
@@ -35,9 +35,9 @@ describe('parseNote', () => {
                 date: Date.parse('2019-03-03'),
             },
         };
-        expect(parseNote(fields, rawNote)).toStrictEqual(right(expected));
+        expect(await parseNote(fields, rawNote)()).toStrictEqual(right(expected));
     });
-    it('returns all errors', () => {
+    it('returns all errors', async () => {
         const noIssue: RawNote = {
             file: 'filename',
             header: {
@@ -47,7 +47,7 @@ describe('parseNote', () => {
             summary: '# test',
             content: '',
         };
-        expect(parseNote(fields, noIssue)).toStrictEqual(
+        expect(await parseNote(fields, noIssue)()).toStrictEqual(
             left([
                 {file: 'filename', error: 'missingField', field: 'issue'},
                 {file: 'filename', error: 'invalidEnum', field: 'type', msg: "expected one of [bugfix, feature, refactoring], got 'bugfixi'"},
