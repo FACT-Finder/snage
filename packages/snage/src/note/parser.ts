@@ -3,12 +3,14 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
+import * as R from 'fp-ts/lib/Record';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
 import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {ArrayFieldValue, Config, Field, FieldValue, PrimitiveFieldValue} from '../config/type';
 import {Note} from './note';
 import {readdir, readFile, sequenceKeepAllLefts} from '../fp/fp';
+import {getFirstSemigroup} from 'fp-ts/lib/Semigroup';
 
 export const parseNotes = (config: Config, folder: string): TE.TaskEither<Array<FileParseError | string>, Note[]> => {
     return pipe(
@@ -78,12 +80,21 @@ export const parseNote = (fields: Field[], rawNote: RawNote): TE.TaskEither<File
         ),
         T.map(sequenceKeepAllLefts),
         TE.map((fieldsWithValue) => ({
-            values: Object.fromEntries(fieldsWithValue.filter(([, value]) => typeof value !== 'undefined')),
+            values: toRecord(fieldsWithValue),
             id: rawNote.file,
             file: rawNote.file,
             content: rawNote.content,
             summary: rawNote.summary.replace(/^\s*#\s*/, ''),
         }))
+    );
+};
+
+const toRecord = <V>(values: Array<[string, V | undefined]>): Record<string, V> => {
+    const First = getFirstSemigroup<V>();
+    return pipe(
+        values,
+        A.filter((pair): pair is [string, V] => typeof pair[1] !== 'undefined'),
+        R.fromFoldable(First, A.array)
     );
 };
 
