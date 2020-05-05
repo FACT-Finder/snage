@@ -27,7 +27,7 @@ const Search: React.FC<{setEntries: (e: ApiNote[]) => void}> = ({setEntries}) =>
     const [query, setQuery] = React.useState('');
 
     React.useEffect(() => {
-        axios.get(`/note?query=${query}`).then((resp) => {
+        axios.get(`/note?query=${encodeURIComponent(query)}`).then((resp) => {
             setEntries(resp.data);
             return;
         });
