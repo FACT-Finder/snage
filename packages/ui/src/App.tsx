@@ -3,6 +3,7 @@ import './App.css';
 import {ApiNote} from '../../shared/type';
 import Chip from '@material-ui/core/Chip';
 import ReactMarkdown from 'react-markdown';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import axios from 'axios';
 import {Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, makeStyles} from '@material-ui/core';
 
@@ -45,7 +46,7 @@ const Entry = React.memo(({entry: {content, summary, values}}: {entry: ApiNote})
         <ExpansionPanel>
             <ExpansionPanelSummary>
                 <div>
-                    <Typography variant="h5" component="div" className={classes.header}>
+                    <Typography variant="h5" component="div" className={classes.header + ' markdown-body'}>
                         <ReactMarkdown source={summary} />
                     </Typography>
                     {Object.entries(values).map(([key, value]) => (
@@ -54,7 +55,13 @@ const Entry = React.memo(({entry: {content, summary, values}}: {entry: ApiNote})
                 </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <div>{content === '' ? '-- no content --' : <ReactMarkdown source={content} />}</div>
+                <div>
+                    {content === '' ? (
+                        '-- no content --'
+                    ) : (
+                        <ReactMarkdown source={content} renderers={{code: CodeBlock}} className={'markdown-body'} />
+                    )}
+                </div>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );
@@ -65,5 +72,9 @@ const useStyles = makeStyles({
         '& > p': {margin: '0'},
     },
 });
+
+const CodeBlock: React.FC<{language?: string; value: string}> = ({value, language}) => {
+    return <SyntaxHighlighter language={language}>{value}</SyntaxHighlighter>;
+};
 
 export default App;
