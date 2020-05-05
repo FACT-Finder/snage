@@ -55,7 +55,7 @@ const Entry = React.memo(({entry: {content, summary, values}}: {entry: ApiNote})
                 </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <div>
+                <div style={{width: '100%'}}>
                     {content === '' ? (
                         '-- no content --'
                     ) : (
