@@ -8,6 +8,9 @@ import path from 'path';
 import {DefaultCli, printAndExit} from './common';
 import {Note} from '../note/note';
 import {pipe} from 'fp-ts/lib/pipeable';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as IO from 'fp-ts/lib/IO';
+import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import * as B from 'fp-ts/lib/boolean';
@@ -28,21 +31,21 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
             .default('port', 8080)
             .describe('port', 'The port snage should listen on'),
     describe: 'Start the snage web server.',
-    handler: ({config: configFilePath, port}) => {
-        pipe(
-            loadConfig(configFilePath),
-            E.chain((config) =>
+    handler: async ({config: configFilePath, port}) => {
+        return pipe(
+            TE.fromEither(loadConfig(configFilePath)),
+            TE.chain((config) =>
                 pipe(
                     parseNotes(config, resolveChangelogDirectory(config, configFilePath)),
-                    E.bimap(errorToString, (notes) => [config, notes] as [Config, Note[]])
+                    TE.bimap(errorToString, (notes) => [config, notes] as [Config, Note[]])
                 )
             ),
-            E.fold(printAndExit, startExpress(port))
-        );
+            TE.fold(T.fromIOK(printAndExit), T.fromIOK(startExpress(port)))
+        )();
     },
 };
 
-export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]) => {
+export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]): IO.IO<void> => () => {
     const parser = createParser(config.fields);
     const app = express();
     app.use(express.text({type: '*/*', limit: '10gb'}));
@@ -69,6 +72,7 @@ export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]
                         )
                     )
             ),
+            E.map(A.sort(config.standard.sort)),
             E.map(A.map((note) => convertToApiNote(note, config.fields))),
             E.fold(identity, (notes): Response => ({status: 200, body: notes})),
             ({status, body}) => res.status(status).json(body)

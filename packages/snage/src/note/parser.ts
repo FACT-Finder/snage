@@ -1,37 +1,39 @@
 import matter from 'gray-matter';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
+import * as R from 'fp-ts/lib/Record';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
 import semver from 'semver';
 import {pipe} from 'fp-ts/lib/pipeable';
-import fs from 'fs';
-import path from 'path';
-import {Config, Field} from '../config/type';
+import {ArrayFieldValue, Config, Field, FieldValue, PrimitiveFieldValue} from '../config/type';
 import {Note} from './note';
+import {readdir, readFile, sequenceKeepAllLefts} from '../fp/fp';
+import {getFirstSemigroup} from 'fp-ts/lib/Semigroup';
 
-export const parseNotes = (config: Config, folder: string): E.Either<Array<FileParseError | string>, Note[]> => {
+export const parseNotes = (config: Config, folder: string): TE.TaskEither<Array<FileParseError | string>, Note[]> => {
     return pipe(
-        E.tryCatch(
-            () => fs.readdirSync(folder),
-            (e) => [`Could not read directory ${folder}: ${e}`]
-        ),
-        E.map(A.map((file) => path.join(folder, file))),
-        E.map(
-            A.map((filePath) =>
-                pipe(
-                    E.tryCatch(
-                        () => fs.readFileSync(filePath, 'utf8'),
-                        (e) => [`Could not read file ${filePath}: ${e}`]
-                    ),
-                    E.chain((content): E.Either<Array<string | FileParseError>, Note> => parseNote(config.fields, content, filePath))
-                )
-            )
-        ),
-        E.chain((e) => {
-            const l = A.flatten(A.lefts(e));
-            const r = A.rights(e);
-            return l.length ? E.left(l) : E.right(r);
-        })
+        readdir(folder),
+        TE.mapLeft((e): Array<FileParseError | string> => [e]),
+        TE.map((files) => readNotes(config.fields, files)),
+        TE.flatten
+    );
+};
+
+const readNotes = (fields: Field[], files: string[]): TE.TaskEither<Array<FileParseError | string>, Note[]> => {
+    return pipe(
+        A.array.traverse(T.task)(files, (file) => readNote(fields, file)),
+        T.map(sequenceKeepAllLefts),
+        TE.mapLeft(A.flatten)
+    );
+};
+
+export const readNote = (fields: Field[], fileName: string): TE.TaskEither<Array<FileParseError | string>, Note> => {
+    return pipe(
+        readFile(fileName),
+        TE.mapLeft((e) => [e]),
+        TE.chain((fileContent): TE.TaskEither<Array<FileParseError | string>, Note> => parseNote(fields, parseRawNote(fileContent, fileName)))
     );
 };
 
@@ -46,33 +48,64 @@ export const errorToString = (errors: Array<FileParseError | string>): string =>
         .join('\n');
 };
 
-export const parseNote = (fields: Field[], note: string, fileName: string): E.Either<FileParseError[], Note> => {
-    const {content: content, ...meta} = matter(note);
+export interface RawNote {
+    file: string;
+    header: Record<string, unknown>;
+    summary: string;
+    content: string;
+}
 
-    let mutableMeta = meta.data;
-    const errors: FileParseError[] = [];
-    for (const field of fields) {
-        const eitherMeta: E.Either<ParseError, Record<string, unknown>> = parseField(field, meta.data, true);
-        if (E.isLeft(eitherMeta)) {
-            errors.push({...eitherMeta.left, file: fileName});
-            continue;
-        }
-        mutableMeta = {...mutableMeta, ...eitherMeta.right};
-    }
-    if (errors.length) {
-        return E.left(errors);
-    }
-    const [first, ...other] = content.split('\n\n');
-    return E.right({values: mutableMeta, id: fileName, file: fileName, content: other.join('\n\n'), summary: first.replace(/^\s*#\s*/, '')});
+const parseRawNote = (note: string, fileName: string): RawNote => {
+    const {content, ...meta} = matter(note);
+    const [head, ...rest] = content.split('\n\n');
+    return {file: fileName, header: meta.data, summary: head, content: rest.join('\n\n')};
 };
 
-export type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion';
+export const parseNote = (fields: Field[], rawNote: RawNote): TE.TaskEither<FileParseError[], Note> => {
+    type FieldWithValue = [string, FieldValue | undefined];
+
+    return pipe(
+        A.array.traverse(T.task)(fields, (field) =>
+            pipe(
+                parseFieldValue(field, rawNote.header, true),
+                E.mapLeft((e: ParseError): FileParseError => ({...e, file: rawNote.file})),
+                TE.fromEither,
+                TE.chain((value) => (typeof value === 'undefined' && field.provider ? field.provider(rawNote.file) : TE.right(value))),
+                TE.filterOrElse(
+                    (value) => typeof value !== 'undefined' || !!field.optional,
+                    (): FileParseError => ({file: rawNote.file, error: 'missingField', field: field.name})
+                ),
+                TE.map((value): FieldWithValue => [field.name, value])
+            )
+        ),
+        T.map(sequenceKeepAllLefts),
+        TE.map((fieldsWithValue) => ({
+            values: toRecord(fieldsWithValue),
+            id: rawNote.file,
+            file: rawNote.file,
+            content: rawNote.content,
+            summary: rawNote.summary.replace(/^\s*#\s*/, ''),
+        }))
+    );
+};
+
+const toRecord = <V>(values: Array<[string, V | undefined]>): Record<string, V> => {
+    const First = getFirstSemigroup<V>();
+    return pipe(
+        values,
+        A.filter((pair): pair is [string, V] => typeof pair[1] !== 'undefined'),
+        R.fromFoldable(First, A.array)
+    );
+};
+
+export type ParseErrorType = 'missingField' | 'wrongType' | 'invalidSemVer' | 'invalidEnum' | 'invalidFFVersion' | 'providerError';
 
 export interface ParseError {
     error: ParseErrorType;
     msg?: string;
     field: string;
 }
+
 export interface FileParseError extends ParseError {
     file: string;
 }
@@ -144,7 +177,7 @@ const parseFFVersion = (value: unknown, field: Field): E.Either<ParseError, stri
     return E.right(value);
 };
 
-const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, unknown> => {
+export const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Either<ParseError, PrimitiveFieldValue> => {
     switch (field.type) {
         case 'string':
             return parseString(value, field);
@@ -163,31 +196,18 @@ const parseSingleValue = (value: unknown, field: Field, strict: boolean): E.Eith
     }
 };
 
-const parseList = (value: unknown, field: Field, strict): E.Either<ParseError, unknown[]> => {
-    if (!Array.isArray(value)) {
-        return E.left(typeError(field.name, 'array', value));
+const parseListValue = (values: unknown, field: Field, strict): E.Either<ParseError, ArrayFieldValue> => {
+    if (!Array.isArray(values)) {
+        return E.left(typeError(field.name, 'array', values));
     }
 
-    const parsed: Array<E.Either<ParseError, unknown>> = value.map((x) => parseSingleValue(x, field, strict));
-    const result: unknown[] = [];
-    for (const x of parsed) {
-        if (E.isLeft(x)) {
-            return x;
-        } else {
-            result.push(x.right);
-        }
-    }
-    return E.right(result);
+    return A.array.traverse(E.either)(values, (value) => parseSingleValue(value, field, strict));
 };
 
-export const parseField = (field: Field, meta: Record<string, unknown>, strict = true): E.Either<ParseError, Record<string, unknown>> => {
+export const parseFieldValue = (field: Field, meta: Record<string, unknown>, strict = true): E.Either<ParseError, FieldValue | undefined> => {
     if (!(field.name in meta)) {
-        return field.optional ? E.right({}) : E.left({error: 'missingField', field: field.name});
+        return field.optional || field.provided ? E.right(undefined) : E.left({error: 'missingField', field: field.name});
     }
 
-    const parsed = field.list === true ? parseList(meta[field.name], field, strict) : parseSingleValue(meta[field.name], field, strict);
-    return pipe(
-        parsed,
-        E.map((x) => ({[field.name]: x}))
-    );
+    return field.list === true ? parseListValue(meta[field.name], field, strict) : parseSingleValue(meta[field.name], field, strict);
 };
