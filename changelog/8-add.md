@@ -11,13 +11,13 @@ components:
 You can configure snage to automatically fetch the release version of a
 note from a git tag.
 Example:
-```
-    - name: version
-      type: semver
-      provided:
-          by: 'git-version'
-          arguments:
-              version-regex: '^v(.*)$'
+```yaml
+- name: version
+  type: semver
+  provided:
+      by: 'git-version'
+      arguments:
+          version-regex: '^v(.*)$'
 ```
 
 Snage will look up the commit which introduced the note and use the first
