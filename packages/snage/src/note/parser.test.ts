@@ -1,8 +1,12 @@
-import {parseFieldValue, parseNote, RawNote} from './parser';
+import {parseNote, RawNote} from './parser';
 import {left, right} from 'fp-ts/lib/Either';
-import semver from 'semver';
-import {Field} from '../config/type';
+import {Field, RawProvidedField} from '../config/type';
+import * as semver from 'semver';
 import {Note} from './note';
+import parseISO from 'date-fns/parseISO';
+import * as git from '../provider/git-version';
+import {assertRight} from '../fp/fp';
+import path from 'path';
 
 describe('parseNote', () => {
     const fields: Field[] = [
@@ -32,7 +36,7 @@ describe('parseNote', () => {
             values: {
                 issue: 'xyz',
                 type: 'bugfix',
-                date: Date.parse('2019-03-03'),
+                date: parseISO('2019-03-03').getTime(),
             },
         };
         expect(await parseNote(fields, rawNote)()).toStrictEqual(right(expected));
@@ -48,72 +52,46 @@ describe('parseNote', () => {
             content: '',
         };
         expect(await parseNote(fields, noIssue)()).toStrictEqual(
-            left([
-                {file: 'filename', error: 'missingField', field: 'issue'},
-                {file: 'filename', error: 'invalidEnum', field: 'type', msg: "expected one of [bugfix, feature, refactoring], got 'bugfixi'"},
-            ])
+            left(['filename: Invalid value "bugfixi" supplied to : note/type: "bugfix" | "feature" | "refactoring"'])
         );
     });
-});
+    it('checks for required fields', async () => {
+        const noIssue: RawNote = {
+            file: 'filename',
+            header: {
+                date: '2019-03-03',
+            },
+            summary: '# test',
+            content: '',
+        };
+        expect(await parseNote(fields, noIssue)()).toStrictEqual(
+            left(['filename: Missing value for required field issue', 'filename: Missing value for required field type'])
+        );
+    });
+    it('runs providers', async () => {
+        const providedField: RawProvidedField = {
+            name: 'version',
+            type: 'semver',
+            provided: {by: 'git-version', arguments: {'version-regex': '^v(.*)$'}},
+        };
 
-describe('parseFieldValue', () => {
-    it('throws on missing field', () => {
-        expect(parseFieldValue({name: 'issue', type: 'string'}, {})).toStrictEqual(left({error: 'missingField', field: 'issue'}));
-    });
-    it('parses strings', () => {
-        expect(parseFieldValue({name: 'issue', type: 'string'}, {issue: 'XYZ'})).toStrictEqual(right('XYZ'));
-        expect(parseFieldValue({name: 'issue', type: 'string'}, {issue: undefined})).toMatchObject(left({error: 'wrongType'}));
-        expect(parseFieldValue({name: 'type', type: 'string', enum: ['bug', 'feature']}, {type: 'xxx'})).toStrictEqual(
-            left({
-                error: 'invalidEnum',
-                msg: "expected one of [bug, feature], got 'xxx'",
-                field: 'type',
+        const gitProvider = git.providerFactory(providedField);
+        assertRight(gitProvider);
+
+        const fields: Field[] = [{name: 'version', type: 'semver', provider: gitProvider.right}];
+        const changelogFile = path.resolve(path.join(__dirname, '../../../../changelog/7-config.md'));
+        const noIssue: RawNote = {
+            file: changelogFile,
+            header: {},
+            summary: '# test',
+            content: '',
+        };
+        expect(await parseNote(fields, noIssue)()).toMatchObject(
+            right({
+                values: {
+                    version: semver.parse('0.0.2'),
+                },
             })
         );
-        expect(parseFieldValue({name: 'type', type: 'string', enum: ['bug', 'feature']}, {type: 'bug'})).toStrictEqual(right('bug'));
-    });
-    it('parses numbers', () => {
-        expect(parseFieldValue({name: 'version', type: 'number'}, {version: 50.5})).toStrictEqual(right(50.5));
-        expect(parseFieldValue({name: 'version', type: 'number'}, {version: ''})).toMatchObject(left({error: 'wrongType'}));
-        expect(parseFieldValue({name: 'version', type: 'number'}, {version: '50'})).toMatchObject(left({error: 'wrongType'}));
-        expect(parseFieldValue({name: 'version', type: 'number'}, {version: '50'}, false)).toMatchObject(right(50));
-    });
-    it('parses booleans', () => {
-        expect(parseFieldValue({name: 'released', type: 'boolean'}, {released: true})).toStrictEqual(right(true));
-        expect(parseFieldValue({name: 'released', type: 'boolean'}, {released: 'true'})).toMatchObject(left({error: 'wrongType'}));
-        expect(parseFieldValue({name: 'released', type: 'boolean'}, {released: 'true'}, false)).toStrictEqual(right(true));
-    });
-    it('parses date', () => {
-        expect(parseFieldValue({name: 'date', type: 'date'}, {date: '2018-01-05'})).toStrictEqual(right(Date.parse('2018-01-05')));
-        expect(parseFieldValue({name: 'date', type: 'date'}, {date: undefined})).toMatchObject(left({error: 'wrongType'}));
-    });
-    it('parses semver', () => {
-        expect(parseFieldValue({name: 'version', type: 'semver'}, {version: undefined})).toMatchObject(left({error: 'wrongType'}));
-        expect(parseFieldValue({name: 'version', type: 'semver'}, {version: '0.8.5-153'})).toStrictEqual(right(semver.parse('0.8.5-153')));
-        expect(parseFieldValue({name: 'version', type: 'semver'}, {version: '0.8'})).toStrictEqual(
-            left({
-                error: 'invalidSemVer',
-                msg: "expected valid semver, got '0.8'",
-                field: 'version',
-            })
-        );
-    });
-    it('parses ffversion', () => {
-        expect(parseFieldValue({name: 'version', type: 'ffversion'}, {version: '0.8.5-153'})).toStrictEqual(right('0.8.5-153'));
-        expect(parseFieldValue({name: 'version', type: 'ffversion'}, {version: '0.8'})).toStrictEqual(
-            left({
-                error: 'invalidFFVersion',
-                msg: "expected valid ffversion in format '1.0.0-1', got '0.8'",
-                field: 'version',
-            })
-        );
-    });
-    it('parses lists', () => {
-        expect(parseFieldValue({name: 'text', type: 'string', list: true}, {text: ['x', 'y']})).toStrictEqual(right(['x', 'y']));
-        expect(parseFieldValue({name: 'text', type: 'string', list: true}, {text: undefined})).toMatchObject(left({error: 'wrongType'}));
-        expect(parseFieldValue({name: 'text', type: 'string', list: true}, {text: ['x', undefined]})).toMatchObject(left({error: 'wrongType'}));
-    });
-    it('allows to omit optional fields', () => {
-        expect(parseFieldValue({name: 'text', type: 'string', optional: true}, {})).toStrictEqual(right(undefined));
     });
 });

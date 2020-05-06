@@ -1,11 +1,10 @@
 import {FieldValue, RawProvidedField} from '../config/type';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
-import {FileParseError} from '../note/parser';
 import {providerFactory as GitVersion} from './git-version';
 
 export interface ValueProvider {
-    (file: string): TE.TaskEither<FileParseError, FieldValue | undefined>;
+    (file: string): TE.TaskEither<string, FieldValue | undefined>;
 }
 
 export interface ProviderFactory {
