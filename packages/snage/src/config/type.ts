@@ -43,6 +43,10 @@ export type FieldType = 'string' | 'boolean' | 'date' | 'number' | 'semver' | 'f
 
 type RequiredProperty<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
 export type RawProvidedField = RequiredProperty<RawField, 'provided'>;
+export type ProvidedField = RequiredProperty<Field, 'provider'>;
+
+export const hasProvided = (field: RawField): field is RawProvidedField => typeof field.provided !== 'undefined';
+export const hasProvider = (field: Field): field is ProvidedField => typeof field.provider !== 'undefined';
 
 export interface FilterPreset {
     name: string;

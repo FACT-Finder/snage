@@ -4,7 +4,7 @@ import {loadConfig, resolveChangelogDirectory} from '../config/load';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
-import {errorToString, parseNotes} from '../note/parser';
+import {parseNotes} from '../note/parser';
 import {createParser, Expression} from '../query/parser';
 import {createMatcher} from '../query/match';
 import {pipe} from 'fp-ts/lib/pipeable';
@@ -21,7 +21,10 @@ export const find: yargs.CommandModule<DefaultCli, DefaultCli> = {
             TE.chain((config) =>
                 pipe(
                     parseNotes(config, resolveChangelogDirectory(config, configFilePath)),
-                    TE.bimap(errorToString, (notes) => [config, notes] as const)
+                    TE.bimap(
+                        (errors) => errors.join('\n'),
+                        (notes) => [config, notes] as const
+                    )
                 )
             ),
             TE.chainEitherK(([config, notes]) => {

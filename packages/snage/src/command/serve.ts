@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import express from 'express';
 import {loadConfig, resolveChangelogDirectory} from '../config/load';
-import {errorToString, parseNotes} from '../note/parser';
+import {parseNotes} from '../note/parser';
 import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
 import path from 'path';
@@ -37,7 +37,10 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
             TE.chain((config) =>
                 pipe(
                     parseNotes(config, resolveChangelogDirectory(config, configFilePath)),
-                    TE.bimap(errorToString, (notes) => [config, notes] as [Config, Note[]])
+                    TE.bimap(
+                        (errors) => errors.join('\n'),
+                        (notes) => [config, notes] as [Config, Note[]]
+                    )
                 )
             ),
             TE.fold(T.fromIOK(printAndExit), T.fromIOK(startExpress(port)))

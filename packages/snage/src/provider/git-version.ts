@@ -1,5 +1,4 @@
 import {Field, FieldValue, RawProvidedField} from '../config/type';
-import {FileParseError, ParseError, parseSingleValue} from '../note/parser';
 import * as O from 'fp-ts/lib/Option';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -7,25 +6,27 @@ import {ProviderFactory, requireArgument, ValueProvider} from './provider';
 import {pipe} from 'fp-ts/lib/pipeable';
 import path from 'path';
 import {tryExec} from './exec';
+import {decodeValue} from '../note/convert';
 
 export const providerFactory: ProviderFactory = (field: RawProvidedField): E.Either<string, ValueProvider> =>
     pipe(
         requireArgument(field, 'version-regex', 'string'),
-        E.map((versionRegex) => (file: string): TE.TaskEither<FileParseError, FieldValue | undefined> => getVersion(versionRegex, file, field))
+        E.map((versionRegex) => (file: string): TE.TaskEither<string, FieldValue | undefined> => getVersion(versionRegex, file, field))
     );
 
-const getVersion = (versionRegex: string, file: string, field: Field): TE.TaskEither<FileParseError, FieldValue | undefined> => {
+const getVersion = (versionRegex: string, file: string, field: Field): TE.TaskEither<string, FieldValue | undefined> => {
     return pipe(
         getFirstTagContainingFile(file),
         TE.map(O.map((tag) => extractVersion(tag, versionRegex))),
-        TE.mapLeft((error): ParseError => ({field: field.name, msg: error, error: 'providerError' as const})),
+        TE.mapLeft((error): string => `provider error on field '${field.name}': ${error}`),
         TE.chainEitherK(
             O.fold(
-                () => E.right<ParseError, FieldValue | undefined>(undefined),
-                (version) => parseSingleValue(version, field, true)
+                () => E.right<string, FieldValue | undefined>(undefined),
+                (version): E.Either<string, FieldValue | undefined> => {
+                    return E.either.mapLeft(decodeValue(field, version), (errors) => errors.join('\n'));
+                }
             )
-        ),
-        TE.mapLeft((e): FileParseError => ({...e, file}))
+        )
     );
 };
 

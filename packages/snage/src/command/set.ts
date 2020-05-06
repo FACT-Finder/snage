@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import {DefaultCli, printAndExit} from './common';
 import {loadConfig, resolveChangelogDirectory} from '../config/load';
-import {errorToString, parseFieldValue, parseNotes} from '../note/parser';
+import {parseNotes} from '../note/parser';
 import matter from 'gray-matter';
 import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
@@ -16,6 +16,7 @@ import {convertToYamlValues} from '../note/convertyaml';
 import {Note} from '../note/note';
 import {Field, FieldValue} from '../config/type';
 import {writeFile} from '../fp/fp';
+import {decodeStringValue} from '../note/convert';
 
 interface Options {
     fields: Field[];
@@ -48,7 +49,7 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
             TE.chain((config) =>
                 pipe(
                     parseNotes(config, resolveChangelogDirectory(config, configFile)),
-                    TE.mapLeft(errorToString),
+                    TE.mapLeft((errors) => errors.join('\n')),
                     TE.chainEitherK((notes) => updateNotes({fields: config.fields, notes, condition: on, stringValue, fieldName}))
                 )
             ),
@@ -74,8 +75,8 @@ const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): 
     }
     const value = field?.list ? stringValue : stringValue[0];
     return pipe(
-        parseFieldValue(field, {[fieldName]: value}, false),
-        E.mapLeft((err) => `${value} is not valid: ${JSON.stringify(err)}`)
+        decodeStringValue(field, value),
+        E.mapLeft((err) => err.join('\n'))
     );
 };
 

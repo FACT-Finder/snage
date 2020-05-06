@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
 import {parseConfig} from './parser';
-import {Config, Field, RawConfig, RawField, RawProvidedField} from './type';
+import {Config, Field, hasProvided, RawConfig, RawField} from './type';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import {pipe} from 'fp-ts/lib/pipeable';
@@ -31,8 +31,6 @@ export const loadConfig = (filePath: string): E.Either<string, Config> => {
         E.chain((rawConfig) => convert(rawConfig))
     );
 };
-
-export const hasProvided = (field: RawField): field is RawProvidedField => typeof field.provided !== 'undefined';
 
 export const convert = (rawConfig: RawConfig): E.Either<string, Config> => {
     const sortField = rawConfig.fields.find((f) => f.name === rawConfig.standard.sort.field)!;

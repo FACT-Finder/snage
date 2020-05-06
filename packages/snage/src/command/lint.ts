@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import {loadConfig, resolveChangelogDirectory} from '../config/load';
-import {errorToString, parseNotes} from '../note/parser';
+import {parseNotes} from '../note/parser';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import {DefaultCli, printAndExit} from './common';
@@ -12,7 +12,12 @@ export const lint: yargs.CommandModule<DefaultCli, DefaultCli> = {
     handler: async ({config: configFilePath}) => {
         return pipe(
             TE.fromEither(loadConfig(configFilePath)),
-            TE.chain((config) => pipe(parseNotes(config, resolveChangelogDirectory(config, configFilePath)), TE.mapLeft(errorToString))),
+            TE.chain((config) =>
+                pipe(
+                    parseNotes(config, resolveChangelogDirectory(config, configFilePath)),
+                    TE.mapLeft((errors) => errors.join('\n'))
+                )
+            ),
             TE.fold(T.fromIOK(printAndExit), () => T.fromIO(() => console.log('All good :D')))
         )();
     },

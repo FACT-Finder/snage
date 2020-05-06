@@ -4,6 +4,8 @@ import * as E from 'fp-ts/lib/Either';
 import fs from 'fs';
 import path from 'path';
 import {pipe} from 'fp-ts/lib/pipeable';
+import {getFirstSemigroup} from 'fp-ts/lib/Semigroup';
+import * as R from 'fp-ts/lib/Record';
 
 export function assertRight<L, R>(either: E.Either<L, R>): asserts either is E.Right<R> {
     if (E.isLeft(either)) {
@@ -40,3 +42,13 @@ export const writeFile = (fileName: string, content: string): TE.TaskEither<stri
         TE.taskify<string, string, NodeJS.ErrnoException, string>(fs.writeFile)(fileName, content),
         TE.mapLeft((e: NodeJS.ErrnoException): string => `Could not write file ${fileName}: ${e}`)
     );
+
+export const toRecord = <V>(values: Array<[string, V]>): Record<string, V> => {
+    const First = getFirstSemigroup<V>();
+    return R.fromFoldable(First, A.array)(values);
+};
+
+export const merge = <V>(a: Record<string, V>, b: Record<string, V>): Record<string, V> => {
+    const First = getFirstSemigroup<V>();
+    return R.getMonoid(First).concat(a, b);
+};

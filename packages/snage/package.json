@@ -30,6 +30,7 @@
     "express": "^4.17.1",
     "fp-ts": "^2.5.3",
     "gray-matter": "^4.0.2",
+    "io-ts": "^2.2.1",
     "node-fetch": "^2.6.0",
     "parsimmon": "^1.13.0",
     "semver": "^7.1.3",
