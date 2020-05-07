@@ -20,7 +20,7 @@ export type SingleExpression = {
 export const StatusOP = '__status__' as const;
 export type Operator = '=' | '<=' | '>=' | '!=' | '<' | '>' | '~' | '~~' | typeof StatusOP;
 
-export type Expression = SingleExpression | [Expression, 'or' | 'and', Expression];
+export type Expression = true | SingleExpression | [Expression, 'or' | 'and', Expression];
 
 export enum StatusValue {
     Present = 'present',
@@ -112,6 +112,9 @@ export const createParser = (fields: Field[]): ((q: string) => Either<ParseError
         expression: (r) => P.alt(r.orAndExpression, r.braceExpression, r.singleExpression),
     }).expression;
     return (s) => {
+        if (s.trim() === '') {
+            return right(true);
+        }
         const result = expression.parse(s);
         if (result.status) {
             return right(result.value);

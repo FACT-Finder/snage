@@ -13,7 +13,6 @@ import * as IO from 'fp-ts/lib/IO';
 import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
-import * as B from 'fp-ts/lib/boolean';
 import {identity} from 'fp-ts/lib/function';
 import {Config} from '../config/type';
 import {convertToApiNote} from '../note/convertapi';
@@ -60,20 +59,13 @@ export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]
 
     app.get('/note', ({query: {query}}, res) => {
         pipe(
-            query && query !== '',
-            B.fold(
-                () => E.right(notes),
-                () =>
-                    pipe(
-                        parser(query),
-                        E.bimap(
-                            (e): Response => ({status: 400, body: e}),
-                            (expression) => {
-                                const matcher = createMatcher(expression, config.fields);
-                                return notes.filter((note) => matcher(note.values));
-                            }
-                        )
-                    )
+            parser(query),
+            E.bimap(
+                (e): Response => ({status: 400, body: e}),
+                (expression) => {
+                    const matcher = createMatcher(expression, config.fields);
+                    return notes.filter((note) => matcher(note.values));
+                }
             ),
             E.map(A.sort(config.standard.sort)),
             E.map(A.map((note) => convertToApiNote(note, config.fields))),
