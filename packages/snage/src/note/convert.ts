@@ -22,6 +22,13 @@ export const encodeHeader = (fields: Field[], values: NoteValues): NoteValues =>
     );
 };
 
+export const stringEncodeHeader = (fields: Field[], values: NoteValues): Record<string, string | string[]> => {
+    return pipe(
+        getNoteStringIOType(fields).encode(values),
+        R.filter((v): v is string | string[] => typeof v !== 'undefined')
+    );
+};
+
 export const decodeValue = (field: Field, value: unknown): E.Either<string[], FieldValue> => {
     const decoded: E.Either<Errors, FieldValue> = getIOFieldType(field.type, field).decode(value);
     return report(decoded);
@@ -36,6 +43,9 @@ const report = <T>(decoded: E.Either<Errors, T>): E.Either<string[], T> => E.map
 
 const getNoteIOType = (fields: Field[]): t.Type<Record<string, FieldValue | undefined>> =>
     t.partial(toRecord(fields.map((field) => [field.name, getIOFieldType(field.type, field)])), 'note');
+
+const getNoteStringIOType = (fields: Field[]): t.Type<Record<string, FieldValue | undefined>, Record<string, string | string[] | undefined>> =>
+    t.partial(toRecord(fields.map((field) => [field.name, getIOStringFieldType(field.type, field)])), 'note');
 
 const getIOFieldType = <Type extends FieldType>(type: Type, field: Field): IOType[Type] | t.ArrayC<IOType[Type]> =>
     field.list ? t.array(getSingletonType(type, field), field.name) : getSingletonType(type, field);
