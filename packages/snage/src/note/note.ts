@@ -1,3 +1,5 @@
+import {FieldValue} from '../config/type';
+
 export interface Note {
     id: string;
     file: string;
@@ -6,4 +8,4 @@ export interface Note {
 
     values: NoteValues;
 }
-export type NoteValues = Record<string, unknown>;
+export type NoteValues = Record<string, FieldValue>;

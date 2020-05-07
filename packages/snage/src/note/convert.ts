@@ -9,9 +9,17 @@ import * as datefns from 'date-fns';
 import {toRecord} from '../fp/fp';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {PathReporter} from 'io-ts/lib/PathReporter';
+import {NoteValues} from './note';
 
 export const decodeHeader = (fields: Field[], values): E.Either<string[], Record<string, FieldValue>> => {
     return pipe(getNoteIOType(fields).decode(values), E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')), report);
+};
+
+export const encodeHeader = (fields: Field[], values: NoteValues): NoteValues => {
+    return pipe(
+        getNoteIOType(fields).encode(values),
+        R.filter((v): v is FieldValue => typeof v !== 'undefined')
+    );
 };
 
 export const decodeValue = (field: Field, value: unknown): E.Either<string[], FieldValue> => {
