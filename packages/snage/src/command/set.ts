@@ -12,11 +12,10 @@ import * as IOE from 'fp-ts/lib/IOEither';
 import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
-import {convertToYamlValues} from '../note/convertyaml';
 import {Note} from '../note/note';
 import {Field, FieldValue} from '../config/type';
 import {writeFile} from '../fp/fp';
-import {decodeStringValue} from '../note/convert';
+import {decodeStringValue, encodeHeader} from '../note/convert';
 
 interface Options {
     fields: Field[];
@@ -124,7 +123,7 @@ const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({file,
         copy[fieldName] = value;
     }
     const mergedContent = `# ${summary}${content.trim() !== '' ? '\n\n' : ''}${content}`;
-    const result = matter.stringify(mergedContent, convertToYamlValues(copy, fields));
+    const result = matter.stringify(mergedContent, encodeHeader(fields, copy));
     return {file: file, content: result};
 };
 

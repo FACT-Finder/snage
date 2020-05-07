@@ -103,23 +103,23 @@ describe('match', () => {
         createTest('stringName ~~ warld', {stringName: 'hello world'}, true),
         createTest('stringName ~~ baum', {stringName: 'hello world'}, false),
 
-        createTest('semverName > 1.1.1', {semverName: semver.parse('2.0.0')}, true),
-        createTest('semverName = 2.0.0', {semverName: semver.parse('2.0.0')}, true),
-        createTest('semverName = 2.0.0', {semverName: semver.parse('2.0.0')}, true),
-        createTest('semverName < 2.0.0', {semverName: semver.parse('2.0.0')}, false),
-        createTest('semverName <= 2.0.0', {semverName: semver.parse('2.0.0')}, true),
-        createTest('semverName <= 2.0', {semverName: semver.parse('2.0.0')}, true),
-        createTest('semverName > 1.1.1', {semverName: semver.parse('2.0.0-1')}, false), // prerelease
-        createTest('semverName > 1', {semverName: semver.parse('2.0.0-1')}, false), // prerelease
-        createTest('semverName > 1', {semverName: semver.parse('2.0.0-beta')}, false), // prerelease
-        createTest('semverName < 1', {semverName: semver.parse('2.0.0-1')}, false), // prerelease
-        createTest('semverName > 1.1.1', {semverName: semver.parse('2.0.0')}, true),
-        createTest('semverName > 1', {semverName: semver.parse('2.0.0')}, true),
-        createTest('semverName = 1', {semverName: semver.parse('1.0.0')}, true),
-        createTest('semverName = 1', {semverName: semver.parse('1.1.0')}, true),
-        createTest('semverName > 1.0', {semverName: semver.parse('1.0.0')}, false),
-        createTest('semverName > 1.0', {semverName: semver.parse('1.0.999999')}, false),
-        createTest('semverName > 1.0', {semverName: semver.parse('1.1.0')}, true),
+        createTest('semverName > 1.1.1', {semverName: semver.parse('2.0.0')!}, true),
+        createTest('semverName = 2.0.0', {semverName: semver.parse('2.0.0')!}, true),
+        createTest('semverName = 2.0.0', {semverName: semver.parse('2.0.0')!}, true),
+        createTest('semverName < 2.0.0', {semverName: semver.parse('2.0.0')!}, false),
+        createTest('semverName <= 2.0.0', {semverName: semver.parse('2.0.0')!}, true),
+        createTest('semverName <= 2.0', {semverName: semver.parse('2.0.0')!}, true),
+        createTest('semverName > 1.1.1', {semverName: semver.parse('2.0.0-1')!}, false), // prerelease
+        createTest('semverName > 1', {semverName: semver.parse('2.0.0-1')!}, false), // prerelease
+        createTest('semverName > 1', {semverName: semver.parse('2.0.0-beta')!}, false), // prerelease
+        createTest('semverName < 1', {semverName: semver.parse('2.0.0-1')!}, false), // prerelease
+        createTest('semverName > 1.1.1', {semverName: semver.parse('2.0.0')!}, true),
+        createTest('semverName > 1', {semverName: semver.parse('2.0.0')!}, true),
+        createTest('semverName = 1', {semverName: semver.parse('1.0.0')!}, true),
+        createTest('semverName = 1', {semverName: semver.parse('1.1.0')!}, true),
+        createTest('semverName > 1.0', {semverName: semver.parse('1.0.0')!}, false),
+        createTest('semverName > 1.0', {semverName: semver.parse('1.0.999999')!}, false),
+        createTest('semverName > 1.0', {semverName: semver.parse('1.1.0')!}, true),
 
         createTest('ffVersion > 1.1.1', {ffVersion: '2.0.0'}, true),
         createTest('ffVersion > 3', {ffVersion: '2.0.0'}, false),
@@ -150,8 +150,8 @@ describe('match', () => {
         createTest('booleanName = true or (booleanName = false and stringName = "test")', {booleanName: false, stringName: 'nah'}, false),
         createTest('booleanName = true or (booleanName = false and stringName = "test")', {booleanName: false, stringName: 'test'}, true),
 
-        createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('1.4.0')}, false),
-        createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('2.1.0')}, false),
-        createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('1.7.0')}, true),
+        createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('1.4.0')!}, false),
+        createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('2.1.0')!}, false),
+        createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('1.7.0')!}, true),
     ].forEach((check) => check());
 });

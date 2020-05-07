@@ -1,10 +1,11 @@
 import * as E from 'fp-ts/lib/Either';
-import {decodeStringValue, decodeValue} from './convert';
+import {decodeStringValue, decodeValue, encodeHeader} from './convert';
 import parseISO from 'date-fns/parseISO';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
+import {Note} from './note';
 
-describe('io field types', () => {
+describe('decode', () => {
     test('boolean', () => {
         const field: Field = {name: 'b', type: 'boolean'};
         expect(decodeValue(field, true)).toStrictEqual(E.right(true));
@@ -65,5 +66,39 @@ describe('io field types', () => {
             E.left(['Invalid value "1.1.0" supplied to : date/0: YYYY-MM-DD', 'Invalid value "1.1.1" supplied to : date/1: YYYY-MM-DD'])
         );
         expect(decodeValue(field, ['2018-05-05'])).toStrictEqual(E.right([parseISO('2018-05-05').getTime()]));
+    });
+});
+describe('encodeHeader', () => {
+    const note: Note = {
+        content: '',
+        id: '',
+        file: '',
+        summary: '',
+        values: {
+            version: semver.parse('1.0.5')!,
+            ffversion: '1.0.5-15',
+            date: Date.parse('2020-04-24'),
+            bool: true,
+            number: 1.53,
+            list: [true, false],
+        },
+    };
+    const fields: Field[] = [
+        {name: 'version', type: 'semver'},
+        {name: 'ffversion', type: 'ffversion'},
+        {name: 'date', type: 'date'},
+        {name: 'bool', type: 'boolean'},
+        {name: 'number', type: 'number'},
+        {name: 'list', type: 'boolean', list: true},
+    ];
+    it('yaml converts whole note values', () => {
+        expect(encodeHeader(fields, note.values)).toStrictEqual({
+            version: '1.0.5',
+            ffversion: '1.0.5-15',
+            date: '2020-04-24',
+            bool: true,
+            number: 1.53,
+            list: [true, false],
+        });
     });
 });
