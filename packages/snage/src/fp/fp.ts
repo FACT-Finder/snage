@@ -1,6 +1,7 @@
 import * as A from 'fp-ts/lib/Array';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as E from 'fp-ts/lib/Either';
+import * as IOE from 'fp-ts/lib/IOEither';
 import fs from 'fs';
 import path from 'path';
 import {pipe} from 'fp-ts/lib/pipeable';
@@ -35,6 +36,12 @@ export const readFile = (fileName: string): TE.TaskEither<string, string> =>
     pipe(
         TE.taskify<string, string, NodeJS.ErrnoException, string>(fs.readFile)(fileName, 'utf8'),
         TE.mapLeft((e: NodeJS.ErrnoException): string => `Could not read file ${fileName}: ${e}`)
+    );
+
+export const readFileSync = (fileName: string): IOE.IOEither<string, string> =>
+    IOE.tryCatch(
+        () => fs.readFileSync(fileName, 'utf-8'),
+        (e) => `Could not read ${fileName}: ${e}`
     );
 
 export const writeFile = (fileName: string, content: string): TE.TaskEither<string, string> =>

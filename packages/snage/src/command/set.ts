@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import {DefaultCli, printAndExit} from './common';
-import {loadConfig, resolveChangelogDirectory} from '../config/load';
+import {getConfig} from '../config/load';
 import {parseNotes} from '../note/parser';
 import matter from 'gray-matter';
 import {createParser} from '../query/parser';
@@ -42,12 +42,12 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
             .describe('on', 'Condition for setting values')
             .positional('field', {type: 'string', describe: 'The field name'})
             .positional('value', {array: true, type: 'string', describe: 'The field values (Empty if unset)'}) as any,
-    handler: async ({config: configFile, field: fieldName, value: stringValue, on}) => {
+    handler: async ({field: fieldName, value: stringValue, on}) => {
         return pipe(
-            TE.fromEither(loadConfig(configFile)),
+            TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
-                    parseNotes(config, resolveChangelogDirectory(config, configFile)),
+                    parseNotes(config),
                     TE.mapLeft((errors) => errors.join('\n')),
                     TE.chainEitherK((notes) => updateNotes({fields: config.fields, notes, condition: on, stringValue, fieldName}))
                 )

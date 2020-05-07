@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import {DefaultCli, printAndExit} from './common';
-import {loadConfig, resolveChangelogDirectory} from '../config/load';
+import {getConfig} from '../config/load';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
@@ -15,12 +15,12 @@ export const find: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'find',
     describe: 'Find notes matching <condition>',
     builder: (y) => y.usage('<condition>'),
-    handler: async ({config: configFilePath, _: [, condition]}) => {
+    handler: async ({_: [, condition]}) => {
         return pipe(
-            TE.fromEither(loadConfig(configFilePath)),
+            TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
-                    parseNotes(config, resolveChangelogDirectory(config, configFilePath)),
+                    parseNotes(config),
                     TE.bimap(
                         (errors) => errors.join('\n'),
                         (notes) => [config, notes] as const
