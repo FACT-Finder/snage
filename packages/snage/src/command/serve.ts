@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import express from 'express';
-import {loadConfig, resolveChangelogDirectory} from '../config/load';
+import {getConfig} from '../config/load';
 import {parseNotes} from '../note/parser';
 import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
@@ -31,12 +31,12 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
             .default('port', 8080)
             .describe('port', 'The port snage should listen on'),
     describe: 'Start the snage web server.',
-    handler: async ({config: configFilePath, port}) => {
+    handler: async ({port}) => {
         return pipe(
-            TE.fromEither(loadConfig(configFilePath)),
+            TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
-                    parseNotes(config, resolveChangelogDirectory(config, configFilePath)),
+                    parseNotes(config),
                     TE.bimap(
                         (errors) => errors.join('\n'),
                         (notes) => [config, notes] as [Config, Note[]]

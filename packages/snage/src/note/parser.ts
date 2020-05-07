@@ -11,9 +11,9 @@ import {Note} from './note';
 import {merge, readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
 import {decodeHeader} from './convert';
 
-export const parseNotes = (config: Config, folder: string): TE.TaskEither<string[], Note[]> => {
+export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> => {
     return pipe(
-        readdir(folder),
+        readdir(config.changelogDirectory),
         TE.mapLeft((e) => [e]),
         TE.map((files) => readNotes(config.fields, files)),
         TE.flatten

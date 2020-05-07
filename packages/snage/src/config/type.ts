@@ -4,6 +4,7 @@ import {Note} from '../note/note';
 import * as ORD from 'fp-ts/lib/Ord';
 
 export type Config = {
+    changelogDirectory: string;
     filename: string;
     fields: Field[];
     links: Link[];

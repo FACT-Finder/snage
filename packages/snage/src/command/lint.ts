@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import {loadConfig, resolveChangelogDirectory} from '../config/load';
+import {getConfig} from '../config/load';
 import {parseNotes} from '../note/parser';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
@@ -9,12 +9,12 @@ import {pipe} from 'fp-ts/lib/pipeable';
 export const lint: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'lint',
     describe: 'Lint all change log files.',
-    handler: async ({config: configFilePath}) => {
+    handler: async () => {
         return pipe(
-            TE.fromEither(loadConfig(configFilePath)),
+            TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
-                    parseNotes(config, resolveChangelogDirectory(config, configFilePath)),
+                    parseNotes(config),
                     TE.mapLeft((errors) => errors.join('\n'))
                 )
             ),

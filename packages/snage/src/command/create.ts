@@ -1,28 +1,17 @@
 import yargs from 'yargs';
-import {DefaultCli, DefaultSnageConfig, ConfigParameterName, EnvPrefix} from './common';
+import {DefaultCli} from './common';
 import {validateFileNameSchema} from '../create/validators';
 import {isLeft} from 'fp-ts/lib/Either';
 import {addToYargs, buildLogParameters} from '../create/consoleParamsReader';
 import {generateChangeLogFile} from '../create/changelogFileWriter';
 import {extractFieldsFromFileName} from '../create/genChangelog';
-import {loadConfigOrExit, loadConfig} from '../config/load';
-
-// We cannot use yargs.argv because it will abort the building of the parameters.
-// Sadly we need the config from the parameters to build the arguments.
-// Thus, we manually parse the config parameter.
-const uglyGetConfig = (): string => {
-    const cfgIdx = process.argv.findIndex((arg) => arg === `--${ConfigParameterName}`);
-    if (cfgIdx !== -1 && process.argv.length > cfgIdx + 1) {
-        return process.argv[cfgIdx + 1];
-    }
-    return process.env[`${EnvPrefix}_${ConfigParameterName.toUpperCase()}`] ?? DefaultSnageConfig;
-};
+import {getConfig, getConfigOrExit} from '../config/load';
 
 export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'create',
     describe: 'Create a change log file.',
     builder: (y) => {
-        const config = loadConfig(uglyGetConfig());
+        const config = getConfig();
         if (isLeft(config)) {
             y.epilog(config.left);
             return y;
@@ -34,10 +23,10 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
         }
         return addToYargs(y, config.right) as yargs.Argv<DefaultCli>;
     },
-    handler: async ({config: configFile, ...other}) => {
-        const config = loadConfigOrExit(configFile);
+    handler: async (args) => {
+        const config = getConfigOrExit();
         const fileNames: string[] = extractFieldsFromFileName(config);
-        const fieldValues = await buildLogParameters(config.fields, other);
+        const fieldValues = await buildLogParameters(config.fields, args);
 
         if (isLeft(fieldValues)) {
             console.error(fieldValues.left);

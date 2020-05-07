@@ -3,7 +3,7 @@ import {serve} from './command/serve';
 import {init} from './command/init';
 import {lint} from './command/lint';
 import {create} from './command/create';
-import {DefaultSnageConfig, ConfigParameterName, EnvPrefix} from './command/common';
+import {ConfigParameterName, DefaultSnageConfig, EnvPrefix} from './command/common';
 import {find} from './command/find';
 import {set} from './command/set';
 
