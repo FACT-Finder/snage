@@ -11,11 +11,10 @@ import {pipe} from 'fp-ts/lib/pipeable';
 import {Config} from '../config/type';
 import {Note} from '../note/note';
 
-export const find: yargs.CommandModule<DefaultCli, DefaultCli> = {
-    command: 'find',
-    describe: 'Find notes matching <condition>',
-    builder: (y) => y.usage('<condition>'),
-    handler: async ({_: [, condition]}) => {
+export const find: yargs.CommandModule<DefaultCli, DefaultCli & {condition?: string}> = {
+    command: 'find [condition]',
+    describe: 'Find notes matching [condition]',
+    handler: async ({condition = ''}) => {
         return pipe(
             TE.fromEither(getConfig()),
             TE.chain((config) =>

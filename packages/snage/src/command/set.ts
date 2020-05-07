@@ -99,12 +99,8 @@ export const updateNotes = ({
 };
 
 const filterNotes = (condition: string | undefined, fields: Field[], notes: Note[]): E.Either<string, Note[]> => {
-    if (!condition) {
-        return E.right(notes);
-    }
-
     return pipe(
-        createParser(fields)(condition),
+        createParser(fields)(condition ?? ''),
         E.bimap(
             (e) => `Invalid expression ${condition} ${JSON.stringify(e)}`,
             (expression) => {

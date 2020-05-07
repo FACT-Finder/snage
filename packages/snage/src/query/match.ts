@@ -11,6 +11,9 @@ interface Matcher {
 }
 
 export const createMatcher = (e: Expression, fields: Field[]): Matcher => {
+    if (e === true) {
+        return () => true;
+    }
     if (Array.isArray(e)) {
         const [left, op, right] = e;
         if (op === 'or') {
