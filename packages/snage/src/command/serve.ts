@@ -16,6 +16,8 @@ import * as A from 'fp-ts/lib/Array';
 import {identity} from 'fp-ts/lib/function';
 import {Config} from '../config/type';
 import {convertToApiNote} from '../note/convertapi';
+import {collectDefaultMetrics, register} from 'prom-client';
+import {startRequestTimer, totalNotes} from '../util/prometheus';
 
 interface Response {
     status: number;
@@ -59,7 +61,10 @@ export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]
         next();
     });
 
+    totalNotes.set(notes.length);
+
     app.get('/note', ({query: {query}}, res) => {
+        const endTimer = startRequestTimer('note');
         pipe(
             parser(query),
             E.bimap(
@@ -72,9 +77,18 @@ export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]
             E.map(A.sort(config.standard.sort)),
             E.map(A.map((note) => convertToApiNote(note, config.fields))),
             E.fold(identity, (notes): Response => ({status: 200, body: notes})),
-            ({status, body}) => res.status(status).json(body)
+            ({status, body}) => {
+                res.status(status).json(body);
+                endTimer(status);
+            }
         );
     });
     app.use(express.static(path.join(__dirname, 'ui')));
+    app.get('/metrics', (req, res) => {
+        res.set('Content-Type', register.contentType);
+        res.end(register.metrics());
+    });
     app.listen(port, () => console.log(`Listening on ${port}`));
+
+    collectDefaultMetrics({prefix: 'snage_'});
 };
