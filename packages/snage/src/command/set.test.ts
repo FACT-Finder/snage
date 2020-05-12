@@ -175,13 +175,13 @@ bool: true
                 {name: 'issue', type: 'string'},
                 {name: 'bool', type: 'boolean', list: true},
             ],
-            condition: 'abc = true',
+            condition: 'bool = notfalse',
             fieldName: 'bool',
             notes: [note('one', {issue: '#31', bool: [true]})],
             stringValue: ['true'],
         });
         expect(result).toStrictEqual(
-            left(`Invalid expression abc = true {"expected":["'('","'bool'","'issue'"],"index":{"offset":0,"line":1,"column":1}}`)
+            left(`Invalid expression bool = notfalse {"expected":["'false'","'true'"],"index":{"offset":7,"line":1,"column":8}}`)
         );
     });
 });

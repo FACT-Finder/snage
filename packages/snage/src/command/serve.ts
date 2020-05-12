@@ -64,7 +64,7 @@ export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]
                 (e): Response => ({status: 400, body: e}),
                 (expression) => {
                     const matcher = createMatcher(expression, config.fields);
-                    return notes.filter((note) => matcher(note.values));
+                    return notes.filter(matcher);
                 }
             ),
             E.map(A.sort(config.standard.sort)),

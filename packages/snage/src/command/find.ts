@@ -48,5 +48,5 @@ export const find: yargs.CommandModule<DefaultCli, DefaultCli & {condition?: str
 
 const match = (config: Config, notes: Note[], expression: Expression): Note[] => {
     const matcher = createMatcher(expression, config.fields);
-    return notes.filter((note) => matcher(note.values));
+    return notes.filter(matcher);
 };

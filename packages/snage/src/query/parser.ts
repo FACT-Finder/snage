@@ -2,6 +2,7 @@ import P, {Language, Parser} from 'parsimmon';
 import {expectNever, ffVersionRegex} from '../util/util';
 import {Field} from '../config/type';
 import {Either, left, right} from 'fp-ts/lib/Either';
+import {ImplicitFields} from './implicitfields';
 
 const whitespace = P.regexp(/\s*/m);
 function token(parser): Parser<any> {
@@ -16,7 +17,6 @@ export type SingleExpression = {
     op: Operator;
     value: unknown;
 };
-
 export const StatusOP = '__status__' as const;
 export type Operator = '=' | '<=' | '>=' | '!=' | '<' | '>' | '~' | '~~' | typeof StatusOP;
 
@@ -37,7 +37,7 @@ export interface ParseError {
 }
 export const createParser = (fields: Field[]): ((q: string) => Either<ParseError, Expression>) => {
     const rules: any = {};
-    fields.forEach((field) => {
+    const addField = (field: Field): void => {
         const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> => {
             return P.alt(
                 P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]),
@@ -67,7 +67,10 @@ export const createParser = (fields: Field[]): ((q: string) => Either<ParseError
             default:
                 expectNever(field.type);
         }
-    });
+    };
+
+    fields.forEach(addField);
+    ImplicitFields.forEach(addField);
 
     const expression = P.createLanguage({
         ...rules,
@@ -104,7 +107,7 @@ export const createParser = (fields: Field[]): ((q: string) => Either<ParseError
                 .map(Number)
                 .desc('number'),
 
-        singleExpression: (r) => P.alt(...fields.map(({name}) => r['field' + name])),
+        singleExpression: (r) => P.alt(...Object.keys(rules).map((key) => r[key])),
         orOrAnd: (r) => P.alt(r.or, r.and).thru((x) => whitespace.then(x)),
         orAndExpression: (r) =>
             P.seq(P.alt(r.braceExpression, r.singleExpression), r.orOrAnd, P.alt(r.braceExpression, r.orAndExpression, r.singleExpression)),
