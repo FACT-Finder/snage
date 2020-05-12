@@ -4,10 +4,13 @@ import semver from 'semver';
 import stringsimi from 'string-similarity';
 import {zip} from 'fp-ts/lib/Array';
 import {Field} from '../config/type';
-import {NoteValues} from '../note/note';
+import {Note} from '../note/note';
+import {ContentField, ImplicitFields, SummaryField} from './implicitfields';
+
+export type MatcherNote = Pick<Note, 'content' | 'summary' | 'values'>;
 
 interface Matcher {
-    (n: NoteValues): boolean;
+    (n: MatcherNote): boolean;
 }
 
 export const createMatcher = (e: Expression, fields: Field[]): Matcher => {
@@ -26,19 +29,31 @@ export const createMatcher = (e: Expression, fields: Field[]): Matcher => {
 
 export const createSimpleExpression = (e: SingleExpression, fields: Field[]): Matcher => {
     const {field, op, value} = e;
-    const conf = fields.find((f) => f.name === field);
+    const conf = fields.find((f) => f.name === field) ?? ImplicitFields.find((f) => f.name === field);
     if (!conf) {
         throw new Error('illegal state');
     }
     if (conf.list) {
         return (note) => {
-            if (!note[field]) {
+            const noteValues = valueByName(field, note);
+            if (!noteValues) {
                 return false;
             }
-            return (note[field] as []).some((noteValue) => checkValue(noteValue, value, conf.type, op));
+            return (noteValues as unknown[]).some((noteValue) => checkValue(noteValue, value, conf.type, op));
         };
     }
-    return (note) => checkValue(note[field], value, conf.type, op);
+    return (note) => checkValue(valueByName(field, note), value, conf.type, op);
+};
+
+const valueByName = (name: string, note: MatcherNote): undefined | unknown => {
+    switch (name) {
+        case ContentField.name:
+            return note.content;
+        case SummaryField.name:
+            return note.summary;
+        default:
+            return note.values[name];
+    }
 };
 
 export const checkValue = (noteValue: any, queryValue: any, type: Field['type'], operator: Operator): boolean => {

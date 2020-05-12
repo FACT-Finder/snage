@@ -1,4 +1,4 @@
-import {createMatcher} from './match';
+import {createMatcher, MatcherNote} from './match';
 import {createParser} from './parser';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
@@ -46,7 +46,9 @@ const fields: Field[] = [
 
 describe('match', () => {
     const parser = createParser(fields);
-    const createTest = (expression: string, note: NoteValues, result: boolean) => () => {
+    const createTest = (expression: string, note: NoteValues, result: boolean): (() => void) =>
+        createFullTest(expression, {content: '', summary: '', values: note}, result);
+    const createFullTest = (expression: string, note: MatcherNote, result: boolean) => () => {
         test(`${expression} + ${JSON.stringify(note)} => ${result ? 'true' : 'false'}`, () => {
             pipe(
                 parser(expression),
@@ -61,6 +63,10 @@ describe('match', () => {
     };
 
     [
+        createFullTest('summary = "cool story"', {summary: 'cool story', content: 'irrelevant', values: {}}, true),
+        createFullTest('content ~ "ClassCastException"', {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}}, true),
+        createFullTest('content ~ "ClassCastExcption"', {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}}, false),
+
         createTest('booleanName absent', {booleanName: true}, false),
         createTest('booleanName present', {booleanName: true}, true),
 

@@ -105,7 +105,7 @@ const filterNotes = (condition: string | undefined, fields: Field[], notes: Note
             (e) => `Invalid expression ${condition} ${JSON.stringify(e)}`,
             (expression) => {
                 const matcher = createMatcher(expression, fields);
-                return notes.filter((note) => matcher(note.values));
+                return notes.filter(matcher);
             }
         )
     );
