@@ -2,18 +2,18 @@ import YAML from 'yaml';
 import {YAMLMap} from 'yaml/types';
 
 export class FrontMatterBuilder {
-    content: string;
+    content: string[];
     header: YAMLMap;
-    comments: string;
+    comments: string[];
 
     constructor() {
-        this.content = '';
+        this.content = [];
         this.header = YAML.createNode({}) as YAMLMap;
-        this.comments = '';
+        this.comments = [];
     }
 
     appendYamlComment(comment: string): FrontMatterBuilder {
-        this.comments += comment + '\n';
+        this.comments.push(comment);
         return this;
     }
 
@@ -24,14 +24,14 @@ export class FrontMatterBuilder {
     }
 
     appendContent(content: string): FrontMatterBuilder {
-        this.content += content + '\n';
+        this.content.push(content);
         return this;
     }
 
     build(): string {
         if (this.comments.length > 0) {
-            this.header.comment = this.comments.substr(0, this.comments.length - 1);
+            this.header.comment = this.comments.join('\n');
         }
-        return '---\n' + YAML.stringify(this.header) + '---\n' + this.content.substr(0, this.content.length - 1);
+        return '---\n' + YAML.stringify(this.header) + '---\n' + this.content.join('\n');
     }
 }
