@@ -5,21 +5,21 @@ describe('parseConfig', () => {
     it('throws when filename is missing', () => {
         expect(parseConfig({})).toMatchObject(left({schemaErrors: [{message: "should have required property 'filename'"}]}));
     });
-    it('parses minimal example', () => {
-        const config = {
-            filename: '',
-            fields: [{name: 'version', type: 'semver'}],
-            standard: {
-                query: '',
-                sort: {
-                    field: 'version',
-                    order: 'desc',
-                },
+    const minimal = {
+        filename: '',
+        fields: [{name: 'version', type: 'semver'}],
+        standard: {
+            query: '',
+            sort: {
+                field: 'version',
+                order: 'desc',
             },
-        };
-        expect(parseConfig(config)).toStrictEqual(
+        },
+    };
+    it('parses minimal example', () => {
+        expect(parseConfig(minimal)).toStrictEqual(
             right({
-                ...config,
+                ...minimal,
                 fileTemplateText: '',
                 filterPresets: [],
                 links: [],
@@ -77,5 +77,13 @@ describe('parseConfig', () => {
         expect(parseConfig(config)).toMatchObject(
             left({msg: "error in filename: Referenced field 'bananaBrands' is a list type. Only non list types may be used."})
         );
+    });
+    it('throws on blacklisted fieldname', () => {
+        expect(
+            parseConfig({
+                ...minimal,
+                fields: [{name: 'summary', type: 'boolean'}],
+            })
+        ).toMatchObject(left([{message: 'should match pattern "^((?!summary|content).+)$"'}]));
     });
 });

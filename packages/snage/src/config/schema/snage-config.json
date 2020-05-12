@@ -6,7 +6,10 @@
     "field": {
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
+        "name": {
+          "type": "string",
+          "pattern": "^((?!summary|content).+)$"
+        },
         "type": {
           "type": "string",
           "enum": ["string", "boolean", "date", "number", "semver", "ffversion"]
