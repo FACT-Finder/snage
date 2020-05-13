@@ -88,7 +88,7 @@ export const checkValue = (noteValue: any, queryValue: any, type: Field['type'],
         case '!=':
             return noteValue !== queryValue;
         case '~':
-            return noteValue?.includes(queryValue);
+            return noteValue?.toLowerCase().includes(queryValue?.toLowerCase());
         case '~~':
             if (!noteValue || !queryValue) {
                 return false;
