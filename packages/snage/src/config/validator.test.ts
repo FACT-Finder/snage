@@ -1,9 +1,9 @@
-import {parseConfig} from './parser';
+import {validateConfig} from './validator';
 import {left, right} from 'fp-ts/lib/Either';
 
 describe('parseConfig', () => {
     it('throws when filename is missing', () => {
-        expect(parseConfig({})).toMatchObject(left({schemaErrors: [{message: "should have required property 'filename'"}]}));
+        expect(validateConfig({})).toMatchObject(left({schemaErrors: [{message: "should have required property 'filename'"}]}));
     });
     const minimal = {
         filename: '',
@@ -17,7 +17,7 @@ describe('parseConfig', () => {
         },
     };
     it('parses minimal example', () => {
-        expect(parseConfig(minimal)).toStrictEqual(
+        expect(validateConfig(minimal)).toStrictEqual(
             right({
                 ...minimal,
                 fileTemplateText: '',
@@ -38,7 +38,7 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig(config)).toMatchObject(left({msg: "error in filename: Referenced field 'banana' does not exist."}));
+        expect(validateConfig(config)).toMatchObject(left({msg: "error in filename: Referenced field 'banana' does not exist."}));
     });
     it('fails on optional field in fieldName', () => {
         const config = {
@@ -55,7 +55,7 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig(config)).toMatchObject(
+        expect(validateConfig(config)).toMatchObject(
             left({msg: "error in filename: Referenced field 'likesBanana' is optional. Only required fields may be used."})
         );
     });
@@ -74,16 +74,16 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig(config)).toMatchObject(
+        expect(validateConfig(config)).toMatchObject(
             left({msg: "error in filename: Referenced field 'bananaBrands' is a list type. Only non list types may be used."})
         );
     });
     it('throws on blacklisted fieldname', () => {
         expect(
-            parseConfig({
+            validateConfig({
                 ...minimal,
                 fields: [{name: 'summary', type: 'boolean'}],
             })
-        ).toMatchObject(left([{message: 'should match pattern "^((?!summary|content).+)$"'}]));
+        ).toMatchObject(left({schemaErrors: [{message: 'should match pattern "^((?!summary|content).+)$"'}]}));
     });
 });
