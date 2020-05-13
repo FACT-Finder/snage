@@ -8,7 +8,7 @@ components: [cli]
 
 # Add `snage find <condition>`
 
-You can use `snage find` to find change log files matching the condition.
+You can use `snage find` to find change log notes matching the condition.
 ```bash
 $ snage find "issue = #21"
 changelog/21-bundle.md

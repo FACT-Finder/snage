@@ -14,6 +14,7 @@ import {Note} from '../note/note';
 export const find: yargs.CommandModule<DefaultCli, DefaultCli & {condition?: string}> = {
     command: 'find [condition]',
     describe: 'Find notes matching [condition]',
+    builder: (y) => y.example('$0', 'find').example('$0', 'find "issue = 21"'),
     handler: async ({condition = ''}) => {
         return pipe(
             TE.fromEither(getConfig()),
