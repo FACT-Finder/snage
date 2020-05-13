@@ -24,12 +24,14 @@ interface Response {
 
 export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}> = {
     command: 'serve',
+    describe: 'Start the snage web server.',
     builder: (yargs) =>
         yargs
+            .example('$0', 'serve')
+            .example('$0', 'serve --port 12345')
             .number('port')
             .default('port', 8080)
             .describe('port', 'The port snage should listen on'),
-    describe: 'Start the snage web server.',
     handler: async ({port}) => {
         return pipe(
             TE.fromEither(getConfig()),

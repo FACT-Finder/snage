@@ -8,8 +8,10 @@ import {extractFieldsFromFileName} from '../util/fieldExtractor';
 
 export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'create',
-    describe: 'Create a change log file.',
+    describe: 'Create a note.',
     builder: (y) => {
+        y.example('$0', 'create');
+        y.example('$0', 'create --no-interactive --issue 12345');
         const config = getConfig();
         if (isLeft(config)) {
             y.epilog(config.left);

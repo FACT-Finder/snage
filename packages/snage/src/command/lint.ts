@@ -8,7 +8,8 @@ import {pipe} from 'fp-ts/lib/pipeable';
 
 export const lint: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'lint',
-    describe: 'Lint all change log files.',
+    describe: 'Lint all notes.',
+    builder: (y) => y.example('$0', 'lint'),
     handler: async () => {
         return pipe(
             TE.fromEither(getConfig()),
