@@ -12,12 +12,12 @@ const fieldsWithDefaults = {
     fileTemplateText: '',
 };
 
-export interface ConfigParseError {
+export interface ConfigValidationError {
     msg: string;
     schemaErrors?: ErrorObject[];
 }
 
-export const parseConfig = (config: any): Either<ConfigParseError, RawConfig> => {
+export const validateConfig = (config: any): Either<ConfigValidationError, RawConfig> => {
     const ajv = Ajv();
     const validate = ajv.compile(configSchema);
     const valid = validate(config);

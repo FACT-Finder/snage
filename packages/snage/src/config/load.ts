@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
-import {parseConfig} from './parser';
+import {validateConfig} from './validator';
 import {Config, Field, hasProvided, RawConfig, RawField} from './type';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
@@ -68,7 +68,7 @@ export const loadConfig = (filePath: string): E.Either<string, Config> => {
         ),
         E.chain((parsed: any) =>
             pipe(
-                parseConfig(parsed),
+                validateConfig(parsed),
                 E.mapLeft((e) => `Could not parse ${filePath}:\n ${JSON.stringify(e)}`)
             )
         ),
