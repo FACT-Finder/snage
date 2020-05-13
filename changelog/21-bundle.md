@@ -14,7 +14,7 @@ You can start the server with:
 $ snage serve
 ```
 
-and create a new change log entry with:
+and create a new change log notes with:
 ```bash
 $ snage create
 ```

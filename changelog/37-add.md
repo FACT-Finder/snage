@@ -6,7 +6,7 @@ date: '2020-04-27'
 components:
   - cli
 ---
-# Allow setting change log field values via `snage set`
+# Allow setting change log note values via `snage set`
 
 ```bash
 # Set version to 1.0.0 where version is empty
