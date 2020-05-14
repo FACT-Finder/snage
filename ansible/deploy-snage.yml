@@ -1,0 +1,101 @@
+---
+- hosts: all
+  vars:
+      traefik_dir: /var/traefik/
+      snage_dir: /var/snage/
+      domain: snage.ff-labs.de
+
+  tasks:
+  - name: install required packages
+    apt:
+        pkg:
+            - docker.io
+            - docker-compose
+            - git
+            - python-pip
+        update_cache: true
+        state: present
+
+  - name: enable docker
+    service:
+        name: docker
+        enabled: yes
+        state: started
+
+  - name: pip install --upgrade pip
+    pip:
+        name: pip
+        extra_args: --upgrade
+        state: present
+
+  - name: pip install docker-py
+    pip:
+        name: docker-py
+        state: present
+
+  - name: ensure traefik directory
+    file:
+        path: '{{ traefik_dir }}'
+        state: directory
+
+  - name: touch acme.json
+    file:
+        path: '{{ traefik_dir }}acme.json'
+        mode: 0600
+        state: touch
+        access_time: preserve
+        modification_time: preserve
+
+  - name: create traefik docker network
+    docker_network:
+        name: traefik
+
+  - name: deploy traefik
+    docker_container:
+        name: 'traefik'
+        image: 'traefik:2.2.1'
+        command:
+            - "--entrypoints.http.address=:80"
+            - "--entrypoints.http.http.redirections.entrypoint.to=https"
+            - "--entrypoints.http.http.redirections.entrypoint.scheme=https"
+            - "--entrypoints.https.address=:443"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--accesslog=true"
+            - "--certificatesresolvers.letsencrypt.acme.email=ff-dev@omikron.net"
+            - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme.json"
+            - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=http"
+        state: started
+        restart_policy: always
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - '{{ traefik_dir }}acme.json:/etc/traefik/acme.json'
+            - '/var/run/docker.sock:/var/run/docker.sock'
+        networks_cli_compatible: false
+        networks:
+            - name: traefik
+
+  - name: pull snage git repository
+    git:
+        repo: 'https://github.com/FACT-Finder/snage.git'
+        dest: '{{ snage_dir }}'
+        update: true
+
+  - name: snage serve
+    docker_container:
+        name: 'snage'
+        image: 'snage/snage:{{ SNAGE_VERSION }}'
+        command: serve --config /var/snage/.snage.yaml
+        recreate: yes
+        state: started
+        restart: yes
+        volumes:
+            - '{{ snage_dir }}:/var/snage:ro'
+        labels:
+            'traefik.enable': 'true'
+            'traefik.http.services.snage.loadbalancer.server.port': '8080'
+            'traefik.http.routers.snage.rule': 'Host(`{{ domain }}`)'
+            'traefik.http.routers.snage.entrypoints': 'https'
+            'traefik.http.routers.snage.tls.certresolver': 'letsencrypt'
