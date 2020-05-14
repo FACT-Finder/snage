@@ -29,3 +29,14 @@ jobs:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Deploy snage.ff-labs.de
+        if: github.ref == 'refs/heads/master'
+        run: |
+          export SNAGE_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          export ANSIBLE_PRIVATE_KEY_FILE="$HOME/id_rsa"
+          echo "$SSH_KEY" > $HOME/id_rsa
+          chmod 600 $HOME/id_rsa
+          ansible-playbook -i root@snage.ff-labs.de, -e "SNAGE_VERSION=${SNAGE_VERSION}" ansible/deploy-snage.yml
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          ANSIBLE_HOST_KEY_CHECKING: false
