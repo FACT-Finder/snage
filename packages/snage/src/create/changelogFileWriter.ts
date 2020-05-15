@@ -9,29 +9,17 @@ export interface FileWriteError {
     msg: string;
 }
 
-/**
- * Creates change logs based on the given config in a front matter format. The file type will be MarkDown (.md)
- * and contain a YAML-header with all fields from the config the user provided data for
- *
- * @param fieldValues contains all fieldNames as key with the corresponding value the user provided
- * @param fields used in the config
- * @param fieldsForFileName that should be used to create the file name
- * @param fileNameTemplate that may contains the field placeholders, eg. path/${foo}-${bar}.md
- * @param fileTemplateText represents the placeholder content that is below the front matter header
- *
- * @return an Either with a FileWriteError in left or true in right on success
- */
 export const generateChangeLogFile = (
     fieldValues: Record<string, unknown>,
     fields: Field[],
     fieldsForFileName: Field[],
-    fileNameTemplate: string,
+    note: {basedir: string; file: string},
     fileTemplateText: string
 ): Either<FileWriteError, boolean> => {
     const content: string = generateFrontMatterFileContent(fieldValues, fields, fileTemplateText);
-    const fileName: string = createFileName(fieldValues, fieldsForFileName, fileNameTemplate);
-
-    return createFile(fileName, content);
+    const fileName: string = createFileName(fieldValues, fieldsForFileName, note.file);
+    const filePath = path.join(note.basedir, fileName);
+    return createFile(filePath, content);
 };
 
 export const generateFrontMatterFileContent = (fieldValues: Record<string, unknown>, fields: Field[], fileText: string): string => {
@@ -64,14 +52,14 @@ const ensureDirExists = (fileName: string): Either<FileWriteError, true> => {
     }
 };
 
-const createFile = (fileName: string, content: string): Either<FileWriteError, boolean> => {
-    const createPathResult = ensureDirExists(fileName);
+const createFile = (filePath: string, content: string): Either<FileWriteError, boolean> => {
+    const createPathResult = ensureDirExists(filePath);
     return pipe(
         createPathResult,
         chain(() => {
             try {
-                fs.writeFileSync(fileName, content);
-                console.log('Successfully created file: ' + fileName);
+                fs.writeFileSync(filePath, content);
+                console.log('Successfully created file: ' + filePath);
                 return right(true);
             } catch (error) {
                 return left({msg: `Error while writing file: ${error}`});

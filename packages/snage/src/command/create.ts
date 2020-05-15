@@ -32,7 +32,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
             console.error(fieldValues.left.msg);
             process.exit(1);
         }
-        const fileStatus = generateChangeLogFile(fieldValues.right, config.fields, fieldsForFileName.right, config.filename, config.fileTemplateText);
+        const fileStatus = generateChangeLogFile(fieldValues.right, config.fields, fieldsForFileName.right, config.note, config.fileTemplateText);
         if (isLeft(fileStatus)) {
             console.error(fileStatus.left.msg);
             process.exit(1);

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
-import {validateConfig} from './validator';
+import {parseRawConfig} from './validator';
 import {Config, Field, hasProvided, RawConfig, RawField} from './type';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
@@ -11,6 +11,8 @@ import {getValueProvider} from '../provider/provider';
 import {getOrdering} from '../query/sort';
 import {ConfigParameterName, printAndExit} from '../command/common';
 import {flow} from 'fp-ts/lib/function';
+import {extractFieldsFromFileName} from '../util/fieldExtractor';
+import {validateFileNameSchema} from '../create/validators';
 
 export const getConfig = (): E.Either<string, Config> => E.either.chain(getConfigFile(), loadConfig);
 
@@ -66,23 +68,25 @@ export const loadConfig = (filePath: string): E.Either<string, Config> => {
                 (e) => `Could not parse ${resolvePath}: ${e}`
             )
         ),
-        E.chain((parsed: any) =>
-            pipe(
-                validateConfig(parsed),
-                E.mapLeft((e) => `Could not parse ${filePath}:\n ${JSON.stringify(e)}`)
-            )
-        ),
-        E.chain((rawConfig) => convert(rawConfig, filePath))
+        E.chain((yamlConfig) => parseConfig(resolvePath, yamlConfig))
     );
 };
 
-export const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string, Config> => {
-    const changelogDirectory = resolveChangelogDirectory(rawConfig.filename, configFilePath);
+export const parseConfig = (filePath: string, yamlConfig: any): E.Either<string, Config> =>
+    pipe(
+        parseRawConfig(yamlConfig),
+        E.mapLeft((e) => `Could not parse ${filePath}:\n ${e}`),
+        E.chain((rawConfig) => convert(rawConfig, filePath))
+    );
+
+const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string, Config> => {
+    const basedir = resolveBasedir(rawConfig.note.basedir, configFilePath);
     const sortField = rawConfig.fields.find((f) => f.name === rawConfig.standard.sort.field)!;
     const ordering = getOrdering(sortField, rawConfig.standard.sort.order);
     return pipe(
         A.array.traverse(E.either)(rawConfig.fields, toField),
-        E.map((fields): Config => ({...rawConfig, changelogDirectory, fields, standard: {sort: ordering}}))
+        E.map((fields): Config => ({...rawConfig, note: {basedir: basedir, file: rawConfig.note.file}, fields, standard: {sort: ordering}})),
+        E.chain(validateNoteFileTemplate)
     );
 };
 
@@ -96,8 +100,19 @@ const toField = (field: RawField): E.Either<string, Field> => {
     );
 };
 
-const resolveChangelogDirectory = (changelogFilePath: string, configFilePath: string): string => {
+const resolveBasedir = (basedir: string, configFilePath: string): string => {
     const configDir = path.dirname(configFilePath);
-    const changelogDir = path.dirname(changelogFilePath);
-    return path.isAbsolute(changelogDir) ? changelogDir : path.join(configDir, changelogDir);
+    return path.isAbsolute(basedir) ? basedir : path.join(configDir, basedir);
+};
+
+const validateNoteFileTemplate = (config: Config): E.Either<string, Config> => {
+    return pipe(
+        config,
+        extractFieldsFromFileName,
+        E.chain((fieldsForName) => validateFileNameSchema(config, fieldsForName)),
+        E.bimap(
+            (error) => `error in note.file: ${error}`,
+            () => config
+        )
+    );
 };

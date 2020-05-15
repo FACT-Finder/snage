@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/FACT-Finder/snage/tree/master/packages/server/src/config/schema/v1.json",
+  "title": "Snage Configuration",
+  "definitions": {
+    "field": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^((?!summary|content).+)$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string", "boolean", "date", "number", "semver", "ffversion"]
+        },
+        "enum": { "type": "array", "items": { "type": "string" } },
+        "list": { "type": "boolean" },
+        "optional": { "type": "boolean" },
+        "provided": { "$ref": "#/definitions/provider" },
+        "description": { "type": "string" },
+        "alias": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": ["name", "type"]
+    },
+    "filterPreset": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "filter": { "type": "string" },
+        "sort": { "$ref": "#/definitions/sort" }
+      },
+      "additionalProperties": false,
+      "required": ["name", "filter", "sort"]
+    },
+    "sort": {
+      "type": "object",
+      "properties": {
+        "field": { "type": "string" },
+        "order": { "type": "string", "enum": ["asc", "desc"] }
+      },
+      "additionalProperties": false,
+      "required": ["field", "order"]
+    },
+    "link": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "link": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": ["name", "link"]
+    },
+    "provider": {
+      "type": "object",
+      "properties": {
+        "by": {"type": "string"},
+        "arguments": { "type": "object" }
+      },
+      "additionalItems": false,
+      "required": ["by"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "version": { "type":  "number" },
+    "note": {
+      "type":  "object",
+      "properties": {
+        "basedir": { "type": "string" },
+        "file": {"type":  "string"}
+      },
+      "additionalItems": false,
+      "required": ["basedir", "file"]
+    },
+    "fields": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/field" }
+    },
+    "filterPresets": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/filterPreset" }
+    },
+    "links": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/link" }
+    },
+    "standard": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string" },
+        "sort": { "$ref": "#/definitions/sort" }
+      },
+      "additionalProperties": false,
+      "required": ["query", "sort"]
+    },
+    "fileTemplateText": { "type": "string" }
+  },
+  "additionalProperties": false,
+  "required": ["version", "note", "standard"]
+}

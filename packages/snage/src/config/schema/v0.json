@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/FACT-Finder/snage/tree/master/packages/server/src/config/schema/snage-config.json",
+  "$id": "https://github.com/FACT-Finder/snage/tree/master/packages/server/src/config/schema/v0.json",
   "title": "Snage Configuration",
   "definitions": {
     "field": {

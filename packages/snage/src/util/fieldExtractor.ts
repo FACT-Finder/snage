@@ -4,7 +4,7 @@ import {Either, left, right} from 'fp-ts/lib/Either';
 export const extractFieldsFromFileName = (config: Config): Either<string, Field[]> => {
     const regex = /\${(\w+)}/g;
     const fields: Field[] = [];
-    for (let match = regex.exec(config.filename); match; match = regex.exec(config.filename)) {
+    for (let match = regex.exec(config.note.file); match; match = regex.exec(config.note.file)) {
         const field = getFieldByName(config, match[1]);
         if (field === undefined) {
             return left(`Referenced field '${match[1]}' does not exist.`);

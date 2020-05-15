@@ -4,8 +4,10 @@ import {Note} from '../note/note';
 import * as ORD from 'fp-ts/lib/Ord';
 
 export type Config = {
-    changelogDirectory: string;
-    filename: string;
+    note: {
+        basedir: string;
+        file: string;
+    };
     fields: Field[];
     links: Link[];
     filterPresets: FilterPreset[];
@@ -16,7 +18,10 @@ export type Config = {
 };
 
 export interface RawConfig {
-    filename: string;
+    note: {
+        basedir: string;
+        file: string;
+    };
     fields: RawField[];
     links: Link[];
     filterPresets: FilterPreset[];
