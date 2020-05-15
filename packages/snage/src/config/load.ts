@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import YAML from 'yaml';
+import YAML, {Document} from 'yaml';
 import {parseRawConfig} from './validator';
 import {Config, Field, hasProvided, Link, LinkProvider, RawConfig, RawField} from './type';
 import * as E from 'fp-ts/lib/Either';
+import {Either, left, right} from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import * as O from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
@@ -13,7 +14,6 @@ import {ConfigParameterName, printAndExit} from '../command/common';
 import {flow} from 'fp-ts/lib/function';
 import {extractFieldNamesFromTemplateString, getFields, replacePlaceholders} from '../util/fieldExtractor';
 import {NoteLink} from '../note/note';
-import {Either, left, right} from 'fp-ts/lib/Either';
 
 export const getConfig = (): E.Either<string, Config> => E.either.chain(getConfigFile(), loadConfig);
 
@@ -59,23 +59,29 @@ const parentDirectories = (): string[] => {
 export const loadConfig = (filePath: string): E.Either<string, Config> => {
     const resolvePath = path.resolve(filePath);
     return pipe(
-        E.tryCatch(
-            () => fs.readFileSync(resolvePath, 'utf-8'),
-            (e) => `Could not read ${resolvePath}: ${e}`
-        ),
-        E.chain((raw) =>
-            E.tryCatch(
-                () => YAML.parse(raw),
-                (e) => `Could not parse ${resolvePath}: ${e}`
-            )
-        ),
+        parseYAMLDocument(resolvePath),
         E.chain((yamlConfig) => parseConfig(resolvePath, yamlConfig))
     );
 };
 
-export const parseConfig = (filePath: string, yamlConfig: any): E.Either<string, Config> =>
+export const parseYAMLDocument = (resolvedPath: string): E.Either<string, Document> => {
+    return pipe(
+        E.tryCatch(
+            () => fs.readFileSync(resolvedPath, 'utf-8'),
+            (e) => `Could not read ${resolvedPath}: ${e}`
+        ),
+        E.chain((raw) =>
+            E.tryCatch(
+                () => YAML.parseDocument(raw),
+                (e) => `Could not yaml parse ${resolvedPath}: ${e}`
+            )
+        )
+    );
+};
+
+export const parseConfig = (filePath: string, yamlDoc: Document): E.Either<string, Config> =>
     pipe(
-        parseRawConfig(yamlConfig),
+        parseRawConfig(yamlDoc),
         E.mapLeft((e) => `Could not parse ${filePath}:\n ${e}`),
         E.chain((rawConfig) => convert(rawConfig, filePath))
     );

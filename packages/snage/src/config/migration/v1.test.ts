@@ -1,13 +1,11 @@
 import {migrate} from '../migrate';
+import YAML from 'yaml';
 
 describe('v1 -> v2', () => {
     const migration = migrate(0, 1);
+    const rawDocument = 'filename: "changelog/nested/${issue}.md"';
     it('splits filename into basedir and file', () => {
-        expect(
-            migration({
-                filename: 'changelog/nested/${issue}.md',
-            })
-        ).toMatchObject({
+        expect(migration(YAML.parseDocument(rawDocument)).toJSON()).toMatchObject({
             note: {
                 basedir: 'changelog/nested',
                 file: '${issue}.md',
@@ -15,11 +13,7 @@ describe('v1 -> v2', () => {
         });
     });
     it('sets version to 1', () => {
-        expect(
-            migration({
-                filename: 'changelog/nested/${issue}.md',
-            })
-        ).toMatchObject({
+        expect(migration(YAML.parseDocument(rawDocument)).toJSON()).toMatchObject({
             version: 1,
         });
     });
