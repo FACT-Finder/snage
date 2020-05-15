@@ -1,9 +1,9 @@
-import Ajv, {ErrorObject} from 'ajv';
-import configSchema from './schema/snage-config.json';
-import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
-import {validateFileNameSchema} from '../create/validators';
-import {extractFieldsFromFileName} from '../util/fieldExtractor';
+import Ajv from 'ajv';
+import * as E from 'fp-ts/lib/Either';
 import {RawConfig} from './type';
+import {pipe} from 'fp-ts/lib/pipeable';
+import {currentSchema, currentVersion, getSchema} from './schema';
+import {migrate} from './migrate';
 
 const fieldsWithDefaults = {
     fields: [],
@@ -12,26 +12,27 @@ const fieldsWithDefaults = {
     fileTemplateText: '',
 };
 
-export interface ConfigValidationError {
-    msg: string;
-    schemaErrors?: ErrorObject[];
-}
+export const parseRawConfig = (config: any): E.Either<string, RawConfig> => {
+    return pipe(
+        config,
+        getSchema,
+        E.chain(([version, schema]) =>
+            pipe(
+                validateConfig(schema, config),
+                E.map(migrate(version, currentVersion)),
+                E.chain((migratedConfig) => validateConfig(currentSchema, migratedConfig))
+            )
+        ),
+        E.map((parsedConfig) => ({...fieldsWithDefaults, ...parsedConfig}))
+    );
+};
 
-export const validateConfig = (config: any): Either<ConfigValidationError, RawConfig> => {
+export const validateConfig = (schema: object, config: any): E.Either<string, any> => {
     const ajv = Ajv();
-    const validate = ajv.compile(configSchema);
-    const valid = validate(config);
+    const validateFunction = ajv.compile(schema);
+    const valid = validateFunction(config);
     if (!valid) {
-        return left({msg: 'error in config schema', schemaErrors: validate.errors as ErrorObject[]});
+        return E.left(ajv.errorsText(validateFunction.errors));
     }
-    const fieldsForName = extractFieldsFromFileName(config);
-    if (isLeft(fieldsForName)) {
-        return left({msg: 'error in filename: ' + fieldsForName.left});
-    }
-    const fileNameIsValid = validateFileNameSchema(config, fieldsForName.right);
-    if (isLeft(fileNameIsValid)) {
-        return left({msg: 'error in filename: ' + fileNameIsValid.left});
-    }
-
-    return right({...fieldsWithDefaults, ...config});
+    return E.right(config);
 };

@@ -13,7 +13,7 @@ import {decodeHeader} from './convert';
 
 export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> => {
     return pipe(
-        readdir(config.changelogDirectory),
+        readdir(config.note.basedir),
         TE.mapLeft((e) => [e]),
         TE.map((files) => readNotes(config.fields, files)),
         TE.flatten
