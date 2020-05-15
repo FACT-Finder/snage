@@ -1,4 +1,7 @@
-filename: "changelog/${issue}-${type}.md"
+version: 1
+note:
+    basedir: changelog
+    file: "${issue}-${type}.md"
 fields:
     - name: issue
       type: string
