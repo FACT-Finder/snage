@@ -2,6 +2,7 @@ import {left} from 'fp-ts/lib/Either';
 import {parseConfig} from './load';
 import semver from 'semver';
 import {assertRight} from '../fp/fp';
+import {document} from '../util/yaml';
 
 describe('parseConfig', () => {
     it('fails on not existing fields in fieldName', () => {
@@ -16,7 +17,7 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig('.snage.yaml', config)).toMatchObject(left("error in note.file: Referenced field 'banana' does not exist."));
+        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(left("error in note.file: Referenced field 'banana' does not exist."));
     });
     it('fails on not existing fields in link', () => {
         const config = {
@@ -31,7 +32,7 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig('.snage.yaml', config)).toMatchObject(left("error in links/0: Referenced field 'banana' does not exist."));
+        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(left("error in links/0: Referenced field 'banana' does not exist."));
     });
     it('creates link provider', () => {
         const config = {
@@ -49,7 +50,7 @@ describe('parseConfig', () => {
                 },
             },
         };
-        const conf = parseConfig('.snage.yaml', config);
+        const conf = parseConfig('.snage.yaml', document(config));
         assertRight(conf);
         const links = conf.right.links({version: semver.parse('1.0.0')!, name: 'hello'});
         expect(links).toEqual([{label: 'Name hello 1.0.0', href: 'http://github.com'}]);
@@ -69,7 +70,7 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig('.snage.yaml', config)).toMatchObject(
+        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(
             left("error in note.file: Referenced field 'likesBanana' is optional. Only required fields may be used.")
         );
     });
@@ -88,7 +89,7 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig('.snage.yaml', config)).toMatchObject(
+        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(
             left("error in note.file: Referenced field 'bananaBrands' is a list type. Only non list types may be used.")
         );
     });

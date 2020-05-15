@@ -4,6 +4,7 @@ import {RawConfig} from './type';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {currentSchema, currentVersion, getSchema} from './schema';
 import {migrate} from './migrate';
+import {Document} from 'yaml';
 
 const fieldsWithDefaults = {
     fields: [],
@@ -12,25 +13,31 @@ const fieldsWithDefaults = {
     fileTemplateText: '',
 };
 
-export const parseRawConfig = (config: any): E.Either<string, RawConfig> => {
+export const parseRawConfig = (yamlDoc: Document): E.Either<string, RawConfig> => {
     return pipe(
-        config,
-        getSchema,
-        E.chain(([version, schema]) =>
-            pipe(
-                validateConfig(schema, config),
-                E.map(migrate(version, currentVersion)),
-                E.chain((migratedConfig) => validateConfig(currentSchema, migratedConfig))
-            )
-        ),
-        E.map((parsedConfig) => ({...fieldsWithDefaults, ...parsedConfig}))
+        migrateConfig(yamlDoc),
+        E.map((parsedConfig) => ({...fieldsWithDefaults, ...parsedConfig.toJSON()}))
     );
 };
 
-export const validateConfig = (schema: object, config: any): E.Either<string, any> => {
+export const migrateConfig = (yamlDoc: Document): E.Either<string, Document> => {
+    return pipe(
+        yamlDoc,
+        getSchema,
+        E.chain(([version, schema]) =>
+            pipe(
+                validateConfig(schema, yamlDoc),
+                E.map(migrate(version, currentVersion)),
+                E.chain((migratedYamlDoc) => validateConfig(currentSchema, migratedYamlDoc))
+            )
+        )
+    );
+};
+
+export const validateConfig = (schema: object, config: Document): E.Either<string, Document> => {
     const ajv = Ajv();
     const validateFunction = ajv.compile(schema);
-    const valid = validateFunction(config);
+    const valid = validateFunction(config.toJSON());
     if (!valid) {
         return E.left(ajv.errorsText(validateFunction.errors));
     }

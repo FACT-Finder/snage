@@ -1,9 +1,10 @@
 import path from 'path';
-import {Migration} from '../migrate';
+import {Migration, upsert} from '../migrate';
+import {Pair} from 'yaml/types';
 
-export const migrateV1: Migration = (v0) => {
-    const {filename, ...rest} = v0;
-    const basedir = path.dirname(filename as string);
-    const file = path.basename(filename as string);
-    return {...rest, note: {basedir, file}};
+export const migrateV1: Migration = (config) => {
+    const filename = config.get('filename') as string;
+    const basedir = path.dirname(filename);
+    const file = path.basename(filename);
+    return upsert(config, 'filename', new Pair('note', {basedir, file}));
 };

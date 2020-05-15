@@ -1,9 +1,10 @@
 import {parseRawConfig} from './validator';
 import {left, right} from 'fp-ts/lib/Either';
+import {document} from '../util/yaml';
 
 describe('parseConfig', () => {
     it('throws when filename is missing', () => {
-        expect(parseRawConfig({})).toMatchObject(left("data should have required property 'filename'"));
+        expect(parseRawConfig(document({}))).toMatchObject(left("data should have required property 'filename'"));
     });
     const minimal = {
         version: 1,
@@ -21,7 +22,7 @@ describe('parseConfig', () => {
         },
     };
     it('parses minimal example', () => {
-        expect(parseRawConfig(minimal)).toStrictEqual(
+        expect(parseRawConfig(document(minimal))).toStrictEqual(
             right({
                 ...minimal,
                 fileTemplateText: '',
@@ -32,10 +33,12 @@ describe('parseConfig', () => {
     });
     it('throws on blacklisted fieldname', () => {
         expect(
-            parseRawConfig({
-                ...minimal,
-                fields: [{name: 'summary', type: 'boolean'}],
-            })
+            parseRawConfig(
+                document({
+                    ...minimal,
+                    fields: [{name: 'summary', type: 'boolean'}],
+                })
+            )
         ).toMatchObject(left('data.fields[0].name should match pattern "^((?!summary|content).+)$"'));
     });
 });
