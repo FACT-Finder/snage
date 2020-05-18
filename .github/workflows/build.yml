@@ -17,7 +17,27 @@ jobs:
       - run: yarn lerna run build
         env:
           BUILD_VERSION: ${{ env.VERSION }}
-      - name: Publish to Docker and NPM
+      - name: Publish master as snage/snage:unstable to Docker
+        if: github.ref == 'refs/heads/master'
+        run: |
+          echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > $HOME/.npmrc
+          docker build -t snage/snage:unstable packages/snage
+          docker push     snage/snage:unstable
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+      - name: Deploy snage.ff-labs.de
+        if: github.ref == 'refs/heads/master'
+        run: |
+          export ANSIBLE_PRIVATE_KEY_FILE="$HOME/id_rsa"
+          echo "$SSH_KEY" > $HOME/id_rsa
+          chmod 600 $HOME/id_rsa
+          ansible-playbook -i root@snage.ff-labs.de, -e "SNAGE_VERSION=unstable" ansible/deploy-snage.yml
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          ANSIBLE_HOST_KEY_CHECKING: false
+      - name: Publish Release to Docker and NPM
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
@@ -29,14 +49,3 @@ jobs:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Deploy snage.ff-labs.de
-        if: github.ref == 'refs/heads/master'
-        run: |
-          export SNAGE_VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
-          export ANSIBLE_PRIVATE_KEY_FILE="$HOME/id_rsa"
-          echo "$SSH_KEY" > $HOME/id_rsa
-          chmod 600 $HOME/id_rsa
-          ansible-playbook -i root@snage.ff-labs.de, -e "SNAGE_VERSION=${SNAGE_VERSION}" ansible/deploy-snage.yml
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          ANSIBLE_HOST_KEY_CHECKING: false

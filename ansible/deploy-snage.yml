@@ -88,6 +88,7 @@
         name: 'snage'
         image: 'snage/snage:{{ SNAGE_VERSION }}'
         command: serve --config /var/snage/.snage.yaml
+        pull: yes
         recreate: yes
         state: started
         restart: yes
