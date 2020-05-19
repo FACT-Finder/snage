@@ -6,7 +6,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {Config, Field, FieldValue, hasProvider, ProvidedField} from '../config/type';
+import {Config, Field, FieldValue, hasProvider, ProvidedField, LinkProvider} from '../config/type';
 import {Note} from './note';
 import {merge, readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
 import {decodeHeader} from './convert';
@@ -16,26 +16,38 @@ export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> => {
     return pipe(
         readdir(config.note.basedir),
         TE.mapLeft((e) => [e]),
-        TE.map((files) => readNotes(config.fields, files)),
-        TE.flatten
+        TE.chain((files) => readNotes(config.fields, config.links, files))
     );
 };
 
-const readNotes = (fields: Field[], files: string[]): TE.TaskEither<string[], Note[]> => {
+const readNotes = (fields: Field[], linkProvider: LinkProvider, files: string[]): TE.TaskEither<string[], Note[]> => {
     return pipe(
-        A.array.traverse(T.task)(files, (file) => readNote(fields, file)),
+        A.array.traverse(T.task)(files, (file) => readNote(fields, linkProvider, file)),
         T.map(sequenceKeepAllLefts),
         TE.mapLeft(A.flatten)
     );
 };
 
-export const readNote = (fields: Field[], fileName: string): TE.TaskEither<string[], Note> => {
+export const readNote = (fields: Field[], linkProvider: LinkProvider, fileName: string): TE.TaskEither<string[], Note> => {
     return pipe(
         readFile(fileName),
         TE.mapLeft((e) => [e]),
-        TE.chain((fileContent) => parseNote(fields, parseRawNote(fileContent, fileName)))
+        TE.map((content) => parseRawNote(content, fileName)),
+        TE.chain(parseNote(fields, linkProvider)),
+        TE.mapLeft((errors) => errors.map((error) => `${fileName}: ${error}`))
     );
 };
+
+export const parseNote = (fields: Field[], linkProvider: LinkProvider) => (rawNote: RawNote): TE.TaskEither<string[], Note> => {
+    return pipe(
+        parseNoteValues(fields, rawNote),
+        TE.chain(runProviders(fields)),
+        TE.chainEitherK(verifyRequiredFields(fields)),
+        TE.map(fillLinks(linkProvider))
+    );
+};
+
+const fillLinks = (linkProvider: LinkProvider) => (note: Note) => ({...note, links: linkProvider(note.values)});
 
 export interface RawNote {
     file: string;
@@ -55,29 +67,26 @@ export const parseRawNote = (note: string, fileName: string): RawNote => {
     return {file: fileName, header: meta.data, summary: head, content: rest.join('\n\n')};
 };
 
-export const parseNote = (fields: Field[], rawNote: RawNote): TE.TaskEither<string[], Note> => {
+export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEither<string[], Note> => {
     return pipe(
         decodeHeader(fields, rawNote.header),
         TE.fromEither,
-        TE.chain(runProviders(rawNote.file, fields)),
-        TE.chainEitherK(verifyRequiredFields(fields)),
         TE.mapLeft(A.map((error) => `${rawNote.file}: ${error}`)),
         TE.map((values) => ({
             values: values,
             id: rawNote.file,
             file: rawNote.file,
+            links: [],
             content: rawNote.content,
             summary: rawNote.summary.replace(/^\s*#\s*/, ''),
         }))
     );
 };
 
-const runProviders = (noteFile: string, fields: Field[]) => (
-    values: Record<string, FieldValue>
-): TE.TaskEither<string[], Record<string, FieldValue>> => {
+const runProviders = (fields: Field[]) => (note: Note): TE.TaskEither<string[], Note> => {
     const runProvider = (field: ProvidedField): TE.TaskEither<string, [string, FieldValue | undefined]> => {
         return pipe(
-            field.provider(noteFile),
+            field.provider(note.file),
             TE.map((value) => [field.name, value])
         );
     };
@@ -85,21 +94,21 @@ const runProviders = (noteFile: string, fields: Field[]) => (
     return pipe(
         fields,
         A.filter(hasProvider),
-        A.filter((f) => O.isNone(R.lookup(f.name, values))),
+        A.filter((f) => O.isNone(R.lookup(f.name, note.values))),
         (fields) => A.array.traverse(TE.taskEither)(fields, runProvider),
         TE.map(A.filter((pair): pair is [string, FieldValue] => typeof pair[1] !== 'undefined')),
-        TE.map((provided) => merge(values, toRecord(provided))),
+        TE.map((provided) => ({...note, values: merge(note.values, toRecord(provided))})),
         TE.mapLeft((error) => [error])
     );
 };
 
-const verifyRequiredFields = (fields: Field[]) => (values: Record<string, any>): E.Either<string[], Record<string, any>> => {
+const verifyRequiredFields = (fields: Field[]) => (note: Note): E.Either<string[], Note> => {
     const missingRequiredFields = pipe(
         fields,
         A.filter((f) => !f.optional),
-        A.filter((f) => O.isNone(R.lookup(f.name, values)))
+        A.filter((f) => O.isNone(R.lookup(f.name, note.values)))
     );
     return A.isEmpty(missingRequiredFields)
-        ? E.right(values)
+        ? E.right(note)
         : E.left(A.array.map(missingRequiredFields, (f) => `Missing value for required field ${f.name}`));
 };

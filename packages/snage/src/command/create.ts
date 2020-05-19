@@ -4,7 +4,7 @@ import {isLeft} from 'fp-ts/lib/Either';
 import {addToYargs, handleFieldValues} from '../create/consoleParamsReader';
 import {generateChangeLogFile} from '../create/changelogFileWriter';
 import {getConfig, getConfigOrExit} from '../config/load';
-import {extractFieldsFromFileName} from '../util/fieldExtractor';
+import {extractFieldNamesFromTemplateString, getFields} from '../util/fieldExtractor';
 
 export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'create',
@@ -21,7 +21,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     },
     handler: async (args) => {
         const config = getConfigOrExit();
-        const fieldsForFileName = extractFieldsFromFileName(config);
+        const fieldsForFileName = getFields(config.fields, extractFieldNamesFromTemplateString(config.note.file));
         if (isLeft(fieldsForFileName)) {
             console.error(fieldsForFileName.left);
             process.exit(1);

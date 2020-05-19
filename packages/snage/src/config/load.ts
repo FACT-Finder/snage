@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
 import {parseRawConfig} from './validator';
-import {Config, Field, hasProvided, RawConfig, RawField} from './type';
+import {Config, Field, hasProvided, Link, LinkProvider, RawConfig, RawField} from './type';
 import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import * as O from 'fp-ts/lib/Option';
@@ -11,8 +11,9 @@ import {getValueProvider} from '../provider/provider';
 import {getOrdering} from '../query/sort';
 import {ConfigParameterName, printAndExit} from '../command/common';
 import {flow} from 'fp-ts/lib/function';
-import {extractFieldsFromFileName} from '../util/fieldExtractor';
-import {validateFileNameSchema} from '../create/validators';
+import {extractFieldNamesFromTemplateString, getFields, replacePlaceholders} from '../util/fieldExtractor';
+import {NoteLink} from '../note/note';
+import {Either, left, right} from 'fp-ts/lib/Either';
 
 export const getConfig = (): E.Either<string, Config> => E.either.chain(getConfigFile(), loadConfig);
 
@@ -85,10 +86,44 @@ const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string,
     const ordering = getOrdering(sortField, rawConfig.standard.sort.order);
     return pipe(
         A.array.traverse(E.either)(rawConfig.fields, toField),
-        E.map((fields): Config => ({...rawConfig, note: {basedir: basedir, file: rawConfig.note.file}, fields, standard: {sort: ordering}})),
+        E.chain((fields) =>
+            E.either.map(
+                createLinkProvider(fields, rawConfig.links),
+                (linkProvider): Config => ({
+                    ...rawConfig,
+                    note: {basedir: basedir, file: rawConfig.note.file},
+                    links: linkProvider,
+                    fields,
+                    standard: {sort: ordering},
+                })
+            )
+        ),
         E.chain(validateNoteFileTemplate)
     );
 };
+
+const createLinkProvider = (fields: Field[], links: Link[]): E.Either<string, LinkProvider> =>
+    E.either.map(A.array.traverseWithIndex(E.either)(links, createSingleLinkProvider(fields)), mergeProviders);
+
+const createSingleLinkProvider = (fields: Field[]) => (index: number, link: Link): Either<string, LinkProvider> => {
+    const requiredFields = extractFieldNamesFromTemplateString(link.name).concat(extractFieldNamesFromTemplateString(link.link));
+    return pipe(
+        getFields(fields, requiredFields),
+        E.chain(fieldsNot('list')),
+        E.bimap(
+            (error) => `error in links/${index}: ${error}`,
+            (fields): LinkProvider => (values) => {
+                if (fields.every((field) => values[field.name] !== undefined)) {
+                    return [{href: replacePlaceholders(values, fields, link.link), label: replacePlaceholders(values, fields, link.name)}];
+                }
+                return [];
+            }
+        )
+    );
+};
+
+const mergeProviders = (providers: LinkProvider[]): LinkProvider => (values) =>
+    providers.reduce((all: NoteLink[], func: LinkProvider) => [...all, ...func(values)], []);
 
 const toField = (field: RawField): E.Either<string, Field> => {
     if (!hasProvided(field)) {
@@ -107,12 +142,22 @@ const resolveBasedir = (basedir: string, configFilePath: string): string => {
 
 const validateNoteFileTemplate = (config: Config): E.Either<string, Config> => {
     return pipe(
-        config,
-        extractFieldsFromFileName,
-        E.chain((fieldsForName) => validateFileNameSchema(config, fieldsForName)),
+        getFields(config.fields, extractFieldNamesFromTemplateString(config.note.file)),
+        E.chain(fieldsNot('optional', 'list')),
         E.bimap(
             (error) => `error in note.file: ${error}`,
             () => config
         )
     );
+};
+export const fieldsNot = (...checks: Array<'optional' | 'list'>) => (fields: Field[]): Either<string, Field[]> => {
+    for (const field of fields) {
+        if (checks.includes('optional') && field.optional) {
+            return left(`Referenced field '${field.name}' is optional. Only required fields may be used.`);
+        }
+        if (checks.includes('list') && field.list) {
+            return left(`Referenced field '${field.name}' is a list type. Only non list types may be used.`);
+        }
+    }
+    return right(fields);
 };

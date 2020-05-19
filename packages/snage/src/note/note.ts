@@ -5,7 +5,12 @@ export interface Note {
     file: string;
     content: string;
     summary: string;
+    links: NoteLink[];
 
     values: NoteValues;
+}
+export interface NoteLink {
+    label: string;
+    href: string;
 }
 export type NoteValues = Record<string, FieldValue>;

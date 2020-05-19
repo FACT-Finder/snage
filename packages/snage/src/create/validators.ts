@@ -97,15 +97,3 @@ export const dateSetValidator = (value: any, isOptional?: boolean): boolean | st
 const hasNoDuplicate = (values: any[]): boolean => {
     return new Set(values).size === values.length;
 };
-
-export const validateFileNameSchema = (config: Config, fields: Field[]): Either<string, boolean> => {
-    for (const field of fields) {
-        if (field.optional) {
-            return left(`Referenced field '${field.name}' is optional. Only required fields may be used.`);
-        }
-        if (field.list) {
-            return left(`Referenced field '${field.name}' is a list type. Only non list types may be used.`);
-        }
-    }
-    return right(true);
-};

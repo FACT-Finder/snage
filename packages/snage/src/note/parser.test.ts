@@ -33,13 +33,19 @@ describe('parseNote', () => {
             summary: 'cool summary line',
             content: 'body text\n\n**test**\n',
             file: 'filename',
+            links: [
+                {
+                    href: 'Hello',
+                    label: 'World',
+                },
+            ],
             values: {
                 issue: 'xyz',
                 type: 'bugfix',
                 date: parseISO('2019-03-03').getTime(),
             },
         };
-        expect(await parseNote(fields, rawNote)()).toStrictEqual(right(expected));
+        expect(await parseNote(fields, () => [{href: 'Hello', label: 'World'}])(rawNote)()).toStrictEqual(right(expected));
     });
     it('returns all errors', async () => {
         const noIssue: RawNote = {
@@ -51,7 +57,7 @@ describe('parseNote', () => {
             summary: '# test',
             content: '',
         };
-        expect(await parseNote(fields, noIssue)()).toStrictEqual(
+        expect(await parseNote(fields, () => [])(noIssue)()).toStrictEqual(
             left(['filename: Invalid value "bugfixi" supplied to : note/type: "bugfix" | "feature" | "refactoring"'])
         );
     });
@@ -64,8 +70,8 @@ describe('parseNote', () => {
             summary: '# test',
             content: '',
         };
-        expect(await parseNote(fields, noIssue)()).toStrictEqual(
-            left(['filename: Missing value for required field issue', 'filename: Missing value for required field type'])
+        expect(await parseNote(fields, () => [])(noIssue)()).toStrictEqual(
+            left(['Missing value for required field issue', 'Missing value for required field type'])
         );
     });
     it('runs providers', async () => {
@@ -86,7 +92,7 @@ describe('parseNote', () => {
             summary: '# test',
             content: '',
         };
-        expect(await parseNote(fields, noIssue)()).toMatchObject(
+        expect(await parseNote(fields, () => [])(noIssue)()).toMatchObject(
             right({
                 values: {
                     version: semver.parse('0.0.2'),

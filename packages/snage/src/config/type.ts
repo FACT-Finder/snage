@@ -1,6 +1,6 @@
 import semver from 'semver';
 import {ValueProvider} from '../provider/provider';
-import {Note} from '../note/note';
+import {Note, NoteLink, NoteValues} from '../note/note';
 import * as ORD from 'fp-ts/lib/Ord';
 
 export type Config = {
@@ -9,13 +9,17 @@ export type Config = {
         file: string;
     };
     fields: Field[];
-    links: Link[];
+    links: LinkProvider;
     filterPresets: FilterPreset[];
     standard: {
         sort: ORD.Ord<Note>;
     };
     fileTemplateText: string;
 };
+
+export interface LinkProvider {
+    (values: NoteValues): NoteLink[];
+}
 
 export interface RawConfig {
     note: {
