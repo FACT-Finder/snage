@@ -10,10 +10,10 @@ import {parseISO, format} from 'date-fns';
 describe('sort', () => {
     describe('getOrdering', () => {
         const notes: Note[] = [
-            {content: '', file: '', id: '', summary: '', values: {number: 3, list: [1, 2]}},
-            {content: '', file: '', id: '', summary: '', values: {number: 5, list: [2]}},
-            {content: '', file: '', id: '', summary: '', values: {number: 1, list: [0]}},
-            {content: '', file: '', id: '', summary: '', values: {}},
+            {content: '', file: '', id: '', summary: '', links: [], values: {number: 3, list: [1, 2]}},
+            {content: '', file: '', id: '', summary: '', links: [], values: {number: 5, list: [2]}},
+            {content: '', file: '', id: '', summary: '', links: [], values: {number: 1, list: [0]}},
+            {content: '', file: '', id: '', summary: '', links: [], values: {}},
         ];
 
         test('number:desc', () => {

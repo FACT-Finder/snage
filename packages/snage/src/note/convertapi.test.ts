@@ -9,6 +9,12 @@ describe('convert', () => {
         id: '',
         file: '',
         summary: '',
+        links: [
+            {
+                label: 'Github',
+                href: 'http://github.com',
+            },
+        ],
         values: {
             version: semver.parse('1.0.5')!,
             ffversion: '1.0.5-15',
@@ -31,6 +37,12 @@ describe('convert', () => {
             content: '',
             id: '',
             summary: '',
+            links: [
+                {
+                    label: 'Github',
+                    href: 'http://github.com',
+                },
+            ],
             values: {
                 version: '1.0.5',
                 ffversion: '1.0.5-15',

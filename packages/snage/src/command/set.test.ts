@@ -3,7 +3,7 @@ import {Note, NoteValues} from '../note/note';
 import {left, right} from 'fp-ts/lib/Either';
 
 const note = (id: string, values: NoteValues): Note => {
-    return {file: id, content: '', summary: id, id, values};
+    return {file: id, content: '', summary: id, id, values, links: []};
 };
 
 describe('updateNotes', () => {

@@ -74,6 +74,7 @@ describe('encodeHeader', () => {
         id: '',
         file: '',
         summary: '',
+        links: [],
         values: {
             version: semver.parse('1.0.5')!,
             ffversion: '1.0.5-15',

@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import axios from 'axios';
-import {Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, makeStyles} from '@material-ui/core';
+import {Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, makeStyles, Link} from '@material-ui/core';
 
 const App: React.FC = () => {
     const [entries, setEntries] = React.useState<ApiNote[]>([]);
@@ -40,7 +40,7 @@ const Search: React.FC<{setEntries: (e: ApiNote[]) => void}> = ({setEntries}) =>
     );
 };
 
-const Entry = React.memo(({entry: {content, summary, values}}: {entry: ApiNote}) => {
+const Entry = React.memo(({entry: {content, summary, values, links}}: {entry: ApiNote}) => {
     const classes = useStyles();
     return (
         <ExpansionPanel>
@@ -50,7 +50,12 @@ const Entry = React.memo(({entry: {content, summary, values}}: {entry: ApiNote})
                         <ReactMarkdown source={summary} />
                     </Typography>
                     {Object.entries(values).map(([key, value]) => (
-                        <Chip key={key} style={{marginRight: 10}} label={key + ': ' + value} />
+                        <Chip size="small" key={key} style={{marginRight: 10}} label={key + ': ' + value} />
+                    ))}
+                    {links.map(({href, label}) => (
+                        <Link key={label + href} href={href} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()}>
+                            {label}
+                        </Link>
                     ))}
                 </div>
             </ExpansionPanelSummary>
