@@ -2,7 +2,7 @@
 issue: '#27'
 type: change
 audience: developer
-date: '2020-04-24'
+date: 2020-04-24
 components:
   - server
 version: 0.0.5

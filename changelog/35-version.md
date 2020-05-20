@@ -1,6 +1,6 @@
 ---
 issue: '#35'
-date: '2020-04-24'
+date: 2020-04-24
 audience: user
 type: fix
 components:

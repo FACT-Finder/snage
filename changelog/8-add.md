@@ -1,6 +1,6 @@
 ---
 issue: '#8'
-date: '2020-05-04'
+date: 2020-05-04
 type: add
 audience: user
 components:
