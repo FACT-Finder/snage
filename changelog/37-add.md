@@ -2,7 +2,7 @@
 issue: '#37'
 type: add
 audience: user
-date: '2020-04-27'
+date: 2020-04-27
 components:
   - cli
 ---

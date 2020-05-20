@@ -1,6 +1,6 @@
 ---
 issue: '#21'
-date: '2020-04-23'
+date: 2020-04-23
 audience: developer
 type: change
 components:

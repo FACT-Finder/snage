@@ -2,7 +2,7 @@
 issue: '#60'
 type: change
 audience: user
-date: '2020-05-07'
+date: 2020-05-07
 components:
   - cli
 ---
