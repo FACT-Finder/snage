@@ -1,5 +1,5 @@
 ---
-issue: "#74"
+issue: 74
 type: add
 audience: user
 date: 2020-05-15

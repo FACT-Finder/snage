@@ -1,5 +1,5 @@
 ---
-issue: '#60'
+issue: 60
 type: change
 audience: user
 date: 2020-05-07

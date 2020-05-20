@@ -1,5 +1,5 @@
 ---
-issue: '#19'
+issue: 19
 type: remove
 audience: user
 date: 2020-04-24
