@@ -1,5 +1,5 @@
 ---
-issue: '#29'
+issue: 29
 date: 2020-04-24
 audience: user
 type: fix

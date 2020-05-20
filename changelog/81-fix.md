@@ -1,5 +1,5 @@
 ---
-issue: "81"
+issue: 81
 type: fix
 audience: user
 date: 2020-05-20

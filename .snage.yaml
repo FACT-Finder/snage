@@ -4,7 +4,7 @@ note:
     file: "${issue}-${type}.md"
 fields:
     - name: issue
-      type: string
+      type: number
     - name: type
       type: string
       enum: [add, change, deprecate, remove, fix, security]
@@ -26,7 +26,9 @@ fields:
       enum: [server, ui, cli, api, config]
       optional: true
 filterPresets: []
-links: []
+links:
+  - name: "GitHub#${issue}"
+    link: "https://github.com/FACT-Finder/snage/issues/${issue}"
 standard:
     query: ""
     sort:
