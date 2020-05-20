@@ -10,6 +10,7 @@ import {Config, Field, FieldValue, hasProvider, ProvidedField} from '../config/t
 import {Note} from './note';
 import {merge, readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
 import {decodeHeader} from './convert';
+import YAML from 'yaml';
 
 export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> => {
     return pipe(
@@ -43,8 +44,13 @@ export interface RawNote {
     content: string;
 }
 
-const parseRawNote = (note: string, fileName: string): RawNote => {
-    const {content, ...meta} = matter(note);
+export const parseRawNote = (note: string, fileName: string): RawNote => {
+    const {content, ...meta} = matter(note, {
+        language: 'yaml',
+        engines: {
+            yaml: YAML.parse,
+        },
+    });
     const [head, ...rest] = content.split('\n\n');
     return {file: fileName, header: meta.data, summary: head, content: rest.join('\n\n')};
 };

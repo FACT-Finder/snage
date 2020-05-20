@@ -1,4 +1,4 @@
-import {parseNote, RawNote} from './parser';
+import {parseNote, parseRawNote, RawNote} from './parser';
 import {left, right} from 'fp-ts/lib/Either';
 import {Field, RawProvidedField} from '../config/type';
 import * as semver from 'semver';
@@ -93,5 +93,24 @@ describe('parseNote', () => {
                 },
             })
         );
+    });
+});
+describe('parseRawNote', () => {
+    it('parses date strings as strings', () => {
+        const note = `---
+date: 2020-05-20
+---
+# summary
+
+content
+`;
+        expect(parseRawNote(note, 'file')).toStrictEqual({
+            file: 'file',
+            header: {
+                date: '2020-05-20',
+            },
+            summary: '# summary',
+            content: 'content\n',
+        });
     });
 });
