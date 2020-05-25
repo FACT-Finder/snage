@@ -5,7 +5,7 @@ import {requiredFFVersionRegex} from '../util/util';
 import semver from 'semver';
 import * as E from 'fp-ts/lib/Either';
 import * as R from 'fp-ts/lib/Record';
-import * as datefns from 'date-fns';
+import {LocalDate} from '@js-joda/core';
 import {toRecord} from '../fp/fp';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {PathReporter} from 'io-ts/lib/PathReporter';
@@ -86,15 +86,18 @@ const semverType = new t.Type<semver.SemVer, string, unknown>(
     (a) => a.format()
 );
 
-const dateType = new t.Type<number, string, unknown>(
+const dateType = new t.Type<LocalDate, string, unknown>(
     'YYYY-MM-DD',
-    (u): u is number => typeof u === 'number',
+    (u): u is LocalDate => u instanceof LocalDate,
     (u, c) =>
         E.either.chain(t.string.validate(u, c), (s) => {
-            const parsed: Date = datefns.parseISO(s);
-            return datefns.isValid(parsed) ? t.success(parsed.getTime()) : t.failure(u, c);
+            try {
+                return t.success(LocalDate.parse(s));
+            } catch (e) {
+                return t.failure(u, c);
+            }
         }),
-    (date) => datefns.format(date, 'yyyy-MM-dd')
+    (date) => date.toString()
 );
 
 const ffversionType = new t.Type<string, string, unknown>(
@@ -144,7 +147,7 @@ interface ATypeMapping {
     semver: semver.SemVer;
     ffversion: string;
     string: string;
-    date: number;
+    date: LocalDate;
     boolean: boolean;
 }
 

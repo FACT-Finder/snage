@@ -7,6 +7,8 @@ import * as ORD from 'fp-ts/lib/Ord';
 import semver from 'semver';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
 import {pipe} from 'fp-ts/lib/pipeable';
+import {LocalDate} from '@js-joda/core';
+import {sign} from 'fp-ts/lib/Ordering';
 
 export const getOrdering = (field: Field, order: 'asc' | 'desc'): ORD.Ord<Note> => {
     return pipe(
@@ -30,6 +32,7 @@ export const getFieldOrdering = (type: FieldType): ORD.Ord<any> => {
         case 'boolean':
             return ORD.ordBoolean;
         case 'date':
+            return dateOrd;
         case 'number':
             return ORD.ordNumber;
         case 'semver':
@@ -40,6 +43,8 @@ export const getFieldOrdering = (type: FieldType): ORD.Ord<any> => {
             return expectNever(type);
     }
 };
+
+export const dateOrd: ORD.Ord<LocalDate> = ORD.fromCompare<LocalDate>((x, y) => sign(x.compareTo(y)));
 
 const semverOrd: ORD.Ord<semver.SemVer> = ORD.fromCompare(semver.compare);
 

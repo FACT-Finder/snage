@@ -3,10 +3,10 @@ import {left, right} from 'fp-ts/lib/Either';
 import {Field, RawProvidedField} from '../config/type';
 import * as semver from 'semver';
 import {Note} from './note';
-import parseISO from 'date-fns/parseISO';
 import * as git from '../provider/git-version';
 import {assertRight} from '../fp/fp';
 import path from 'path';
+import {LocalDate} from '@js-joda/core';
 
 describe('parseNote', () => {
     const fields: Field[] = [
@@ -42,7 +42,7 @@ describe('parseNote', () => {
             values: {
                 issue: 'xyz',
                 type: 'bugfix',
-                date: parseISO('2019-03-03').getTime(),
+                date: LocalDate.parse('2019-03-03'),
             },
         };
         expect(await parseNote(fields, () => [{href: 'Hello', label: 'World'}])(rawNote)()).toStrictEqual(right(expected));

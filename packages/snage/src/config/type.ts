@@ -2,6 +2,7 @@ import semver from 'semver';
 import {ValueProvider} from '../provider/provider';
 import {Note, NoteLink, NoteValues} from '../note/note';
 import * as ORD from 'fp-ts/lib/Ord';
+import {LocalDate} from '@js-joda/core';
 
 export type Config = {
     note: {
@@ -79,6 +80,6 @@ export interface Provider {
     arguments?: Record<string, unknown>;
 }
 
-export type PrimitiveFieldValue = string | number | boolean | semver.SemVer;
+export type PrimitiveFieldValue = string | number | boolean | semver.SemVer | LocalDate;
 export type ArrayFieldValue = PrimitiveFieldValue[];
 export type FieldValue = PrimitiveFieldValue | ArrayFieldValue;

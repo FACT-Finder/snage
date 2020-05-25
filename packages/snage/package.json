@@ -21,6 +21,7 @@
   ],
   "bin": "build/snage.js",
   "dependencies": {
+    "@js-joda/core": "^2.0.0",
     "@types/date-fns": "^2.6.0",
     "@types/yaml": "^1.2.0",
     "ajv": "^6.12.2",

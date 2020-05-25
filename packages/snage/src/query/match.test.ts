@@ -5,6 +5,7 @@ import {Field} from '../config/type';
 import {NoteValues} from '../note/note';
 import {fold} from 'fp-ts/lib/Either';
 import {pipe} from 'fp-ts/lib/pipeable';
+import {LocalDate} from '@js-joda/core';
 
 const fields: Field[] = [
     {
@@ -147,10 +148,10 @@ describe('match', () => {
         createTest('ffVersion > 2', {ffVersion: '2.0.0-1'}, false),
         createTest('ffVersion < 1', {ffVersion: '2.0.0-1'}, false),
 
-        createTest('dateName <= 2019-01-31', {dateName: Date.parse('2019-01-31')}, true),
-        createTest('dateName < 2019-01-31', {dateName: Date.parse('2019-01-31')}, false),
-        createTest('dateName = 2019-01-31', {dateName: Date.parse('2019-01-31')}, true),
-        createTest('dateName = 2019-01-31', {dateName: Date.parse('2019-01-30')}, false),
+        createTest('dateName <= 2019-01-31', {dateName: LocalDate.parse('2019-01-31')}, true),
+        createTest('dateName < 2019-01-31', {dateName: LocalDate.parse('2019-01-31')}, false),
+        createTest('dateName = 2019-01-31', {dateName: LocalDate.parse('2019-01-31')}, true),
+        createTest('dateName = 2019-01-31', {dateName: LocalDate.parse('2019-01-30')}, false),
 
         createTest('booleanName = true or (booleanName = false and stringName = "test")', {booleanName: true, stringName: 'nah'}, true),
         createTest('booleanName = true or (booleanName = false and stringName = "test")', {booleanName: false, stringName: 'nah'}, false),
