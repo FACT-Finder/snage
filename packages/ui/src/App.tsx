@@ -5,25 +5,10 @@ import Chip from '@material-ui/core/Chip';
 import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import axios from 'axios';
-import {Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, makeStyles, Link} from '@material-ui/core';
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, makeStyles, Typography} from '@material-ui/core';
 
 const App: React.FC = () => {
     const [entries, setEntries] = React.useState<ApiNote[]>([]);
-
-    return (
-        <div className="App">
-            <h1 style={{textAlign: 'center'}}>Changelog</h1>
-            <Search setEntries={setEntries} />
-            <div>
-                {entries.map((entry) => (
-                    <Entry key={entry.id} entry={entry} />
-                ))}
-            </div>
-        </div>
-    );
-};
-
-const Search: React.FC<{setEntries: (e: ApiNote[]) => void}> = ({setEntries}) => {
     const [query, setQuery] = React.useState('');
 
     React.useEffect(() => {
@@ -34,14 +19,40 @@ const Search: React.FC<{setEntries: (e: ApiNote[]) => void}> = ({setEntries}) =>
     }, [query, setEntries]);
 
     return (
+        <div className="App">
+            <h1 style={{textAlign: 'center'}}>Changelog</h1>
+            <Search setEntries={setEntries} query={query} setQuery={setQuery} />
+            <div>
+                {entries.map((entry) => (
+                    <Entry key={entry.id} entry={entry} setQuery={setQuery} />
+                ))}
+            </div>
+        </div>
+    );
+};
+
+interface SearchProps {
+    setEntries: (e: ApiNote[]) => void;
+    query: string;
+    setQuery: (e: string) => void;
+}
+
+const Search: React.FC<SearchProps> = ({setEntries, query, setQuery}) => {
+    return (
         <div style={{textAlign: 'center', padding: 30}}>
             <input type="text" style={{width: 500}} value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
     );
 };
 
-const Entry = React.memo(({entry: {content, summary, values, links}}: {entry: ApiNote}) => {
+const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: {entry: ApiNote; setQuery: (e: string) => void}) => {
     const classes = useStyles();
+    const handleClick = (key: string, value: string | string[]) => (e) => {
+        e.stopPropagation();
+        const arrayValue = Array.isArray(value) ? value : [value];
+        setQuery(arrayValue.map((v) => `${key}=${v}`).join(' or '));
+    };
+
     return (
         <ExpansionPanel>
             <ExpansionPanelSummary>
@@ -50,7 +61,7 @@ const Entry = React.memo(({entry: {content, summary, values, links}}: {entry: Ap
                         <ReactMarkdown source={summary} />
                     </Typography>
                     {Object.entries(values).map(([key, value]) => (
-                        <Chip size="small" key={key} style={{marginRight: 10}} label={key + ': ' + value} />
+                        <Chip size="small" key={key} style={{marginRight: 10}} label={key + ': ' + value} onClick={handleClick(key, value)} />
                     ))}
                     {links.map(({href, label}) => (
                         <Link
