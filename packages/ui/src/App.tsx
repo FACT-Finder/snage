@@ -53,7 +53,13 @@ const Entry = React.memo(({entry: {content, summary, values, links}}: {entry: Ap
                         <Chip size="small" key={key} style={{marginRight: 10}} label={key + ': ' + value} />
                     ))}
                     {links.map(({href, label}) => (
-                        <Link key={label + href} href={href} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()}>
+                        <Link
+                            key={label + href}
+                            style={{marginRight: 5}}
+                            href={href}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            onClick={(e) => e.stopPropagation()}>
                             {label}
                         </Link>
                     ))}
