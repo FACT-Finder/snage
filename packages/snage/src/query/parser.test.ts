@@ -1,5 +1,6 @@
 import {createParser, StatusOP, StatusValue} from './parser';
 import {left, right} from 'fp-ts/lib/Either';
+import {LocalDate} from '@js-joda/core';
 
 const parser = createParser([
     {
@@ -65,8 +66,9 @@ describe('parser', () => {
         expect(parser('numberName = xxx')).toEqual(left({expected: ['number'], index: {column: 14, line: 1, offset: 13}}));
     });
     test('date', () => {
-        expect(parser('dateName >= 2019-01-31')).toEqual(right({field: 'dateName', op: '>=', value: 1548892800000}));
+        expect(parser('dateName >= 2019-01-31')).toEqual(right({field: 'dateName', op: '>=', value: LocalDate.of(2019, 1, 31)}));
         expect(parser('dateName = xxx')).toEqual(left({expected: ['date YYYY-MM-DD'], index: {column: 12, line: 1, offset: 11}}));
+        expect(parser('dateName >= 2019-02-31')).toMatchObject(left({expected: ['valid date YYYY-MM-DD']}));
     });
     test('semver', () => {
         expect(parser('semverName >= 1.1.0-100')).toEqual(right({field: 'semverName', op: '>=', value: '1.1.0-100'}));

@@ -5,7 +5,7 @@ import * as O from 'fp-ts/lib/Option';
 import * as R from 'fp-ts/lib/Record';
 import {pipe} from 'fp-ts/lib/pipeable';
 import semver from 'semver/preload';
-import {parseISO, format} from 'date-fns';
+import {LocalDate} from '@js-joda/core';
 
 describe('sort', () => {
     describe('getOrdering', () => {
@@ -72,9 +72,9 @@ describe('sort', () => {
             expect(
                 pipe(
                     ['2017-09-02', '2017-08-01', '2018-09-01', '2017-09-01'],
-                    A.map((d) => parseISO(d).getTime()),
+                    A.map((d) => LocalDate.parse(d)),
                     A.sort(getFieldOrdering('date')),
-                    A.map((d) => format(d, 'yyyy-MM-dd'))
+                    A.map((d) => d.toString())
                 )
             ).toStrictEqual(['2017-08-01', '2017-09-01', '2017-09-02', '2018-09-01']);
         });

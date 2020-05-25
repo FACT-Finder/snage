@@ -3,11 +3,14 @@ import {expectNever, ffVersionRegex} from '../util/util';
 import {Field} from '../config/type';
 import {Either, left, right} from 'fp-ts/lib/Either';
 import {ImplicitFields} from './implicitfields';
+import {LocalDate} from '@js-joda/core';
 
 const whitespace = P.regexp(/\s*/m);
+
 function token(parser): Parser<any> {
     return parser.skip(whitespace);
 }
+
 function word(str): Parser<any> {
     return P.string(str).thru(token);
 }
@@ -35,6 +38,7 @@ export interface ParseError {
     };
     expected: string[];
 }
+
 export const createParser = (fields: Field[]): ((q: string) => Either<ParseError, Expression>) => {
     const rules: any = {};
     const addField = (field: Field): void => {
@@ -95,7 +99,13 @@ export const createParser = (fields: Field[]): ((q: string) => Either<ParseError
         date: () =>
             P.regex(/\d{4}-\d{2}-\d{2}/)
                 .desc('date YYYY-MM-DD')
-                .map(Date.parse),
+                .chain((dateString) => {
+                    try {
+                        return P.of(LocalDate.parse(dateString));
+                    } catch (e) {
+                        return P.fail('valid date YYYY-MM-DD');
+                    }
+                }),
         true: () => word('true').result(true),
         false: () => word('false').result(false),
         stringWithoutWhiteSpace: () => P.regex(/([^\s()]+)/, 1).desc('string'),

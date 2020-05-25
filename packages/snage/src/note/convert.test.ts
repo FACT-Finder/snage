@@ -1,9 +1,9 @@
 import * as E from 'fp-ts/lib/Either';
 import {decodeStringValue, decodeValue, encodeHeader} from './convert';
-import parseISO from 'date-fns/parseISO';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
 import {Note} from './note';
+import {LocalDate} from '@js-joda/core';
 
 describe('decode', () => {
     test('boolean', () => {
@@ -23,7 +23,7 @@ describe('decode', () => {
     test('date', () => {
         const field: Field = {name: 'date', type: 'date'};
         expect(decodeValue(field, '1.1.0')).toStrictEqual(E.left(['Invalid value "1.1.0" supplied to : YYYY-MM-DD']));
-        expect(decodeValue(field, '2018-05-05')).toStrictEqual(E.right(parseISO('2018-05-05').getTime()));
+        expect(decodeValue(field, '2018-05-05')).toStrictEqual(E.right(LocalDate.parse('2018-05-05')));
     });
     test('number', () => {
         const field: Field = {name: 'n', type: 'number'};
@@ -65,7 +65,7 @@ describe('decode', () => {
         expect(decodeValue(field, ['1.1.0', '1.1.1'])).toStrictEqual(
             E.left(['Invalid value "1.1.0" supplied to : date/0: YYYY-MM-DD', 'Invalid value "1.1.1" supplied to : date/1: YYYY-MM-DD'])
         );
-        expect(decodeValue(field, ['2018-05-05'])).toStrictEqual(E.right([parseISO('2018-05-05').getTime()]));
+        expect(decodeValue(field, ['2018-05-05'])).toStrictEqual(E.right([LocalDate.parse('2018-05-05')]));
     });
 });
 describe('encodeHeader', () => {
@@ -78,7 +78,7 @@ describe('encodeHeader', () => {
         values: {
             version: semver.parse('1.0.5')!,
             ffversion: '1.0.5-15',
-            date: Date.parse('2020-04-24'),
+            date: LocalDate.parse('2020-04-24'),
             bool: true,
             number: 1.53,
             list: [true, false],

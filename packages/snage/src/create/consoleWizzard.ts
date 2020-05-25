@@ -9,9 +9,9 @@ import {
     numberValidator,
     stringSetValidator,
 } from './validators';
-import {getCurrentDate} from './dateProvider';
 import {expectNever} from '../util/util';
 import {Field} from '../config/type';
+import {LocalDate} from '@js-joda/core';
 
 /**
  * Asks the user to provide a valid value for the given field in an interactive way on the cli
@@ -142,7 +142,7 @@ const askForDateInput = async (field: Field) => {
         return replaceBlankAndEmptyWithNull(values);
     }
     if (await askYesNo('Do you want to set the current date for ' + field.name + '?')) {
-        return getCurrentDate();
+        return LocalDate.now().toString();
     }
     const dateValue = await askForDateInputFromUser(
         'input',

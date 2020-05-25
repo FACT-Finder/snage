@@ -2,6 +2,7 @@ import {Note} from './note';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
 import {convertToApiNote} from './convertapi';
+import {LocalDate} from '@js-joda/core';
 
 describe('convert', () => {
     const note: Note = {
@@ -18,7 +19,7 @@ describe('convert', () => {
         values: {
             version: semver.parse('1.0.5')!,
             ffversion: '1.0.5-15',
-            date: Date.parse('2020-04-24'),
+            date: LocalDate.parse('2020-04-24'),
             bool: true,
             number: 1.53,
             list: [true, false],

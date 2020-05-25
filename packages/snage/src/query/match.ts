@@ -6,6 +6,7 @@ import {zip} from 'fp-ts/lib/Array';
 import {Field} from '../config/type';
 import {Note} from '../note/note';
 import {ContentField, ImplicitFields, SummaryField} from './implicitfields';
+import {LocalDate} from '@js-joda/core';
 
 export type MatcherNote = Pick<Note, 'content' | 'summary' | 'values'>;
 
@@ -73,6 +74,9 @@ export const checkValue = (noteValue: any, queryValue: any, type: Field['type'],
     }
     if (type === 'ffversion') {
         return checkFFVersion(noteValue, queryValue, operator);
+    }
+    if (type === 'date') {
+        return checkDate(noteValue, queryValue, operator);
     }
     switch (operator) {
         case '<':
@@ -160,4 +164,27 @@ const parseVersion = (s: string): number[] => {
         .slice(1)
         .filter((x) => x !== undefined)
         .map((part) => (part !== 'SNAPSHOT' ? parseInt(part, 10) : -1));
+};
+
+const checkDate = (left: LocalDate | undefined, right: LocalDate | undefined, operator: Operator): boolean => {
+    if (left === undefined || right === undefined) {
+        return false;
+    }
+
+    switch (operator) {
+        case '!=':
+            return left.compareTo(right) !== 0;
+        case '=':
+            return left.compareTo(right) === 0;
+        case '<':
+            return left.compareTo(right) < 0;
+        case '<=':
+            return left.compareTo(right) <= 0;
+        case '>':
+            return left.compareTo(right) > 0;
+        case '>=':
+            return left.compareTo(right) >= 0;
+        default:
+            throw new Error(`illegal operator ${operator}`);
+    }
 };
