@@ -1,6 +1,10 @@
 # fact-finder/snage 
 [![codecov][codecov-badge]][codecov]
 [![build][build-badge]][build]
+[![npm][npm-badge]][npm]
+[![docker][docker-badge]][docker]
+[![aur][aur-badge]][aur]
+[![provided][provided-badge]][provided]
 
 ## Install
 
@@ -77,3 +81,11 @@ $ CI=true yarn lerna run test
 [build-badge]: https://github.com/FACT-Finder/snage/workflows/.github/workflows/build.yml/badge.svg?branch=master
 [codecov]: https://codecov.io/gh/fact-finder/snage/
 [codecov-badge]: https://codecov.io/gh/fact-finder/snage/branch/master/graph/badge.svg
+[npm]: https://www.npmjs.com/package/snage
+[npm-badge]: https://img.shields.io/npm/dt/snage?label=npm%20downloads
+[docker]: https://hub.docker.com/r/snage/snage
+[docker-badge]: https://img.shields.io/docker/pulls/snage/snage
+[aur]: https://aur.archlinux.org/packages/snage/
+[aur-badge]: https://img.shields.io/aur/version/snage?label=aur%3A%20snage
+[provided]: https://fact-finder.de
+[provided-badge]: https://img.shields.io/badge/provided%20by-FACT--Finder-%23294884
