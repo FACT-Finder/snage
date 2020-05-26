@@ -16,8 +16,7 @@
     "format-check": "prettier --config \"../../prettier.config.js\" \"*.js\" \"src/**/*.ts\" --list-different"
   },
   "files": [
-    "build/**",
-    "package.json"
+    "build/**"
   ],
   "bin": "build/snage.js",
   "dependencies": {
