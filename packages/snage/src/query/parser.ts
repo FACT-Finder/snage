@@ -21,7 +21,11 @@ export type SingleExpression = {
     value: unknown;
 };
 export const StatusOP = '__status__' as const;
-export type Operator = '=' | '<=' | '>=' | '!=' | '<' | '>' | '~' | '~~' | typeof StatusOP;
+const compareOperators = ['=', '<=', '>=', '!=', '<', '>'] as const;
+export type CompareOperator = typeof compareOperators[number];
+export type Operator = CompareOperator | '~' | '~~' | typeof StatusOP;
+
+export const isCompareOperator = (op: Operator): op is CompareOperator => (compareOperators as readonly string[]).includes(op);
 
 export type Expression = true | SingleExpression | [Expression, 'or' | 'and', Expression];
 

@@ -1,12 +1,13 @@
-import {Expression, Operator, SingleExpression, StatusOP, StatusValue} from './parser';
+import {CompareOperator, Expression, isCompareOperator, Operator, SingleExpression, StatusOP, StatusValue} from './parser';
 import {expectNever, ffVersionRegex} from '../util/util';
 import semver from 'semver';
 import stringsimi from 'string-similarity';
 import {zip} from 'fp-ts/lib/Array';
-import {Field} from '../config/type';
+import {Field, FieldType} from '../config/type';
 import {Note} from '../note/note';
 import {ContentField, ImplicitFields, SummaryField} from './implicitfields';
-import {LocalDate} from '@js-joda/core';
+import * as ORD from 'fp-ts/lib/Ord';
+import {getFieldOrdering} from './sort';
 
 export type MatcherNote = Pick<Note, 'content' | 'summary' | 'values'>;
 
@@ -57,7 +58,7 @@ const valueByName = (name: string, note: MatcherNote): undefined | unknown => {
     }
 };
 
-export const checkValue = (noteValue: any, queryValue: any, type: Field['type'], operator: Operator): boolean => {
+export const checkValue = (noteValue: any, queryValue: any, type: FieldType, operator: Operator): boolean => {
     if (operator === StatusOP) {
         const status = queryValue as StatusValue;
         switch (status) {
@@ -69,28 +70,16 @@ export const checkValue = (noteValue: any, queryValue: any, type: Field['type'],
                 return expectNever(status);
         }
     }
-    if (type === 'semver') {
-        return semver.satisfies(noteValue, `${operator}${queryValue}`);
+
+    if (isCompareOperator(operator)) {
+        return compare(noteValue, queryValue, type, operator);
     }
-    if (type === 'ffversion') {
-        return checkFFVersion(noteValue, queryValue, operator);
+
+    if (type !== 'string') {
+        throw new Error(`illegal operator ${operator}`);
     }
-    if (type === 'date') {
-        return checkDate(noteValue, queryValue, operator);
-    }
+
     switch (operator) {
-        case '<':
-            return noteValue < queryValue;
-        case '<=':
-            return noteValue <= queryValue;
-        case '>=':
-            return noteValue >= queryValue;
-        case '>':
-            return noteValue > queryValue;
-        case '=':
-            return noteValue === queryValue;
-        case '!=':
-            return noteValue !== queryValue;
         case '~':
             return noteValue?.toLowerCase().includes(queryValue?.toLowerCase());
         case '~~':
@@ -110,49 +99,61 @@ export const checkValue = (noteValue: any, queryValue: any, type: Field['type'],
     }
 };
 
-const checkFFVersion = (left: string, right: string, operator: Operator): boolean => {
+const compare = (noteValue: any, queryValue: any, type: FieldType, operator: CompareOperator): boolean => {
+    if (type === 'semver') {
+        return semver.satisfies(noteValue, `${operator}${queryValue}`);
+    }
+    if (type === 'ffversion') {
+        return checkFFVersion(noteValue, queryValue, operator);
+    }
+    return checkOrd(getFieldOrdering(type), noteValue, queryValue, operator);
+};
+
+const checkOrd = <T>(ord: ORD.Ord<T>, left: T | undefined, right: T | undefined, operator: CompareOperator): boolean => {
+    if (left === undefined || right === undefined) {
+        return false;
+    }
+
+    switch (operator) {
+        case '!=':
+            return !ord.equals(left, right);
+        case '=':
+            return ord.equals(left, right);
+        case '<':
+            return ORD.lt(ord)(left, right);
+        case '<=':
+            return ORD.leq(ord)(left, right);
+        case '>':
+            return ORD.gt(ord)(left, right);
+        case '>=':
+            return ORD.geq(ord)(left, right);
+        default:
+            return expectNever(operator);
+    }
+};
+
+const checkFFVersion = (left: string, right: string, operator: CompareOperator): boolean => {
     if (left === undefined || right === undefined) {
         return false;
     }
 
     const vLeft = [...parseVersion(left), 0, 0, 0, 0];
     const vRight = parseVersion(right);
-    const zipped = zip(vLeft, vRight);
-    switch (operator) {
-        case '!=':
-            return zipped.some(([l, r]) => l !== r);
-        case '=':
-            return zipped.every(([l, r]) => l === r);
-        case '<':
-            return compareFFVersion(zipped, CompareResult.LessThan);
-        case '<=':
-            return compareFFVersion(zipped, CompareResult.LessThan) || checkFFVersion(left, right, '=');
-        case '>':
-            return compareFFVersion(zipped, CompareResult.GreaterThan);
-        case '>=':
-            return compareFFVersion(zipped, CompareResult.GreaterThan) || checkFFVersion(left, right, '=');
-        default:
-            throw new Error(`illegal operator ${operator}`);
-    }
+    return checkOrd(arrayOrd(), vLeft, vRight, operator);
 };
 
-enum CompareResult {
-    Equal,
-    LessThan,
-    GreaterThan,
-}
-
-const compareFFVersion = (versions: Array<[number, number]>, is: CompareResult): boolean => {
-    for (const [l, r] of versions) {
-        if (l > r) {
-            return is === CompareResult.GreaterThan;
+const arrayOrd = (): ORD.Ord<number[]> =>
+    ORD.fromCompare((ls, rs) => {
+        for (const [l, r] of zip(ls, rs)) {
+            if (l > r) {
+                return 1;
+            }
+            if (l < r) {
+                return -1;
+            }
         }
-        if (l < r) {
-            return is === CompareResult.LessThan;
-        }
-    }
-    return is === CompareResult.Equal;
-};
+        return 0;
+    });
 
 const parseVersion = (s: string): number[] => {
     const exec = ffVersionRegex.exec(s);
@@ -164,27 +165,4 @@ const parseVersion = (s: string): number[] => {
         .slice(1)
         .filter((x) => x !== undefined)
         .map((part) => (part !== 'SNAPSHOT' ? parseInt(part, 10) : -1));
-};
-
-const checkDate = (left: LocalDate | undefined, right: LocalDate | undefined, operator: Operator): boolean => {
-    if (left === undefined || right === undefined) {
-        return false;
-    }
-
-    switch (operator) {
-        case '!=':
-            return left.compareTo(right) !== 0;
-        case '=':
-            return left.compareTo(right) === 0;
-        case '<':
-            return left.compareTo(right) < 0;
-        case '<=':
-            return left.compareTo(right) <= 0;
-        case '>':
-            return left.compareTo(right) > 0;
-        case '>=':
-            return left.compareTo(right) >= 0;
-        default:
-            throw new Error(`illegal operator ${operator}`);
-    }
 };
