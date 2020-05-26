@@ -6,7 +6,7 @@ const config = {
     entry: './src/index.ts',
     target: 'node',
     output: {
-        path: path.resolve(__dirname, 'build'),
+        path: path.resolve(__dirname, 'build/npm'),
         filename: 'snage.js',
     },
     node: {

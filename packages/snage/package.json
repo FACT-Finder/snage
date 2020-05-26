@@ -16,9 +16,9 @@
     "format-check": "prettier --config \"../../prettier.config.js\" \"*.js\" \"src/**/*.ts\" --list-different"
   },
   "files": [
-    "build/**"
+    "build/npm/**"
   ],
-  "bin": "build/snage.js",
+  "bin": "build/npm/snage.js",
   "dependencies": {
     "@js-joda/core": "^2.0.0",
     "@types/yaml": "^1.2.0",
