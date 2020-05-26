@@ -1,11 +1,13 @@
-import {isValid} from 'date-fns';
-import {parseFromTimeZone} from 'date-fns-timezone';
-import {Either, left, right} from 'fp-ts/lib/Either';
-import {Field, Config} from '../config/type';
 import semver from 'semver';
+import {LocalDate} from '@js-joda/core';
 
 export const isValidDate = (date: string): boolean => {
-    return isValid(parseFromTimeZone(date, {timeZone: 'UTC'}));
+    try {
+        LocalDate.parse(date);
+        return true;
+    } catch (e) {
+        return false;
+    }
 };
 
 export const noBlankValuesValidator = (value: any, isOptional?: boolean): boolean | string => {
