@@ -79,7 +79,19 @@ jobs:
             git config user.email "ff-dev@omikron.net";
             git config user.name "SnageCI";
             git add PKGBUILD .SRCINFO;
-            git commit -m "Update Version";
+            git commit -m "Update to version ${VERSION}";
+            git push;
+          )
+          git clone ssh://aur@aur.archlinux.org/snage-bin.git aur-snage-bin
+          (
+            cd aur-snage-bin;
+            sed -i -E 's/pkgrel=[0-9]+/pkgrel=1/g' PKGBUILD;
+            sed -i -E "s/pkgver=[0-9.]+/pkgver=${VERSION}/g" PKGBUILD;
+            bash updpkgsums-printsrcinfo-build.sh;
+            git config user.email "ff-dev@omikron.net";
+            git config user.name "SnageCI";
+            git add PKGBUILD .SRCINFO;
+            git commit -m "Update to version ${VERSION}";
             git push;
           )
         env:
