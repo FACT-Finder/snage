@@ -53,7 +53,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           tar -cvzf snage-${VERSION}.tar.gz -C packages/snage/build snage.js ui
-          RELEASE_ID=$(curl "https://api.github.com/repos/FACT-Finder/snage/releases/tags/${VERSION}" | jq '.id')
+          RELEASE_ID=$(curl "https://api.github.com/repos/FACT-Finder/snage/releases/tags/v${VERSION}" | jq '.id')
           curl \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-type: application/gzip" \
