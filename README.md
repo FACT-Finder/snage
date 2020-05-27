@@ -6,6 +6,7 @@
 [![aur][aur-badge]][aur]
 [![provided][provided-badge]][provided]
 
+
 ## Install
 
 If you're a happy Arch Linux user install `snage` from AUR.
