@@ -1,0 +1,8 @@
+.md-logo {
+	display: none;
+}
+
+[data-termynal] {
+	margin-bottom: 30px;
+	width: 100%;
+}
