@@ -1,0 +1,70 @@
+site_name: Snage
+site_url: https://fact-finder.github.io/snage
+repo_url: https://github.com/FACT-Finder/snage/
+theme:
+  name: 'material'
+  favicon: 'favicon.png'
+  language: en
+  icon:
+    logo: material/cloud
+
+extra_css:
+  - 'static/custom.css'
+  - 'static/termynal.css'
+
+extra_javascript:
+  - 'static/termynal.js'
+  - 'static/custom.js'
+
+plugins:
+  - search
+
+copyright: ''
+
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: traggo
+      repo: website
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Intro: index.md
+  - Install:
+    - Arch: install/arch.md
+    - Docker: install/docker.md
+    - NPM: install/npm.md
+    - Yarn: install/yarn.md
+  - Config: config.md
+  - Usage:
+    - Serve: cmd/serve.md
+    - Lint: cmd/lint.md
+    - Set: cmd/set.md
+    - Find: cmd/find.md
+    - Create: cmd/create.md
+  - Development:
+    - Setup: dev/setup.md
+    - Build: dev/build.md

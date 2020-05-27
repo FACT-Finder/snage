@@ -13,6 +13,9 @@
       "**/babel-loader"
     ]
   },
+  "scripts": {
+    "docs": "node docs.js"
+  },
   "engines": {
     "yarn": ">1.4.2"
   },

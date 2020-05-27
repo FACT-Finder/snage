@@ -18,6 +18,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: ${{ runner.os }}-node_modules-
       - run: yarn --frozen-lockfile
+      - run: yarn docs build
       - run: yarn lerna run test
       - uses: codecov/codecov-action@v1
       - run: yarn lerna run format-check
