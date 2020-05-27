@@ -1,0 +1,65 @@
+name: deploy
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: cache yarn
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn --frozen-lockfile
+      - name: Get Version
+        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+      - run: yarn lerna run build
+        env:
+          BUILD_VERSION: ${{ env.VERSION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: packages/**/build
+
+  deploy-docker-unstable:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+      - name: Publish master as snage/snage:unstable to Docker
+        run: |
+          echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > $HOME/.npmrc
+          docker build -t snage/snage:unstable packages/snage
+          docker push     snage/snage:unstable
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+
+  deploy-snage-changelog:
+    runs-on: ubuntu-latest
+    needs: deploy-docker-unstable
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy snage.ff-labs.de
+        run: |
+          export ANSIBLE_PRIVATE_KEY_FILE="$HOME/id_rsa"
+          echo "$SSH_KEY" > $HOME/id_rsa
+          chmod 600 $HOME/id_rsa
+          ansible-playbook -i root@snage.ff-labs.de, -e "SNAGE_VERSION=unstable" ansible/deploy-snage.yml
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          ANSIBLE_HOST_KEY_CHECKING: false

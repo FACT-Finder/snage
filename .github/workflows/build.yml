@@ -2,98 +2,25 @@ name: build
 on: [push, pull_request]
 
 jobs:
-  build:
+
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --prune --unshallow
       - uses: actions/setup-node@v1
+      - id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: cache yarn
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - run: yarn --frozen-lockfile
       - run: yarn lerna run test
       - uses: codecov/codecov-action@v1
       - run: yarn lerna run format-check
       - run: yarn lerna run lint-check
-      - name: Get Version
-        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
       - run: yarn lerna run build
-        env:
-          BUILD_VERSION: ${{ env.VERSION }}
-      - name: Publish master as snage/snage:unstable to Docker
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > $HOME/.npmrc
-          docker build -t snage/snage:unstable packages/snage
-          docker push     snage/snage:unstable
-        env:
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-      - name: Deploy snage.ff-labs.de
-        if: github.ref == 'refs/heads/master'
-        run: |
-          export ANSIBLE_PRIVATE_KEY_FILE="$HOME/id_rsa"
-          echo "$SSH_KEY" > $HOME/id_rsa
-          chmod 600 $HOME/id_rsa
-          ansible-playbook -i root@snage.ff-labs.de, -e "SNAGE_VERSION=unstable" ansible/deploy-snage.yml
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          ANSIBLE_HOST_KEY_CHECKING: false
-      - name: Publish Release to Docker and NPM
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > $HOME/.npmrc
-          docker build -t snage/snage:${VERSION} packages/snage
-          docker push     snage/snage:${VERSION}
-          (cd packages/snage && yarn publish --new-version "${VERSION}" --no-git-tag-version)
-        env:
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Create release artifact
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          mkdir -p packages/snage/build/github/snage-${VERSION}
-          cp -r LICENSE packages/snage/build/npm/snage.js packages/snage/build/npm/ui packages/snage/build/github/snage-${VERSION}
-          tar -cvzf snage-${VERSION}.tar.gz -C packages/snage/build/github snage-${VERSION}
-          RELEASE_ID=$(curl "https://api.github.com/repos/FACT-Finder/snage/releases/tags/v${VERSION}" | jq -r '.id')
-          curl \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Content-type: application/gzip" \
-            --data-binary @snage-${VERSION}.tar.gz \
-            "https://uploads.github.com/repos/FACT-Finder/snage/releases/${RELEASE_ID}/assets?name=snage-${VERSION}.tar.gz"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish to Archlinux User Repository
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          mkdir $HOME/.ssh
-          echo "$SSH_KEY" > $HOME/.ssh/id_rsa
-          chmod 700 $HOME/.ssh && chmod 600 $HOME/.ssh/id_rsa
-          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts
-          git clone ssh://aur@aur.archlinux.org/snage.git aur-snage
-          (
-            cd aur-snage;
-            sed -i -E 's/pkgrel=[0-9]+/pkgrel=1/g' PKGBUILD;
-            sed -i -E "s/pkgver=[0-9.]+/pkgver=${VERSION}/g" PKGBUILD;
-            bash updpkgsums-printsrcinfo-build.sh;
-            git config user.email "ff-dev@omikron.net";
-            git config user.name "SnageCI";
-            git add PKGBUILD .SRCINFO;
-            git commit -m "Update to version ${VERSION}";
-            git push;
-          )
-          git clone ssh://aur@aur.archlinux.org/snage-bin.git aur-snage-bin
-          (
-            cd aur-snage-bin;
-            sed -i -E 's/pkgrel=[0-9]+/pkgrel=1/g' PKGBUILD;
-            sed -i -E "s/pkgver=[0-9.]+/pkgver=${VERSION}/g" PKGBUILD;
-            bash updpkgsums-printsrcinfo-build.sh;
-            git config user.email "ff-dev@omikron.net";
-            git config user.name "SnageCI";
-            git add PKGBUILD .SRCINFO;
-            git commit -m "Update to version ${VERSION}";
-            git push;
-          )
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
