@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://fact-finder.github.io/snage/install/docker/">
+        <link rel="canonical" href="https://fact-finder.github.io/snage/cmd/migrate/">
       
       
       <link rel="shortcut icon" href="../../favicon.png">
@@ -17,7 +17,7 @@
     
     
       
-        <title>Docker - Snage</title>
+        <title>Migrate - Snage</title>
       
     
     
@@ -77,7 +77,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Docker
+              Migrate
             
           </span>
         </div>
@@ -187,12 +187,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
     
     <label class="md-nav__link" for="nav-2">
       Install
@@ -216,7 +214,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../arch/" title="Arch" class="md-nav__link">
+    <a href="../../install/arch/" title="Arch" class="md-nav__link">
       Arch
     </a>
   </li>
@@ -226,18 +224,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-    
-    <a href="./" title="Docker" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../../install/docker/" title="Docker" class="md-nav__link">
       Docker
     </a>
-    
   </li>
 
         
@@ -247,7 +238,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../npm/" title="NPM" class="md-nav__link">
+    <a href="../../install/npm/" title="NPM" class="md-nav__link">
       NPM
     </a>
   </li>
@@ -259,7 +250,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../yarn/" title="Yarn" class="md-nav__link">
+    <a href="../../install/yarn/" title="Yarn" class="md-nav__link">
       Yarn
     </a>
   </li>
@@ -286,10 +277,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
     
     <label class="md-nav__link" for="nav-4">
       Usage
@@ -313,7 +306,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../cmd/serve/" title="Serve" class="md-nav__link">
+    <a href="../serve/" title="Serve" class="md-nav__link">
       Serve
     </a>
   </li>
@@ -325,7 +318,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../cmd/create/" title="Create" class="md-nav__link">
+    <a href="../create/" title="Create" class="md-nav__link">
       Create
     </a>
   </li>
@@ -337,7 +330,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../cmd/lint/" title="Lint" class="md-nav__link">
+    <a href="../lint/" title="Lint" class="md-nav__link">
       Lint
     </a>
   </li>
@@ -349,7 +342,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../cmd/set/" title="Set" class="md-nav__link">
+    <a href="../set/" title="Set" class="md-nav__link">
       Set
     </a>
   </li>
@@ -361,7 +354,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../cmd/find/" title="Find" class="md-nav__link">
+    <a href="../find/" title="Find" class="md-nav__link">
       Find
     </a>
   </li>
@@ -371,11 +364,18 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../../cmd/migrate/" title="Migrate" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+    <a href="./" title="Migrate" class="md-nav__link md-nav__link--active">
       Migrate
     </a>
+    
   </li>
 
         
@@ -450,7 +450,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/FACT-Finder/snage/edit/master/docs/install/docker.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/FACT-Finder/snage/edit/master/docs/cmd/migrate.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -458,14 +458,9 @@
                   
                 
                 
-                  <h1>Docker</h1>
+                  <h1>Migrate</h1>
                 
-                <p>If you want to use docker, you can use our <a href="https://hub.docker.com/r/snage/snage">snage/snage</a> image.
-Replace <code>$VERSION</code> with the latest version. Currently: <span class="latest_release_version">loading</span></p>
-<div id="term-docker" data-termynal data-ty-typeDelay="40" data-ty-lineDelay="700">
-    <span data-ty="input" data-ty-prompt="$">docker run --rm snage/snage:$VERSION help</span>
-    <span data-ty>snage &lt;command&gt; ...</span>
-</div>
+                <p>TODO</p>
                 
               
               
@@ -484,7 +479,7 @@ Replace <code>$VERSION</code> with the latest version. Currently: <span class="l
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../arch/" title="Arch" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../find/" title="Find" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -493,19 +488,19 @@ Replace <code>$VERSION</code> with the latest version. Currently: <span class="l
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Arch
+                Find
               </div>
             </div>
           </a>
         
         
-          <a href="../npm/" title="NPM" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../dev/setup/" title="Setup" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                NPM
+                Setup
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

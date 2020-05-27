@@ -28,6 +28,10 @@
      <lastmod>2020-05-27</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
+     <loc>https://fact-finder.github.io/snage/cmd/create/</loc>
+     <lastmod>2020-05-27</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
      <loc>https://fact-finder.github.io/snage/cmd/lint/</loc>
      <lastmod>2020-05-27</lastmod>
      <changefreq>daily</changefreq>
@@ -40,7 +44,7 @@
      <lastmod>2020-05-27</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
-     <loc>https://fact-finder.github.io/snage/cmd/create/</loc>
+     <loc>https://fact-finder.github.io/snage/cmd/migrate/</loc>
      <lastmod>2020-05-27</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
