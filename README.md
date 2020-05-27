@@ -78,7 +78,7 @@ $ CI=true yarn lerna run test
 * [Draft a new release on GitHub](https://github.com/FACT-Finder/snage/releases/new)
 
 [build]: https://github.com/FACT-Finder/snage/actions?query=workflow%3A.github%2Fworkflows%2Fbuild.yml
-[build-badge]: https://github.com/FACT-Finder/snage/workflows/.github/workflows/build.yml/badge.svg?branch=master
+[build-badge]: https://github.com/FACT-Finder/snage/workflows/build/badge.svg?branch=master
 [codecov]: https://codecov.io/gh/fact-finder/snage/
 [codecov-badge]: https://codecov.io/gh/fact-finder/snage/branch/master/graph/badge.svg
 [npm]: https://www.npmjs.com/package/snage
