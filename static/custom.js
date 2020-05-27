@@ -9,15 +9,18 @@ var isInViewport = function (elem) {
 };
 
 window.onload =  function () {
-    var arr = [];
-    document.querySelectorAll("[id^='term']").forEach(x => arr.push(x));
+    var elements = [];
+    document.querySelectorAll("[id^='term']").forEach(x => elements.push(x));
 
     var startVisibleTerm = function () {
-        arr.filter(x => isInViewport(x)).forEach(x => {
-            new Termynal('#' + x.id);
+        elements.filter(element => isInViewport(element)).forEach(element => {
+            new Termynal('#' + element.id);
         })
-        arr = arr.filter(x => !isInViewport(x))
+        elements = elements.filter(element => !isInViewport(element))
     };
+
+    window.addEventListener('scroll', startVisibleTerm, false);
+    startVisibleTerm();
 
     var version = document.querySelectorAll('.latest_release_version')
     if (version.length > 0) {
@@ -26,7 +29,4 @@ window.onload =  function () {
             version.forEach(x => x.innerHTML = current);
         });
     }
-
-    window.addEventListener('scroll', startVisibleTerm, false);
-    startVisibleTerm();
 }
