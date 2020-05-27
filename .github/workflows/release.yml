@@ -26,10 +26,11 @@ jobs:
       - run: yarn lerna run build
         env:
           BUILD_VERSION: ${{ env.VERSION }}
-      - uses: actions/upload-artifact@v2
+      - name: upload build artifact
+        uses: actions/upload-artifact@v2
         with:
           name: build
-          path: packages/**/build
+          path: packages/snage/build/npm
 
   release-docker-npm:
     runs-on: ubuntu-latest
@@ -39,6 +40,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: build
+          path: packages/snage/build/npm
       - name: Get Version
         run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
       - name: Publish Release to Docker and NPM
