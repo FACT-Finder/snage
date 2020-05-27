@@ -61,10 +61,11 @@ nav:
   - Config: config.md
   - Usage:
     - Serve: cmd/serve.md
+    - Create: cmd/create.md
     - Lint: cmd/lint.md
     - Set: cmd/set.md
     - Find: cmd/find.md
-    - Create: cmd/create.md
+    - Migrate: cmd/migrate.md
   - Development:
     - Setup: dev/setup.md
     - Build: dev/build.md
