@@ -18,7 +18,7 @@ export const noBlankValuesValidator = (value: any, isOptional?: boolean): boolea
 };
 
 export const isBlank = (value: any): boolean => {
-    return typeof value == 'undefined' || value.trim() == '';
+    return typeof value == 'undefined' || (typeof value === 'string' && value.trim() == '');
 };
 
 export const listSelectionValidator = (values: any[], isOptional?: boolean): boolean | string => {
