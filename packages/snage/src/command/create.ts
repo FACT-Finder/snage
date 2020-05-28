@@ -1,10 +1,13 @@
 import yargs from 'yargs';
-import {DefaultCli} from './common';
+import {DefaultCli, print, printAndExit} from './common';
 import {isLeft} from 'fp-ts/lib/Either';
 import {addToYargs, handleFieldValues} from '../create/consoleParamsReader';
 import {generateChangeLogFile} from '../create/changelogFileWriter';
 import {getConfig, getConfigOrExit} from '../config/load';
 import {extractFieldNamesFromTemplateString, getFields} from '../util/fieldExtractor';
+import {pipe} from 'fp-ts/lib/pipeable';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as T from 'fp-ts/lib/Task';
 
 export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'create',
@@ -26,17 +29,16 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
             console.error(fieldsForFileName.left);
             process.exit(1);
         }
-        const fieldValues = await handleFieldValues(config.fields, args);
 
-        if (isLeft(fieldValues)) {
-            console.error(fieldValues.left.msg);
-            process.exit(1);
-        }
-        const fileStatus = generateChangeLogFile(fieldValues.right, config.fields, fieldsForFileName.right, config.note, config.fileTemplateText);
-        if (isLeft(fileStatus)) {
-            console.error(fileStatus.left.msg);
-            process.exit(1);
-        }
-        console.log(fileStatus.right);
+        return pipe(
+            handleFieldValues(config.fields, args),
+            TE.chainEitherK((fieldValues) =>
+                generateChangeLogFile(fieldValues, config.fields, fieldsForFileName.right, config.note, config.fileTemplateText)
+            ),
+            TE.fold(
+                T.fromIOK((status) => printAndExit(status.msg)),
+                T.fromIOK(print)
+            )
+        )();
     },
 };
