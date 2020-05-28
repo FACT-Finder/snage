@@ -15,7 +15,7 @@ export const generateChangeLogFile = (
     fieldsForFileName: Field[],
     note: {basedir: string; file: string},
     fileTemplateText: string
-): Either<FileWriteError, boolean> => {
+): Either<FileWriteError, string> => {
     const content: string = generateFrontMatterFileContent(fieldValues, fields, fileTemplateText);
     const fileName: string = createFileName(fieldValues, fieldsForFileName, note.file);
     const filePath = path.join(note.basedir, fileName);
@@ -52,15 +52,14 @@ const ensureDirExists = (fileName: string): Either<FileWriteError, true> => {
     }
 };
 
-const createFile = (filePath: string, content: string): Either<FileWriteError, boolean> => {
+const createFile = (filePath: string, content: string): Either<FileWriteError, string> => {
     const createPathResult = ensureDirExists(filePath);
     return pipe(
         createPathResult,
         chain(() => {
             try {
                 fs.writeFileSync(filePath, content);
-                console.log('Successfully created file: ' + filePath);
-                return right(true);
+                return right(filePath);
             } catch (error) {
                 return left({msg: `Error while writing file: ${error}`});
             }

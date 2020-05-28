@@ -14,6 +14,7 @@ import {
 } from './validators';
 import {expectNever} from '../util/util';
 import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
+import * as TE from 'fp-ts/lib/TaskEither';
 import {Config, Field} from '../config/type';
 
 const INTERACTIVE_LABEL = 'interactive';
@@ -73,7 +74,7 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder;
 };
 
-export const handleFieldValues = async (fields: Field[], consoleArguments: {}): Promise<Either<ConsoleParamsError, Record<string, unknown>>> => {
+export const handleFieldValues = (fields: Field[], consoleArguments: {}): TE.TaskEither<ConsoleParamsError, Record<string, unknown>> => async () => {
     const returnValues = {};
     for (const field of fields) {
         if (consoleArguments[field.name] != null) {
