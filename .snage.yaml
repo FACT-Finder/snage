@@ -5,12 +5,14 @@ note:
 fields:
   - name: issue
     type: number
+    description: The github issue number
   - name: type
     type: string
     enum: [ add, change, deprecate, remove, fix, security ]
   - name: audience
     type: string
     enum: [ user, developer ]
+    description: The audience affected by the change
   - name: version
     type: semver
     optional: true
@@ -20,6 +22,7 @@ fields:
         version-regex: '^v(.*)$'
   - name: date
     type: date
+    description: date in 'YYYY-MM-DD' format
   - name: components
     type: string
     list: true
