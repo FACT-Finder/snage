@@ -59,6 +59,7 @@ nav:
     - NPM: install/npm.md
     - Yarn: install/yarn.md
   - Config: config.md
+  - Note: note.md
   - Usage:
     - Serve: cmd/serve.md
     - Create: cmd/create.md
