@@ -73,7 +73,7 @@ You can install Snage in many different ways:
 * `snage create`: Interactively create a new note. [read more](https://fact-finder.github.io/snage/cmd/create)
 * `snage lint`: Check for errors in notes. [read more](https://fact-finder.github.io/snage/cmd/lint)
 * `snage set`: Set field values. [read more](https://fact-finder.github.io/snage/cmd/set)
-* `snage find`: Set fields values. [read more](https://fact-finder.github.io/snage/cmd/find)
+* `snage find`: Find notes. [read more](https://fact-finder.github.io/snage/cmd/find)
 * `snage migrate`: Migrate the `.snage.yaml`. [read more](https://fact-finder.github.io/snage/cmd/migrate)
 
 ## Contributing
