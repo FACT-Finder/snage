@@ -3,7 +3,7 @@ site_url: https://fact-finder.github.io/snage
 repo_url: https://github.com/FACT-Finder/snage/
 theme:
   name: 'material'
-  favicon: 'favicon.png'
+  favicon: 'favicon.ico'
   language: en
   icon:
     logo: material/cloud

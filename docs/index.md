@@ -1,4 +1,9 @@
-# fact-finder/snage 
+<p align="center">
+    <a href="https://fact-finder.github.io/snage">
+        <img height="200px" src="https://fact-finder.github.io/snage/logo-text.png" />
+    </a>
+</p>
+
 [![codecov][codecov-badge]][codecov]
 [![build][build-badge]][build]
 [![npm][npm-badge]][npm]
