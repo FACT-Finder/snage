@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
      <loc>https://fact-finder.github.io/snage/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/install/arch/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/install/docker/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/install/npm/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/install/yarn/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/config/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/cmd/serve/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/cmd/create/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/cmd/lint/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/cmd/set/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/cmd/find/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/cmd/migrate/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/dev/setup/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://fact-finder.github.io/snage/dev/build/</loc>
-     <lastmod>2020-05-27</lastmod>
+     <lastmod>2020-05-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
