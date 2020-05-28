@@ -27,7 +27,7 @@ No more merge conflicts.
 ## Demo/Changelog
 
 Snage uses Snage for its own changelog. Have a look at it on 
-[snage.ff-labs.de](https://snage.ff-labs.de).
+[changelog.snage.dev](https://changelog.snage.dev).
 
 ## Example Changelog Note
 

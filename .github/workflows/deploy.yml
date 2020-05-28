@@ -61,12 +61,12 @@ jobs:
     needs: deploy-docker-unstable
     steps:
       - uses: actions/checkout@v2
-      - name: Deploy snage.ff-labs.de
+      - name: Deploy changelog.snage.dev
         run: |
           export ANSIBLE_PRIVATE_KEY_FILE="$HOME/id_rsa"
           echo "$SSH_KEY" > $HOME/id_rsa
           chmod 600 $HOME/id_rsa
-          ansible-playbook -i root@snage.ff-labs.de, -e "SNAGE_VERSION=unstable" ansible/deploy-snage.yml
+          ansible-playbook -i root@changelog.snage.dev, -e "SNAGE_VERSION=unstable" ansible/deploy-snage.yml
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           ANSIBLE_HOST_KEY_CHECKING: false
