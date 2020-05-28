@@ -1,6 +1,6 @@
 <p align="center">
-    <a href="https://fact-finder.github.io/snage">
-        <img height="200px" src="https://fact-finder.github.io/snage/logo-text.png" />
+    <a href="https://snage.dev">
+        <img height="200px" src="https://snage.dev/logo-text.png" />
     </a>
 </p>
 
@@ -51,39 +51,39 @@ $ snage lint
 ````
 Snage will render it as:
 
-![](https://fact-finder.github.io/snage/example.png)
+![](https://snage.dev/example.png)
 
-Read more about notes [here](https://fact-finder.github.io/snage/note).
+Read more about notes [here](https://snage.dev/note).
 
 
 ## Install
 
 You can install Snage in many different ways:
-[Archlinux](https://fact-finder.github.io/snage/install/arch), 
-[NPM](https://fact-finder.github.io/snage/install/npm),
-[Yarn](https://fact-finder.github.io/snage/install/yarn),
-[Docker](https://fact-finder.github.io/snage/install/docker) or 
-[build Snage manually](https://fact-finder.github.io/snage/dev/build).
+[Archlinux](https://snage.dev/install/arch), 
+[NPM](https://snage.dev/install/npm),
+[Yarn](https://snage.dev/install/yarn),
+[Docker](https://snage.dev/install/docker) or 
+[build Snage manually](https://snage.dev/dev/build).
 
 ## Features
 
-* Highly customizable with user defined [fields](https://fact-finder.github.io/snage/config/#fields)
+* Highly customizable with user defined [fields](https://snage.dev/config/#fields)
 * Custom query language for finding change log notes
 * Sleek web UI in material ui design
 * Great tooling support for managing notes.
 
 ## Usage
 
-* `snage serve`: Start the Snage server. [read more](https://fact-finder.github.io/snage/cmd/serve)
-* `snage create`: Interactively create a new note. [read more](https://fact-finder.github.io/snage/cmd/create)
-* `snage lint`: Check for errors in notes. [read more](https://fact-finder.github.io/snage/cmd/lint)
-* `snage set`: Set field values. [read more](https://fact-finder.github.io/snage/cmd/set)
-* `snage find`: Find notes. [read more](https://fact-finder.github.io/snage/cmd/find)
-* `snage migrate`: Migrate the `.snage.yaml`. [read more](https://fact-finder.github.io/snage/cmd/migrate)
+* `snage serve`: Start the Snage server. [read more](https://snage.dev/cmd/serve)
+* `snage create`: Interactively create a new note. [read more](https://snage.dev/cmd/create)
+* `snage lint`: Check for errors in notes. [read more](https://snage.dev/cmd/lint)
+* `snage set`: Set field values. [read more](https://snage.dev/cmd/set)
+* `snage find`: Find notes. [read more](https://snage.dev/cmd/find)
+* `snage migrate`: Migrate the `.snage.yaml`. [read more](https://snage.dev/cmd/migrate)
 
 ## Contributing
 
-[Setup your development environment](https://fact-finder.github.io/snage/dev/setup)
+[Setup your development environment](https://snage.dev/dev/setup)
 
 
 [build]: https://github.com/FACT-Finder/snage/actions?query=workflow%3A.github%2Fworkflows%2Fbuild.yml
