@@ -3,7 +3,7 @@
   vars:
       traefik_dir: /var/traefik/
       snage_dir: /var/snage/
-      domain: snage.ff-labs.de
+      domain: changelog.snage.dev
 
   tasks:
   - name: install required packages
