@@ -63,6 +63,8 @@ jobs:
         with:
           name: build
           path: packages/snage/build/npm
+      - name: Get Version
+        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
       - name: Create release artifact
         run: |
           mkdir -p packages/snage/build/github/snage-${VERSION}
@@ -70,6 +72,7 @@ jobs:
           tar -cvzf snage-${VERSION}.tar.gz -C packages/snage/build/github snage-${VERSION}
           RELEASE_ID=$(curl "https://api.github.com/repos/FACT-Finder/snage/releases/tags/v${VERSION}" | jq -r '.id')
           curl \
+            --fail \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-type: application/gzip" \
             --data-binary @snage-${VERSION}.tar.gz \
@@ -85,6 +88,8 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: build
+      - name: Get Version
+        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
       - name: Publish to Archlinux User Repository
         run: |
           mkdir $HOME/.ssh
