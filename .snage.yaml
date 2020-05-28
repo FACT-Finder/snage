@@ -23,7 +23,7 @@ fields:
   - name: components
     type: string
     list: true
-    enum: [ server, ui, cli, api, config ]
+    enum: [ server, ui, cli, api, config, docs ]
     optional: true
 filterPresets: []
 links:
