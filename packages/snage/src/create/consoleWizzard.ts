@@ -10,20 +10,13 @@ import {
     stringSetValidator,
 } from './validators';
 import {expectNever} from '../util/util';
-import {Field} from '../config/type';
+import {Field, FieldValue} from '../config/type';
 import {LocalDate} from '@js-joda/core';
+import * as T from 'fp-ts/lib/Task';
+import * as O from 'fp-ts/lib/Option';
 
-/**
- * Asks the user to provide a valid value for the given field in an interactive way on the cli
- * For optional fields, a prompt will ask the user if he wants to provide data
- *
- * @param field the user needs to provide a value for
- *
- * @returns a Promise containing either the given value, or null if the field is optional and no value has been provided
- */
-export const askUserForFieldValue = async (field: Field): Promise<any> => {
-    return await askForInputForFieldByTypes(field);
-};
+export const askUserForFieldValue = (field: Field): T.Task<O.Option<FieldValue>> =>
+    T.task.map(() => askForInputForFieldByTypes(field), O.fromNullable);
 
 const askForInputForFieldByTypes = async (field: Field) => {
     const prefix = field.optional ? '[OPTIONAL] ' : '';

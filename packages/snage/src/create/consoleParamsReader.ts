@@ -1,27 +1,19 @@
 import yargs from 'yargs';
 import {askUserForFieldValue} from './consoleWizzard';
-import {
-    booleanSetValidator,
-    booleanValidator,
-    dateSetValidator,
-    dateValidator,
-    noBlankValuesValidator,
-    numberSetValidator,
-    numberValidator,
-    semverSetValidator,
-    semverValidator,
-    stringSetValidator,
-} from './validators';
 import {expectNever} from '../util/util';
-import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
+import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
-import {Config, Field} from '../config/type';
+import * as T from 'fp-ts/lib/Task';
+import * as A from 'fp-ts/lib/Array';
+import * as O from 'fp-ts/lib/Option';
+import * as R from 'fp-ts/lib/Record';
+import {Config, Field, FieldValue} from '../config/type';
+import {pipe} from 'fp-ts/lib/pipeable';
+import {decodeHeader} from '../note/convert';
+import {merge, toRecord} from '../fp/fp';
+import {NoteValues} from '../note/note';
 
 const INTERACTIVE_LABEL = 'interactive';
-
-export interface ConsoleParamsError {
-    msg: string;
-}
 
 const addType = (field: Field, yargs: yargs.Argv) => {
     if (field.list) {
@@ -74,69 +66,23 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder;
 };
 
-export const handleFieldValues = (fields: Field[], consoleArguments: {}): TE.TaskEither<ConsoleParamsError, Record<string, unknown>> => async () => {
-    const returnValues = {};
-    for (const field of fields) {
-        if (consoleArguments[field.name] != null) {
-            const isValid = validateInput(field, consoleArguments[field.name]);
-            if (isLeft(isValid)) {
-                return left(isValid.left);
-            }
-            returnValues[field.name] = consoleArguments[field.name];
-        } else {
-            const result = await handleMissingValue(field, consoleArguments, returnValues);
-            if (isLeft(result)) {
-                return left(result.left);
-            }
-        }
-    }
-    return right(returnValues);
+export const handleFieldValues = (fields: Field[], consoleArguments: Record<string, unknown>): TE.TaskEither<string[], NoteValues> => {
+    const decoded = decodeHeader(fields, consoleArguments);
+    return E.either.traverse(T.task)(decoded, askForMissingValues(fields, consoleArguments));
 };
 
-//FIXME - extract validation and unify it with code from consoleWizzard.ts : https://github.com/FACT-Finder/snage/issues/50
-const validateInput = (field: Field, consoleArgument: unknown): Either<ConsoleParamsError, true> => {
-    let validation;
-    switch (field.type) {
-        case 'date':
-            validation = field.list
-                ? dateSetValidator(String(consoleArgument), field.optional)
-                : dateValidator(String(consoleArgument), field.optional);
-            break;
-        case 'semver':
-            validation = field.list ? semverSetValidator(consoleArgument, field.optional) : semverValidator(consoleArgument, field.optional);
-            break;
-        case 'ffversion': // intentional fallthrough
-        case 'string': {
-            validation = field.list ? stringSetValidator(consoleArgument, field.optional) : noBlankValuesValidator(consoleArgument, field.optional);
-            break;
-        }
-        case 'boolean': {
-            validation = field.list ? booleanSetValidator(consoleArgument, field.optional) : booleanValidator(consoleArgument, field.optional);
-            break;
-        }
-        case 'number': {
-            validation = field.list ? numberSetValidator(consoleArgument, field.optional) : numberValidator(consoleArgument, field.optional);
-            break;
-        }
-        default: {
-            expectNever(field.type);
-        }
-    }
-
-    if (validation !== true) {
-        return left({msg: `Invalid value provided for field ${field.name}: ${validation}`});
-    }
-    return right(true);
+export const askForMissingValues = (fields: Field[], consoleArguments: Record<string, unknown>) => (values: NoteValues): T.Task<NoteValues> => {
+    const missingFields = fields.filter((f) => O.isNone(R.lookup(f.name, values)));
+    return pipe(
+        A.array.traverse(T.taskSeq)(missingFields, (f) => askValue(f, consoleArguments)),
+        T.map(A.filterMap((x) => x)),
+        T.map((xs) => merge(values, toRecord(xs)))
+    );
 };
 
-const handleMissingValue = async (field: Field, consoleArguments: {}, returnValues: {}): Promise<Either<ConsoleParamsError, true>> => {
+const askValue = (field: Field, consoleArguments: {}): T.Task<O.Option<[string, FieldValue]>> => {
     if (consoleArguments[INTERACTIVE_LABEL] == null || consoleArguments[INTERACTIVE_LABEL]) {
-        const fieldValue = await askUserForFieldValue(field);
-        if (fieldValue != null) {
-            returnValues[field.name] = fieldValue;
-        }
-    } else {
-        returnValues[field.name] = null;
+        return pipe(askUserForFieldValue(field), T.map(O.map((v): [string, FieldValue] => [field.name, v])));
     }
-    return right(true);
+    return T.of(O.none);
 };
