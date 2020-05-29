@@ -6,22 +6,53 @@ import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import axios from 'axios';
 import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, makeStyles, Typography} from '@material-ui/core';
+import {useDebounce} from 'use-debounce';
+
+type SetQuery = (x: DebounceableQuery) => void;
+const getQueryFromSearch = (search: string): string =>
+    decodeURIComponent(
+        search
+            .slice(1)
+            .split('&')
+            .find((param) => param.startsWith('q='))
+            ?.split('=')[1] ?? ''
+    );
+
+interface DebounceableQuery {
+    query: string;
+    debounce: boolean;
+}
+
+const useUrlChangeableQuery = (): [DebounceableQuery, (v: DebounceableQuery) => void] => {
+    const [state, setState] = React.useState<DebounceableQuery>(() => ({query: getQueryFromSearch(window.location.search), debounce: false}));
+    React.useEffect(() => {
+        const onChange = (): void => setState({query: getQueryFromSearch(window.location.search), debounce: false});
+        window.addEventListener('popstate', onChange);
+        return () => window.removeEventListener('popstate', onChange);
+    }, [setState]);
+    return [state, setState];
+};
 
 const App: React.FC = () => {
     const [entries, setEntries] = React.useState<ApiNote[]>([]);
-    const [query, setQuery] = React.useState('');
+    const [query, setQuery] = useUrlChangeableQuery();
+    const [debounceQuery] = useDebounce(query.query, query.debounce ? 500 : 0);
 
     React.useEffect(() => {
-        axios.get(`/note?query=${encodeURIComponent(query)}`).then((resp) => {
+        axios.get(`/note?query=${encodeURIComponent(debounceQuery)}`).then((resp) => {
             setEntries(resp.data);
             return;
         });
-    }, [query, setEntries]);
+        const newSearch = `?q=${encodeURIComponent(debounceQuery)}`;
+        if (newSearch !== window.location.search) {
+            window.history.pushState({query: debounceQuery}, '', newSearch);
+        }
+    }, [debounceQuery, setEntries]);
 
     return (
         <div className="App">
             <h1 style={{textAlign: 'center'}}>Changelog</h1>
-            <Search setEntries={setEntries} query={query} setQuery={setQuery} />
+            <Search query={query.query} setQuery={setQuery} />
             <div>
                 {entries.map((entry) => (
                     <Entry key={entry.id} entry={entry} setQuery={setQuery} />
@@ -32,25 +63,24 @@ const App: React.FC = () => {
 };
 
 interface SearchProps {
-    setEntries: (e: ApiNote[]) => void;
     query: string;
-    setQuery: (e: string) => void;
+    setQuery: SetQuery;
 }
 
-const Search: React.FC<SearchProps> = ({setEntries, query, setQuery}) => {
+const Search: React.FC<SearchProps> = ({query, setQuery}) => {
     return (
         <div style={{textAlign: 'center', padding: 30}}>
-            <input type="text" style={{width: 500}} value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input type="text" style={{width: 500}} value={query} onChange={(e) => setQuery({query: e.target.value, debounce: true})} />
         </div>
     );
 };
 
-const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: {entry: ApiNote; setQuery: (e: string) => void}) => {
+const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: {entry: ApiNote; setQuery: SetQuery}) => {
     const classes = useStyles();
     const handleClick = (key: string, value: string | string[]) => (e) => {
         e.stopPropagation();
         const arrayValue = Array.isArray(value) ? value : [value];
-        setQuery(arrayValue.map((v) => `${key}=${v}`).join(' or '));
+        setQuery({query: arrayValue.map((v) => `${key}=${v}`).join(' or '), debounce: false});
     };
 
     return (
