@@ -5,17 +5,13 @@ import {pipe} from 'fp-ts/lib/pipeable';
 import {Field} from '../config/type';
 import {FrontMatterBuilder} from './frontMatterBuilder';
 
-export interface FileWriteError {
-    msg: string;
-}
-
 export const generateChangeLogFile = (
     fieldValues: Record<string, unknown>,
     fields: Field[],
     fieldsForFileName: Field[],
     note: {basedir: string; file: string},
     fileTemplateText: string
-): Either<FileWriteError, string> => {
+): Either<string, string> => {
     const content: string = generateFrontMatterFileContent(fieldValues, fields, fileTemplateText);
     const fileName: string = createFileName(fieldValues, fieldsForFileName, note.file);
     const filePath = path.join(note.basedir, fileName);
@@ -43,16 +39,16 @@ export const createFileName = (fieldValues: Record<string, unknown>, fields: Fie
         .reduce((name, field) => name.replace(`\${${field.name}}`, String(fieldValues[field.name])), fileNameTemplate);
 };
 
-const ensureDirExists = (fileName: string): Either<FileWriteError, true> => {
+const ensureDirExists = (fileName: string): Either<string, true> => {
     try {
         fs.mkdirSync(path.dirname(fileName), {recursive: true});
         return right(true);
     } catch (error) {
-        return left({msg: `Error while creating path ${fileName}: ${error}`});
+        return left(`Error while creating path ${fileName}: ${error}`);
     }
 };
 
-const createFile = (filePath: string, content: string): Either<FileWriteError, string> => {
+const createFile = (filePath: string, content: string): Either<string, string> => {
     const createPathResult = ensureDirExists(filePath);
     return pipe(
         createPathResult,
@@ -61,7 +57,7 @@ const createFile = (filePath: string, content: string): Either<FileWriteError, s
                 fs.writeFileSync(filePath, content);
                 return right(filePath);
             } catch (error) {
-                return left({msg: `Error while writing file: ${error}`});
+                return left(`Error while writing file: ${error}`);
             }
         })
     );

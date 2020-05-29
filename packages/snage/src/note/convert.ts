@@ -68,12 +68,22 @@ const getSingletonType = <Type extends FieldType>(type: Type, field: Field): IOT
     return {
         boolean: t.boolean,
         date: dateType,
-        number: t.number,
+        number: number,
         semver: semverType,
         ffversion: ffversionType,
         string: stringType(field),
     }[type];
 };
+
+const number = new t.Type<number, number, unknown>(
+    'number',
+    (u): u is number => typeof u === 'number' && !isNaN(u),
+    (u, c) =>
+        E.either.chain(t.number.validate(u, c), (s) => {
+            return isNaN(s) ? t.failure(u, c) : t.success(s);
+        }),
+    (a) => a
+);
 
 const semverType = new t.Type<semver.SemVer, string, unknown>(
     'semver',

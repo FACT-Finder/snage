@@ -32,13 +32,11 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
 
         return pipe(
             handleFieldValues(config.fields, args),
+            TE.mapLeft((e) => e.join('\n')),
             TE.chainEitherK((fieldValues) =>
                 generateChangeLogFile(fieldValues, config.fields, fieldsForFileName.right, config.note, config.fileTemplateText)
             ),
-            TE.fold(
-                T.fromIOK((status) => printAndExit(status.msg)),
-                T.fromIOK(print)
-            )
+            TE.fold(T.fromIOK(printAndExit), T.fromIOK(print))
         )();
     },
 };
