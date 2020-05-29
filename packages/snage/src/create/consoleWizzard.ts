@@ -3,7 +3,6 @@ import {
     dateSetValidator,
     dateValidator,
     isBlank,
-    listSelectionValidator,
     noBlankValuesValidator,
     numberSetValidator,
     numberValidator,
@@ -14,25 +13,14 @@ import {Field, FieldValue} from '../config/type';
 import {LocalDate} from '@js-joda/core';
 import * as T from 'fp-ts/lib/Task';
 import * as O from 'fp-ts/lib/Option';
+import * as A from 'fp-ts/lib/Array';
 
 export const askUserForFieldValue = (field: Field): T.Task<O.Option<FieldValue>> =>
     T.task.map(() => askForInputForFieldByTypes(field), O.fromNullable);
 
 const askForInputForFieldByTypes = async (field: Field) => {
-    const prefix = field.optional ? '[OPTIONAL] ' : '';
     if (field.enum) {
-        let type = 'rawlist';
-        if (field.list) {
-            type = 'checkbox';
-        }
-        return await askForUserInputWithChoices(
-            type,
-            prefix + 'Select ' + field.name,
-            field.name,
-            field.enum,
-            listSelectionValidator,
-            field.optional
-        );
+        return select(`Select ${field.name}`, field.enum, field.list, field.optional);
     }
     switch (field.type) {
         case 'date':
@@ -105,21 +93,11 @@ const askForUserInput = async (
 };
 
 const askForBooleanInput = async (field: Field) => {
-    let type = 'rawlist';
-    if (field.list) {
-        type = 'checkbox';
-    }
-    return await askForUserInputWithChoices(
-        type,
-        'Select ' + field.name,
-        field.name,
-        [
-            {name: 'true', value: true},
-            {name: 'false', value: false},
-        ],
-        listSelectionValidator,
-        field.optional
-    );
+    const choices = [
+        {name: 'true', value: true},
+        {name: 'false', value: false},
+    ];
+    return select(`Select ${field.name}`, choices, field.list, field.optional);
 };
 
 const askForDateInput = async (field: Field) => {
@@ -159,22 +137,29 @@ const replaceBlankAndEmptyWithNull = (value: any) => {
     return value;
 };
 
-const askForUserInputWithChoices = async (
-    type: any,
+const select = async <T>(
     message: string,
-    name: string,
-    choices: any,
-    validator: (value: any, isOptional?: boolean) => boolean | string,
-    isOptional?: boolean
-) => {
+    choices: Array<string | {name: string; value: T | null}>,
+    list: boolean = false,
+    optional: boolean = false
+) => (list ? multiSelect(message, choices, optional) : singleSelect(message, choices, optional));
+
+const multiSelect = async <T>(message: string, choices: Array<string | {name: string; value: T | null}>, optional = false) => {
+    const answer = await inquirer.prompt({type: 'checkbox', message, name: 'field', choices});
+    const value = answer['field'];
+    return optional && Array.isArray(value) && value.length === 0 ? null : value;
+};
+
+const singleSelect = async <T>(message: string, choices: Array<string | {name: string; value: T | null}>, optional = false) => {
+    const noChoice = {name: '[no value]', value: null};
+
     const answer = await inquirer.prompt({
-        type: type,
-        message: message,
-        name: name,
-        choices: choices,
-        validate: (value) => validator(value, isOptional),
+        type: 'list',
+        message,
+        name: 'field',
+        choices: optional ? A.cons(noChoice, choices) : choices,
     });
-    return answer[name];
+    return answer['field'];
 };
 
 const askForDateInputFromUser = async (
