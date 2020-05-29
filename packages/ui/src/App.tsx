@@ -5,8 +5,19 @@ import Chip from '@material-ui/core/Chip';
 import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import axios from 'axios';
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, makeStyles, Typography} from '@material-ui/core';
+import {
+    ExpansionPanel,
+    ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    Link,
+    makeStyles,
+    Typography,
+    TextField,
+    InputAdornment,
+    IconButton,
+} from '@material-ui/core';
 import {useDebounce} from 'use-debounce';
+import CloseIcon from '@material-ui/icons/Close';
 
 type SetQuery = (x: DebounceableQuery) => void;
 const getQueryFromSearch = (search: string): string =>
@@ -70,7 +81,22 @@ interface SearchProps {
 const Search: React.FC<SearchProps> = ({query, setQuery}) => {
     return (
         <div style={{textAlign: 'center', padding: 30}}>
-            <input type="text" style={{width: 500}} value={query} onChange={(e) => setQuery({query: e.target.value, debounce: true})} />
+            <TextField
+                type="text"
+                variant="outlined"
+                style={{width: 500}}
+                value={query}
+                onChange={(e) => setQuery({query: e.target.value, debounce: true})}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton onClick={() => setQuery({query: '', debounce: false})}>
+                                <CloseIcon />
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
+            />
         </div>
     );
 };
