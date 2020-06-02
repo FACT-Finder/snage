@@ -2650,10 +2650,12 @@
   dependencies:
     winston "*"
 
-"@types/yaml@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/yaml/-/yaml-1.2.0.tgz#4ed577fc4ebbd6b829b28734e56d10c9e6984e09"
-  integrity sha512-GW8b9qM+ebgW3/zjzPm0I1NxMvLaz/YKT9Ph6tTb+Fkeyzd9yLTvQ6ciQ2MorTRmb/qXmfjMerRpG4LviixaqQ==
+"@types/yaml@^1.9.7":
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/@types/yaml/-/yaml-1.9.7.tgz#2331f36e0aac91311a63d33eb026c21687729679"
+  integrity sha512-8WMXRDD1D+wCohjfslHDgICd2JtMATZU8CkhH8LVJqcJs6dyYj5TGptzP8wApbmEullGBSsCEzzap73DQ1HJaA==
+  dependencies:
+    yaml "*"
 
 "@types/yargs-parser@*":
   version "15.0.0"
@@ -15255,6 +15257,11 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
+
+yaml@*:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.0.tgz#3b593add944876077d4d683fee01081bd9fff31e"
+  integrity sha512-yr2icI4glYaNG+KWONODapy2/jDdMSDnrONSjblABjD9B4Z5LgiircSt8m8sRZFNi08kG9Sm0uSHtEmP3zaEGg==
 
 yaml@^1.7.2:
   version "1.8.3"

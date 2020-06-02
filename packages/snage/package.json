@@ -21,7 +21,6 @@
   "bin": "build/npm/snage.js",
   "dependencies": {
     "@js-joda/core": "^2.0.0",
-    "@types/yaml": "^1.2.0",
     "ajv": "^6.12.2",
     "cross-env": "^7.0.2",
     "express": "^4.17.1",
@@ -52,6 +51,7 @@
     "@types/string-similarity": "^3.0.0",
     "@types/supertest": "^2.0.8",
     "@types/winston": "^2.4.4",
+    "@types/yaml": "^1.9.7",
     "copy-webpack-plugin": "^5.1.1",
     "get-port": "^5.0.0",
     "jest": "^24.9.0",
