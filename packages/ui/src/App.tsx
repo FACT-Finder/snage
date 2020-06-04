@@ -2,22 +2,11 @@ import React from 'react';
 import './App.css';
 import {ApiNote} from '../../shared/type';
 import Chip from '@material-ui/core/Chip';
-import ReactMarkdown from 'react-markdown';
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import axios from 'axios';
-import {
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
-    Link,
-    makeStyles,
-    Typography,
-    TextField,
-    InputAdornment,
-    IconButton,
-} from '@material-ui/core';
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, TextField, InputAdornment, IconButton} from '@material-ui/core';
 import {useDebounce} from 'use-debounce';
 import CloseIcon from '@material-ui/icons/Close';
+import {Markdown} from './Markdown';
 
 type SetQuery = (x: DebounceableQuery) => void;
 const getQueryFromSearch = (search: string): string =>
@@ -102,7 +91,6 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => {
 };
 
 const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: {entry: ApiNote; setQuery: SetQuery}) => {
-    const classes = useStyles();
     const handleClick = (key: string, value: string | string[]) => (e) => {
         e.stopPropagation();
         const arrayValue = Array.isArray(value) ? value : [value];
@@ -113,9 +101,7 @@ const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: 
         <ExpansionPanel>
             <ExpansionPanelSummary>
                 <div>
-                    <Typography variant="h5" component="div" className={classes.header + ' markdown-body'}>
-                        <ReactMarkdown source={summary} />
-                    </Typography>
+                    <Markdown content={'# ' + summary} />
                     {Object.entries(values).map(([key, value]) => (
                         <Chip size="small" key={key} style={{marginRight: 10}} label={key + ': ' + value} onClick={handleClick(key, value)} />
                     ))}
@@ -133,26 +119,10 @@ const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: 
                 </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <div style={{width: '100%'}}>
-                    {content === '' ? (
-                        '-- no content --'
-                    ) : (
-                        <ReactMarkdown source={content} renderers={{code: CodeBlock}} className={'markdown-body'} />
-                    )}
-                </div>
+                <div style={{width: '100%'}}>{content === '' ? '-- no content --' : <Markdown content={content} />}</div>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );
 });
-
-const useStyles = makeStyles({
-    header: {
-        '& > p': {margin: '0'},
-    },
-});
-
-const CodeBlock: React.FC<{language?: string; value: string}> = ({value, language}) => {
-    return <SyntaxHighlighter language={language}>{value}</SyntaxHighlighter>;
-};
 
 export default App;
