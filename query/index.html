@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://snage.dev/config/">
+        <link rel="canonical" href="https://snage.dev/query/">
       
       
       <link rel="shortcut icon" href="../favicon.ico">
@@ -17,7 +17,7 @@
     
     
       
-        <title>Config - Snage</title>
+        <title>Query - Snage</title>
       
     
     
@@ -54,7 +54,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#explanation" class="md-skip">
+        <a href="#structure" class="md-skip">
           Skip to content
         </a>
       
@@ -82,7 +82,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Config
+              Query
             
           </span>
         </div>
@@ -270,97 +270,11 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Config
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="Config" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../config/" title="Config" class="md-nav__link">
       Config
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#explanation" class="md-nav__link">
-    Explanation
-  </a>
-  
-    <nav class="md-nav" aria-label="Explanation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#version" class="md-nav__link">
-    version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#note" class="md-nav__link">
-    note
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fields" class="md-nav__link">
-    fields
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#filterpresets" class="md-nav__link">
-    filterPresets
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#links" class="md-nav__link">
-    links
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#standard" class="md-nav__link">
-    standard
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
     
@@ -380,11 +294,143 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../query/" title="Query" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Query
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Query" class="md-nav__link md-nav__link--active">
       Query
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#structure" class="md-nav__link">
+    Structure
+  </a>
+  
+    <nav class="md-nav" aria-label="Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field" class="md-nav__link">
+    Field
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator" class="md-nav__link">
+    Operator
+  </a>
+  
+    <nav class="md-nav" aria-label="Operator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unary" class="md-nav__link">
+    Unary
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary" class="md-nav__link">
+    Binary
+  </a>
+  
+    <nav class="md-nav" aria-label="Binary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-comparison" class="md-nav__link">
+    Version comparison
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value" class="md-nav__link">
+    Value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complex-queries" class="md-nav__link">
+    Complex Queries
+  </a>
+  
+    <nav class="md-nav" aria-label="Complex Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#precedence" class="md-nav__link">
+    Precedence
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quoting" class="md-nav__link">
+    Quoting
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -568,57 +614,103 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#explanation" class="md-nav__link">
-    Explanation
+  <a href="#structure" class="md-nav__link">
+    Structure
   </a>
   
-    <nav class="md-nav" aria-label="Explanation">
+    <nav class="md-nav" aria-label="Structure">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#version" class="md-nav__link">
-    version
+  <a href="#field" class="md-nav__link">
+    Field
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#note" class="md-nav__link">
-    note
+  <a href="#operator" class="md-nav__link">
+    Operator
+  </a>
+  
+    <nav class="md-nav" aria-label="Operator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unary" class="md-nav__link">
+    Unary
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#fields" class="md-nav__link">
-    fields
+  <a href="#binary" class="md-nav__link">
+    Binary
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Binary">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#filterpresets" class="md-nav__link">
-    filterPresets
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#links" class="md-nav__link">
-    links
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#standard" class="md-nav__link">
-    standard
+  <a href="#version-comparison" class="md-nav__link">
+    Version comparison
   </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value" class="md-nav__link">
+    Value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complex-queries" class="md-nav__link">
+    Complex Queries
+  </a>
+  
+    <nav class="md-nav" aria-label="Complex Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#precedence" class="md-nav__link">
+    Precedence
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quoting" class="md-nav__link">
+    Quoting
+  </a>
   
 </li>
       
@@ -634,7 +726,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/FACT-Finder/snage/edit/master/docs/config.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/FACT-Finder/snage/edit/master/docs/query.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -642,67 +734,178 @@
                   
                 
                 
-                  <h1>Config</h1>
+                  <h1>Query</h1>
                 
-                <p>Description about .snage.yaml.</p>
-<p>Example config:
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="nt">note</span><span class="p">:</span>
-    <span class="nt">basedir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">changelog</span>
-    <span class="nt">file</span><span class="p">:</span> <span class="s">&quot;${issue}-${type}.md&quot;</span>
-<span class="nt">fields</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">issue</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">type</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">add</span><span class="p p-Indicator">,</span> <span class="nv">change</span><span class="p p-Indicator">,</span> <span class="nv">deprecate</span><span class="p p-Indicator">,</span> <span class="nv">remove</span><span class="p p-Indicator">,</span> <span class="nv">fix</span><span class="p p-Indicator">,</span> <span class="nv">security</span><span class="p p-Indicator">]</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">audience</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">user</span><span class="p p-Indicator">,</span> <span class="nv">developer</span><span class="p p-Indicator">]</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">version</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">semver</span>
-      <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">provided</span><span class="p">:</span>
-          <span class="nt">by</span><span class="p">:</span> <span class="s">&#39;git-version&#39;</span>
-          <span class="nt">arguments</span><span class="p">:</span>
-              <span class="nt">version-regex</span><span class="p">:</span> <span class="s">&#39;^v(.*)$&#39;</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">components</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">server</span><span class="p p-Indicator">,</span> <span class="nv">ui</span><span class="p p-Indicator">,</span> <span class="nv">cli</span><span class="p p-Indicator">,</span> <span class="nv">api</span><span class="p p-Indicator">,</span> <span class="nv">config</span><span class="p p-Indicator">]</span>
-      <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="nt">filterPresets</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
-<span class="nt">links</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;GitHub#${issue}&quot;</span>
-    <span class="nt">link</span><span class="p">:</span> <span class="s">&quot;https://github.com/FACT-Finder/snage/issues/${issue}&quot;</span>
-<span class="nt">standard</span><span class="p">:</span>
-    <span class="nt">query</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
-    <span class="nt">sort</span><span class="p">:</span>
-        <span class="nt">field</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">version</span>
-        <span class="nt">order</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">desc</span>
-</code></pre></div></p>
-<h2 id="explanation">Explanation<a class="headerlink" href="#explanation" title="Permanent link">&para;</a></h2>
-<h3 id="version"><code>version</code><a class="headerlink" href="#version" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+                <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Queries are highly dependent on your field config,
+everything here is an example and must be adjusted to your config.</p>
+<p>The examples below use our Snage config
+<a href="https://github.com/FACT-Finder/snage/blob/master/.snage.yaml">.snage.yaml</a></p>
+</div>
+<p>You can query for all notes belonging to a specific version</p>
+<div class="highlight"><pre><span></span><code>version = 0.0.7
 </code></pre></div>
 
-<h3 id="note"><code>note</code><a class="headerlink" href="#note" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="nt">note</span><span class="p">:</span>
-    <span class="nt">basedir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">changelog</span>
-    <span class="nt">file</span><span class="p">:</span> <span class="s">&quot;${issue}-${type}.md&quot;</span>
+<p><a href="https://changelog.snage.dev/?q=version%3D0.0.7">Try it out</a></p>
+<p>or for all notes newer than a specific version</p>
+<div class="highlight"><pre><span></span><code>version &gt; 0.0.7
 </code></pre></div>
 
-<h3 id="fields"><code>fields</code><a class="headerlink" href="#fields" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="nt">fields</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">issue</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span>
+<p><a href="https://changelog.snage.dev/?q=version%3E0.0.7">Try it out</a></p>
+<p>If you want to find all notes between two different versions you have to use the <code>and</code> operator to combine two conditions</p>
+<div class="highlight"><pre><span></span><code>version &gt;= 1.2.7 and version &lt; 2.0.0
 </code></pre></div>
 
-<h3 id="filterpresets"><code>filterPresets</code><a class="headerlink" href="#filterpresets" title="Permanent link">&para;</a></h3>
-<h3 id="links"><code>links</code><a class="headerlink" href="#links" title="Permanent link">&para;</a></h3>
-<h3 id="standard"><code>standard</code><a class="headerlink" href="#standard" title="Permanent link">&para;</a></h3>
+<p><a href="https://changelog.snage.dev/?q=version%3E%3D0.0.7%20and%20version%20%3C%200.0.10">Try it out</a></p>
+<h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
+<p>A simple note query consists either of a field name followed by a binary operator, and a value</p>
+<div class="highlight"><pre><span></span><code>field binaryOperator value
+</code></pre></div>
+
+<p>or of a field name followed by a unary operator</p>
+<div class="highlight"><pre><span></span><code>field unaryOperator
+</code></pre></div>
+
+<h3 id="field">Field<a class="headerlink" href="#field" title="Permanent link">&para;</a></h3>
+<p>Field may be any field name defined inside your <a href="../config/#field">config</a>.</p>
+<p>Our config for Snage has fields like <code>issue</code>, <code>type</code> and <code>version</code>.
+Have a look at it here: <a href="https://github.com/FACT-Finder/snage/blob/master/.snage.yaml">snage: ./snage.yaml</a>.</p>
+<h3 id="operator">Operator<a class="headerlink" href="#operator" title="Permanent link">&para;</a></h3>
+<h4 id="unary">Unary<a class="headerlink" href="#unary" title="Permanent link">&para;</a></h4>
+<p>Unary operators don't have a value.</p>
+<table>
+<thead>
+<tr>
+<th>operator</th>
+<th>description</th>
+<th>field type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>absent</td>
+<td>field value is unset</td>
+<td>all field types</td>
+</tr>
+<tr>
+<td>present</td>
+<td>field value is set</td>
+<td>all field types</td>
+</tr>
+</tbody>
+</table>
+<h4 id="binary">Binary<a class="headerlink" href="#binary" title="Permanent link">&para;</a></h4>
+<p>Binary operators compare field values of a note with values provided in the query.</p>
+<table>
+<thead>
+<tr>
+<th>operator</th>
+<th>description</th>
+<th>field type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>=</td>
+<td>equal or contains on list</td>
+<td>all field types</td>
+</tr>
+<tr>
+<td>!=</td>
+<td>not equal or not contains on list</td>
+<td>all field types</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>greater</td>
+<td><code>date</code>, <code>number</code>, <code>semver</code>, <code>ffversion</code></td>
+</tr>
+<tr>
+<td>&gt;=</td>
+<td>greater or equal</td>
+<td><code>date</code>, <code>number</code>, <code>semver</code>, <code>ffversion</code></td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>less</td>
+<td><code>date</code>, <code>number</code>, <code>semver</code>, <code>ffversion</code></td>
+</tr>
+<tr>
+<td>&lt;=</td>
+<td>less or equal</td>
+<td><code>date</code>, <code>number</code>, <code>semver</code>, <code>ffversion</code></td>
+</tr>
+<tr>
+<td>~</td>
+<td>string contains</td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td>~~</td>
+<td>string fuzzy search</td>
+<td><code>string</code></td>
+</tr>
+</tbody>
+</table>
+<h5 id="version-comparison">Version comparison<a class="headerlink" href="#version-comparison" title="Permanent link">&para;</a></h5>
+<p>Fields with type <code>semver</code> or <code>ffversion</code> aren't compared literally, if only part of the version is specified but instead will be seen as range.</p>
+<p>For fields with type <code>semver</code> the following rules apply:</p>
+<ul>
+<li><code>semver = 1</code> is the same as <code>semver &gt;= 1.0.0 and semver &lt; 2.0.0</code>.</li>
+<li><code>semver 1.2</code> is the same as <code>semver &gt;= 1.2.0 and semver &lt; 1.3.0</code>.</li>
+<li><code>semver = 1.2.3</code> is compared literally.</li>
+<li><code>semver &gt; 1</code> is compared with minor and patch version implicitly set to 0 <code>semver &gt; 1.0.0</code>.</li>
+</ul>
+<p>For fields with type <code>ffversion</code> the following rules apply:</p>
+<ul>
+<li><code>ffversion = 1</code> is the same as <code>ffversion &gt;= 1.0.0-0 and ffversion &lt; 2.0.0-0</code>.</li>
+<li><code>ffversion = 1.2</code> is the same as <code>ffversion &gt;= 1.2.0-0 and ffversion &lt; 1.3.0-0</code>.</li>
+<li><code>ffversion = 1.2.3</code> is the same as <code>ffversion &gt;= 1.2.3-0 and ffversion &lt; 1.2.4-0</code>.</li>
+<li><code>ffversion = 1.2.3-10</code> is compared literally.</li>
+<li><code>ffversion &gt; 1</code> is compared with minor, patch and prerelease version implicitly set to 0 <code>ffversion &gt; 1.0.0-0</code>.</li>
+</ul>
+<h3 id="value">Value<a class="headerlink" href="#value" title="Permanent link">&para;</a></h3>
+<p>The value depends on the field type.
+When you query a number field, you are only allowed to specify a number.
+Other values will result in a query parse error.</p>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nv">issue</span> <span class="o">=</span> <span class="m">50</span>
+<span class="nb">type</span> <span class="o">=</span> bugfix
+date &gt;<span class="o">=</span> <span class="m">2020</span>-05-05
+date absent
+issue present
+</code></pre></div>
+
+<h2 id="complex-queries">Complex Queries<a class="headerlink" href="#complex-queries" title="Permanent link">&para;</a></h2>
+<p>Simple queries can be combined via logical <code>and</code> and logical <code>or</code>.</p>
+<p><strong><code>and</code></strong> requires both its left and right side to evaluate to true.
+<strong><code>or</code></strong> requires either its left or right side to evaluate to true.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span> and <span class="nb">type</span> <span class="o">=</span> bugfix or <span class="nb">type</span> !<span class="o">=</span> bugfix
+</code></pre></div>
+
+<h3 id="precedence">Precedence<a class="headerlink" href="#precedence" title="Permanent link">&para;</a></h3>
+<p><code>and</code> takes precendence over <code>or</code>, meaning that in a query like</p>
+<div class="highlight"><pre><span></span><code><span class="o">(</span><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span><span class="o">)</span> or <span class="o">(</span><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span><span class="o">)</span>
+</code></pre></div>
+
+<p>you can omit the parentheses and use</p>
+<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span>
+</code></pre></div>
+
+<p>instead.
+On the other hand parenthesis around <code>or</code> change the meaning of the query, e.g.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="o">(</span><span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span><span class="o">)</span>
+</code></pre></div>
+
+<p>is a different from</p>
+<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span>.
+</code></pre></div>
+
+<h2 id="quoting">Quoting<a class="headerlink" href="#quoting" title="Permanent link">&para;</a></h2>
+<p>String values that contain spaces can be quoted with single or double quotes:</p>
+<div class="highlight"><pre><span></span><code>content ~ &quot;throw error&quot;
+</code></pre></div>
                 
               
               
@@ -721,7 +924,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../install/yarn/" title="Yarn" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../note/" title="Note" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -730,19 +933,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Yarn
+                Note
               </div>
             </div>
           </a>
         
         
-          <a href="../note/" title="Note" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../cmd/serve/" title="Serve" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Note
+                Serve
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
