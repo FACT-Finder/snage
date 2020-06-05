@@ -68,7 +68,7 @@ You can install Snage in many different ways:
 ## Features
 
 * Highly customizable with user defined [fields](https://snage.dev/config/#fields)
-* Custom query language for finding change log notes
+* Custom [query language](https://snage.dev/query) for finding change log notes
 * Sleek web UI in material ui design
 * Great tooling support for managing notes.
 

@@ -60,6 +60,7 @@ nav:
     - Yarn: install/yarn.md
   - Config: config.md
   - Note: note.md
+  - Query: query.md
   - Usage:
     - Serve: cmd/serve.md
     - Create: cmd/create.md
