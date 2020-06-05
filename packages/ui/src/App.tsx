@@ -6,6 +6,7 @@ import axios from 'axios';
 import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, TextField, InputAdornment, IconButton} from '@material-ui/core';
 import {useDebounce} from 'use-debounce';
 import CloseIcon from '@material-ui/icons/Close';
+import HelpIcon from '@material-ui/icons/Help';
 import {Markdown} from './Markdown';
 
 type SetQuery = (x: DebounceableQuery) => void;
@@ -73,14 +74,19 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => {
             <TextField
                 type="text"
                 variant="outlined"
-                style={{width: 500}}
+                style={{maxWidth: 600, width: '100%'}}
                 value={query}
                 onChange={(e) => setQuery({query: e.target.value, debounce: true})}
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton onClick={() => setQuery({query: '', debounce: false})}>
-                                <CloseIcon />
+                            {query !== '' ? (
+                                <IconButton onClick={() => setQuery({query: '', debounce: false})} size="small">
+                                    <CloseIcon />
+                                </IconButton>
+                            ) : null}
+                            <IconButton href="https://snage.dev/query" size="small">
+                                <HelpIcon />
                             </IconButton>
                         </InputAdornment>
                     ),
