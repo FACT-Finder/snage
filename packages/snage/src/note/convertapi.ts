@@ -6,5 +6,5 @@ import {stringEncodeHeader} from './convert';
 export const convertToApiNote = (note: Note, fields: Field[]): ApiNote => {
     const {id, content, summary, values} = note;
     const convertedValues = stringEncodeHeader(fields, values);
-    return {id, content, summary, values: convertedValues, links: note.links};
+    return {id, content, summary, values: convertedValues, links: note.links, style: note.style};
 };

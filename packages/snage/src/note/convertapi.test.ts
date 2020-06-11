@@ -1,21 +1,18 @@
-import {Note} from './note';
+import {Note, partialNote} from './note';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
 import {convertToApiNote} from './convertapi';
 import {LocalDate} from '@js-joda/core';
 
 describe('convert', () => {
-    const note: Note = {
-        content: '',
-        id: '',
-        file: '',
-        summary: '',
+    const note: Note = partialNote({
         links: [
             {
                 label: 'Github',
                 href: 'http://github.com',
             },
         ],
+        style: {color: 'blue'},
         values: {
             version: semver.parse('1.0.5')!,
             ffversion: '1.0.5-15',
@@ -24,7 +21,7 @@ describe('convert', () => {
             number: 1.53,
             list: [true, false],
         },
-    };
+    });
     const fields: Field[] = [
         {name: 'version', type: 'semver'},
         {name: 'ffversion', type: 'ffversion'},
@@ -44,6 +41,7 @@ describe('convert', () => {
                     href: 'http://github.com',
                 },
             ],
+            style: {color: 'blue'},
             values: {
                 version: '1.0.5',
                 ffversion: '1.0.5-15',

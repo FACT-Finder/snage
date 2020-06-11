@@ -6,7 +6,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {Config, Field, FieldValue, hasProvider, ProvidedField, LinkProvider} from '../config/type';
+import {Config, Field, FieldValue, hasProvider, ProvidedField, LinkProvider, CSSProvider} from '../config/type';
 import {Note} from './note';
 import {merge, readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
 import {decodeHeader} from './convert';
@@ -16,38 +16,47 @@ export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> => {
     return pipe(
         readdir(config.basedir),
         TE.mapLeft((e) => [e]),
-        TE.chain((files) => readNotes(config.fields, config.note.links, files))
+        TE.chain((files) => readNotes(config.fields, config.note.links, config.note.styles, files))
     );
 };
 
-const readNotes = (fields: Field[], linkProvider: LinkProvider, files: string[]): TE.TaskEither<string[], Note[]> => {
+const readNotes = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider, files: string[]): TE.TaskEither<string[], Note[]> => {
     return pipe(
-        A.array.traverse(T.task)(files, (file) => readNote(fields, linkProvider, file)),
+        A.array.traverse(T.task)(files, (file) => readNote(fields, linkProvider, styleProvider, file)),
         T.map(sequenceKeepAllLefts),
         TE.mapLeft(A.flatten)
     );
 };
 
-export const readNote = (fields: Field[], linkProvider: LinkProvider, fileName: string): TE.TaskEither<string[], Note> => {
+export const readNote = (
+    fields: Field[],
+    linkProvider: LinkProvider,
+    styleProvider: CSSProvider,
+    fileName: string
+): TE.TaskEither<string[], Note> => {
     return pipe(
         readFile(fileName),
         TE.mapLeft((e) => [e]),
         TE.map((content) => parseRawNote(content, fileName)),
-        TE.chain(parseNote(fields, linkProvider)),
+        TE.chain(parseNote(fields, linkProvider, styleProvider)),
         TE.mapLeft((errors) => errors.map((error) => `${fileName}: ${error}`))
     );
 };
 
-export const parseNote = (fields: Field[], linkProvider: LinkProvider) => (rawNote: RawNote): TE.TaskEither<string[], Note> => {
+export const parseNote = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider) => (
+    rawNote: RawNote
+): TE.TaskEither<string[], Note> => {
     return pipe(
         parseNoteValues(fields, rawNote),
         TE.chain(runProviders(fields)),
         TE.chainEitherK(verifyRequiredFields(fields)),
-        TE.map(fillLinks(linkProvider))
+        TE.map(fillLinks(linkProvider)),
+        TE.map(fillStyle(styleProvider))
     );
 };
 
-const fillLinks = (linkProvider: LinkProvider) => (note: Note) => ({...note, links: linkProvider(note.values)});
+const fillLinks = (linkProvider: LinkProvider) => (note: Note): Note => ({...note, links: linkProvider(note.values)});
+const fillStyle = (styleProvider: CSSProvider) => (note: Note): Note => ({...note, style: styleProvider(note)});
 
 export interface RawNote {
     file: string;
@@ -77,6 +86,7 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
             id: rawNote.file,
             file: rawNote.file,
             links: [],
+            style: {},
             content: rawNote.content,
             summary: rawNote.summary.replace(/^\s*#\s*/, ''),
         }))

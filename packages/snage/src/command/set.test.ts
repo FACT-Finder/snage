@@ -1,9 +1,9 @@
 import {updateNotes} from './set';
-import {Note, NoteValues} from '../note/note';
+import {Note, NoteValues, partialNote} from '../note/note';
 import {left, right} from 'fp-ts/lib/Either';
 
 const note = (id: string, values: NoteValues): Note => {
-    return {file: id, content: '', summary: id, id, values, links: []};
+    return partialNote({file: id, summary: id, id, values});
 };
 
 describe('updateNotes', () => {

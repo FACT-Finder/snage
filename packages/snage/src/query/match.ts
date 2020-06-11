@@ -11,7 +11,7 @@ import {getFieldOrdering} from './sort';
 
 export type MatcherNote = Pick<Note, 'content' | 'summary' | 'values'>;
 
-interface Matcher {
+export interface Matcher {
     (n: MatcherNote): boolean;
 }
 
