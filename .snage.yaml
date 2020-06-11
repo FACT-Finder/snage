@@ -3,6 +3,31 @@ basedir: changelog
 template:
   file: ${issue}-${type}.md
 note:
+  styles:
+    - on: 'type = add'
+      css:
+        borderLeft: '10px solid #2ecc71' # green
+
+    - on: 'type = remove'
+      css:
+        borderLeft: '10px solid black'
+
+    - on: 'type = deprecate'
+      css:
+        borderLeft: '10px solid #95a5a6' # grey
+
+    - on: 'type = fix'
+      css:
+        borderLeft: '10px solid #2980b9' # blue
+
+    - on: 'type = security'
+      css:
+        borderLeft: '10px solid #e74c3c' # red
+
+    - on: 'type = change'
+      css:
+        borderLeft: '10px solid #f39c12' # orange
+
   links:
     - name: "GitHub#${issue}"
       link: "https://github.com/FACT-Finder/snage/issues/${issue}"
