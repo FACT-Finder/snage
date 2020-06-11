@@ -1,7 +1,7 @@
 import {migrate} from '../migrate';
 import YAML from 'yaml';
 
-describe('v1 -> v2', () => {
+describe('v0 -> v1', () => {
     const migration = migrate(0, 1);
     const rawDocument = 'filename: "changelog/nested/${issue}.md"';
     it('splits filename into basedir and file', () => {
