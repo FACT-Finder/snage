@@ -24,7 +24,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     },
     handler: async (args) => {
         const config = getConfigOrExit();
-        const fieldsForFileName = getFields(config.fields, extractFieldNamesFromTemplateString(config.note.file));
+        const fieldsForFileName = getFields(config.fields, extractFieldNamesFromTemplateString(config.template.file));
         if (isLeft(fieldsForFileName)) {
             console.error(fieldsForFileName.left);
             process.exit(1);
@@ -33,9 +33,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
         return pipe(
             handleFieldValues(config.fields, args),
             TE.mapLeft((e) => e.join('\n')),
-            TE.chainEitherK((fieldValues) =>
-                generateChangeLogFile(fieldValues, config.fields, fieldsForFileName.right, config.note, config.fileTemplateText)
-            ),
+            TE.chainEitherK((fieldValues) => generateChangeLogFile(fieldValues, config, fieldsForFileName.right)),
             TE.fold(T.fromIOK(printAndExit), T.fromIOK(print))
         )();
     },

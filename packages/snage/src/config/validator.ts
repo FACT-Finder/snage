@@ -6,17 +6,20 @@ import {currentSchema, currentVersion, getSchema} from './schema';
 import {migrate} from './migrate';
 import {Document} from 'yaml';
 
-const fieldsWithDefaults = {
+const fieldsWithDefaults: Partial<RawConfig> = {
     fields: [],
-    links: [],
     filterPresets: [],
-    fileTemplateText: '',
+    template: {text: '', file: ''},
+    note: {links: []},
 };
 
 export const parseRawConfig = (yamlDoc: Document): E.Either<string, RawConfig> => {
     return pipe(
         migrateConfig(yamlDoc),
-        E.map((parsedConfig) => ({...fieldsWithDefaults, ...parsedConfig.toJSON()}))
+        E.map((parsedConfig) => {
+            const json = parsedConfig.toJSON();
+            return {...fieldsWithDefaults, ...json, template: {...fieldsWithDefaults.template, ...json.template, note: {...fieldsWithDefaults.note, ...json.note}}};
+        })
     );
 };
 

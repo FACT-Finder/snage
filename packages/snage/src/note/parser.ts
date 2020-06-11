@@ -14,9 +14,9 @@ import YAML from 'yaml';
 
 export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> => {
     return pipe(
-        readdir(config.note.basedir),
+        readdir(config.basedir),
         TE.mapLeft((e) => [e]),
-        TE.chain((files) => readNotes(config.fields, config.links, files))
+        TE.chain((files) => readNotes(config.fields, config.note.links, files))
     );
 };
 

@@ -6,11 +6,13 @@ import {pipe} from 'fp-ts/lib/pipeable';
 import {Document} from 'yaml';
 import {Pair, YAMLMap} from 'yaml/types';
 import {findPair} from 'yaml/util';
+import {migrateV2} from './migration/v2';
 
 export type Migration = (config: YAMLMap) => YAMLMap;
 
 const migrations: Record<string, Migration> = {
     0: migrateV1,
+    1: migrateV2,
 };
 
 /**
@@ -41,6 +43,19 @@ export const upsert = (contents: YAMLMap, key: any, pair: Pair, defaultIndex: nu
         }
     }
     return contents;
+};
+
+export const insertBefore = (contents: YAMLMap, key: string, pair: Pair): void => {
+    const index = pipe(
+        findIndex(contents, key),
+        O.getOrElse(() => contents.items.length)
+    );
+    contents.items.splice(index, 0, pair);
+};
+
+export const findIndex = (contents: YAMLMap, key: string): O.Option<number> => {
+    const index = contents.items.findIndex((item) => item.key && (item.key === key || item.key.value === key));
+    return index === -1 ? O.none : O.some(index);
 };
 
 const getMigration = (from: number): Migration =>

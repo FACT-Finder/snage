@@ -1,16 +1,18 @@
 import {parseRawConfig} from './validator';
 import {left, right} from 'fp-ts/lib/Either';
 import {document} from '../util/yaml';
+import {RawConfig} from './type';
 
 describe('parseConfig', () => {
     it('throws when filename is missing', () => {
         expect(parseRawConfig(document({}))).toMatchObject(left("data should have required property 'filename'"));
     });
-    const minimal = {
-        version: 1,
-        note: {
-            basedir: '',
+    const minimal: Partial<RawConfig> = {
+        version: 2,
+        basedir: '',
+        template: {
             file: '',
+            text: '',
         },
         fields: [{name: 'version', type: 'semver'}],
         standard: {
@@ -25,9 +27,8 @@ describe('parseConfig', () => {
         expect(parseRawConfig(document(minimal))).toStrictEqual(
             right({
                 ...minimal,
-                fileTemplateText: '',
                 filterPresets: [],
-                links: [],
+                note: {links: []},
             })
         );
     });

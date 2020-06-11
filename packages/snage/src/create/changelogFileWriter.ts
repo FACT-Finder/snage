@@ -2,19 +2,13 @@ import * as fs from 'fs';
 import {chain, Either, left, right} from 'fp-ts/lib/Either';
 import path from 'path';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {Field} from '../config/type';
+import {Config, Field} from '../config/type';
 import {FrontMatterBuilder} from './frontMatterBuilder';
 
-export const generateChangeLogFile = (
-    fieldValues: Record<string, unknown>,
-    fields: Field[],
-    fieldsForFileName: Field[],
-    note: {basedir: string; file: string},
-    fileTemplateText: string
-): Either<string, string> => {
-    const content: string = generateFrontMatterFileContent(fieldValues, fields, fileTemplateText);
-    const fileName: string = createFileName(fieldValues, fieldsForFileName, note.file);
-    const filePath = path.join(note.basedir, fileName);
+export const generateChangeLogFile = (fieldValues: Record<string, unknown>, config: Config, fieldsForFileName: Field[]): Either<string, string> => {
+    const content: string = generateFrontMatterFileContent(fieldValues, config.fields, config.template.text);
+    const fileName: string = createFileName(fieldValues, fieldsForFileName, config.template.file);
+    const filePath = path.join(config.basedir, fileName);
     return createFile(filePath, content);
 };
 

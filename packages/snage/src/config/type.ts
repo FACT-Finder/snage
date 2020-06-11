@@ -5,17 +5,19 @@ import * as ORD from 'fp-ts/lib/Ord';
 import {LocalDate} from '@js-joda/core';
 
 export type Config = {
-    note: {
-        basedir: string;
+    basedir: string;
+    template: {
         file: string;
+        text: string;
+    };
+    note: {
+        links: LinkProvider;
     };
     fields: Field[];
-    links: LinkProvider;
     filterPresets: FilterPreset[];
     standard: {
         sort: ORD.Ord<Note>;
     };
-    fileTemplateText: string;
 };
 
 export interface LinkProvider {
@@ -23,18 +25,21 @@ export interface LinkProvider {
 }
 
 export interface RawConfig {
-    note: {
-        basedir: string;
+    version: number;
+    basedir: string;
+    template: {
         file: string;
+        text: string;
+    };
+    note: {
+        links: Link[];
     };
     fields: RawField[];
-    links: Link[];
     filterPresets: FilterPreset[];
     standard: {
         sort: Sort;
         query: string;
     };
-    fileTemplateText: string;
 }
 
 export type Field = RawField & {provider?: ValueProvider};
