@@ -5,13 +5,24 @@ export interface Note {
     file: string;
     content: string;
     summary: string;
-    style: CSS;
+    style?: CSS;
     links: NoteLink[];
+    valueStyles: Record<string, Record<string, string>>;
 
     values: NoteValues;
 }
 
-export const partialNote = (note: Partial<Note>): Note => ({id: '', file: '', content: '', summary: '', style: {}, links: [], values: {}, ...note});
+export const partialNote = (note: Partial<Note>): Note => ({
+    id: '',
+    file: '',
+    content: '',
+    summary: '',
+    style: {},
+    links: [],
+    values: {},
+    valueStyles: {},
+    ...note,
+});
 
 export interface NoteLink {
     label: string;

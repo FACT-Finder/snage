@@ -57,7 +57,39 @@ describe('parseConfig', () => {
         const links = conf.right.note.links({version: semver.parse('1.0.0')!, name: 'hello'});
         expect(links).toEqual([{label: 'Name hello 1.0.0', href: 'http://github.com'}]);
     });
-    it('creates css provider', () => {
+    it('creates field css provider', () => {
+        const config: RawConfig = {
+            basedir: 'aeu',
+            filterPresets: [],
+            template: {
+                text: '',
+                file: '',
+            },
+            version: 2,
+            note: {
+                links: [],
+                styles: [],
+            },
+            fields: [
+                {name: 'name', type: 'string', styles: [{on: 'name = hello', css: {color: 'blue'}}]},
+                {name: 'version', type: 'semver'},
+            ],
+            standard: {
+                query: '',
+                sort: {
+                    field: 'version',
+                    order: 'desc',
+                },
+            },
+        };
+        const conf = parseConfig('.snage.yaml', document(config));
+        assertRight(conf);
+        const filledStyle = conf.right.fields[0].styleProvider?.(partialNote({values: {version: semver.parse('1.0.0')!, name: 'hello'}}));
+        expect(filledStyle).toEqual({color: 'blue'});
+        const emptyStyle = conf.right.fields[0].styleProvider?.(partialNote({values: {version: semver.parse('1.0.0')!, name: 'nope'}}));
+        expect(emptyStyle).toEqual(undefined);
+    });
+    it('creates note css provider', () => {
         const config: RawConfig = {
             basedir: 'aeu',
             filterPresets: [],
@@ -92,7 +124,7 @@ describe('parseConfig', () => {
         const filledStyle = conf.right.note.styles(partialNote({values: {version: semver.parse('1.0.0')!, name: 'hello'}}));
         expect(filledStyle).toEqual({background: 'green'});
         const emptyStyle = conf.right.note.styles(partialNote({values: {version: semver.parse('1.0.0')!, name: 'nope'}}));
-        expect(emptyStyle).toEqual({});
+        expect(emptyStyle).toEqual(undefined);
     });
     it('fails on optional field in fieldName', () => {
         const config = {

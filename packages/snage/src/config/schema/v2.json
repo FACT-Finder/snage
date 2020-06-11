@@ -19,7 +19,11 @@
         "optional": { "type": "boolean" },
         "provided": { "$ref": "#/definitions/provider" },
         "description": { "type": "string" },
-        "alias": { "type": "string" }
+        "alias": { "type": "string" },
+        "styles": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/styleDefinition" }
+        }
       },
       "additionalProperties": false,
       "required": ["name", "type"]

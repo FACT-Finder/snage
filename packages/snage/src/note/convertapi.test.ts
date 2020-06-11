@@ -13,6 +13,7 @@ describe('convert', () => {
             },
         ],
         style: {color: 'blue'},
+        valueStyles: {version: {color: 'blue'}},
         values: {
             version: semver.parse('1.0.5')!,
             ffversion: '1.0.5-15',
@@ -42,6 +43,7 @@ describe('convert', () => {
                 },
             ],
             style: {color: 'blue'},
+            valueStyles: {version: {color: 'blue'}},
             values: {
                 version: '1.0.5',
                 ffversion: '1.0.5-15',

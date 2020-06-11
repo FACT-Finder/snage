@@ -15,7 +15,9 @@ export interface Matcher {
     (n: MatcherNote): boolean;
 }
 
-export const createMatcher = (e: Expression, fields: Field[]): Matcher => {
+export type MatcherField = Pick<Field, 'name' | 'type' | 'list'>;
+
+export const createMatcher = (e: Expression, fields: MatcherField[]): Matcher => {
     if (e === true) {
         return () => true;
     }
@@ -29,7 +31,7 @@ export const createMatcher = (e: Expression, fields: Field[]): Matcher => {
     return createSimpleExpression(e, fields);
 };
 
-export const createSimpleExpression = (e: SingleExpression, fields: Field[]): Matcher => {
+export const createSimpleExpression = (e: SingleExpression, fields: MatcherField[]): Matcher => {
     const {field, op, value} = e;
     const conf = fields.find((f) => f.name === field) ?? ImplicitFields.find((f) => f.name === field);
     if (!conf) {
