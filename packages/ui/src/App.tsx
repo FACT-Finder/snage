@@ -3,7 +3,7 @@ import './App.css';
 import {ApiNote} from '../../shared/type';
 import Chip from '@material-ui/core/Chip';
 import axios from 'axios';
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, TextField, InputAdornment, IconButton} from '@material-ui/core';
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, TextField, InputAdornment, IconButton, useTheme} from '@material-ui/core';
 import {useDebounce} from 'use-debounce';
 import CloseIcon from '@material-ui/icons/Close';
 import HelpIcon from '@material-ui/icons/Help';
@@ -96,20 +96,25 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => {
     );
 };
 
-const Entry = React.memo(({entry: {content, summary, values, links, style}, setQuery}: {entry: ApiNote; setQuery: SetQuery}) => {
+const Entry = React.memo(({entry: {content, summary, values, links, style, valueStyles}, setQuery}: {entry: ApiNote; setQuery: SetQuery}) => {
     const handleClick = (key: string, value: string | string[]) => (e) => {
         e.stopPropagation();
         const arrayValue = Array.isArray(value) ? value : [value];
         setQuery({query: arrayValue.map((v) => `${key}=${v}`).join(' or '), debounce: false});
     };
-
     return (
         <ExpansionPanel style={style}>
             <ExpansionPanelSummary>
                 <div>
                     <Markdown content={'# ' + summary} />
                     {Object.entries(values).map(([key, value]) => (
-                        <Chip size="small" key={key} style={{marginRight: 10}} label={key + ': ' + value} onClick={handleClick(key, value)} />
+                        <Chip
+                            size="small"
+                            key={key}
+                            style={{marginRight: 10, ...valueStyles[key]}}
+                            label={key + ': ' + value}
+                            onClick={handleClick(key, value)}
+                        />
                     ))}
                     {links.map(({href, label}) => (
                         <Link

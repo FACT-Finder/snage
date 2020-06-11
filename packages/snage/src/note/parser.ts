@@ -6,7 +6,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {Config, Field, FieldValue, hasProvider, ProvidedField, LinkProvider, CSSProvider} from '../config/type';
+import {Config, CSS, CSSProvider, Field, FieldValue, hasProvider, LinkProvider, ProvidedField} from '../config/type';
 import {Note} from './note';
 import {merge, readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
 import {decodeHeader} from './convert';
@@ -51,12 +51,20 @@ export const parseNote = (fields: Field[], linkProvider: LinkProvider, styleProv
         TE.chain(runProviders(fields)),
         TE.chainEitherK(verifyRequiredFields(fields)),
         TE.map(fillLinks(linkProvider)),
-        TE.map(fillStyle(styleProvider))
+        TE.map(fillStyle(fields, styleProvider))
     );
 };
 
 const fillLinks = (linkProvider: LinkProvider) => (note: Note): Note => ({...note, links: linkProvider(note.values)});
-const fillStyle = (styleProvider: CSSProvider) => (note: Note): Note => ({...note, style: styleProvider(note)});
+const fillStyle = (fields: Field[], noteStyle: CSSProvider) => (note: Note): Note => ({
+    ...note,
+    style: noteStyle(note),
+    valueStyles: toRecord(
+        fields
+            .map((field): [string, CSS | undefined] => [field.name, field.styleProvider?.(note)])
+            .filter((x): x is [string, CSS] => x[1] !== undefined)
+    ),
+});
 
 export interface RawNote {
     file: string;
@@ -87,6 +95,7 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
             file: rawNote.file,
             links: [],
             style: {},
+            valueStyles: {},
             content: rawNote.content,
             summary: rawNote.summary.replace(/^\s*#\s*/, ''),
         }))
@@ -96,7 +105,7 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
 const runProviders = (fields: Field[]) => (note: Note): TE.TaskEither<string[], Note> => {
     const runProvider = (field: ProvidedField): TE.TaskEither<string, [string, FieldValue | undefined]> => {
         return pipe(
-            field.provider(note.file),
+            field.valueProvider(note.file),
             TE.map((value) => [field.name, value])
         );
     };

@@ -38,6 +38,27 @@ fields:
   - name: type
     type: string
     enum: [ add, change, deprecate, remove, fix, security ]
+    styles:
+      - on: 'type = add'
+        css:
+          background: '#2ecc71' # green
+      - on: 'type = remove'
+        css:
+          background: 'black'
+          color: 'white'
+      - on: 'type = deprecate'
+        css:
+          background: '#95a5a6' # grey
+      - on: 'type = fix'
+        css:
+          background: '#2980b9' # blue
+          color: 'white'
+      - on: 'type = security'
+        css:
+          background: '#e74c3c' # red
+      - on: 'type = change'
+        css:
+          background: '#f39c12' # orange
   - name: audience
     type: string
     enum: [ user, developer ]

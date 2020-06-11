@@ -1,4 +1,4 @@
-import {Field, FieldType} from '../config/type';
+import {Field, FieldType, RawField} from '../config/type';
 import {Note} from '../note/note';
 import * as O from 'fp-ts/lib/Option';
 import * as A from 'fp-ts/lib/Array';
@@ -10,7 +10,7 @@ import {pipe} from 'fp-ts/lib/pipeable';
 import {LocalDate} from '@js-joda/core';
 import {sign} from 'fp-ts/lib/Ordering';
 
-export const getOrdering = (field: Field, order: 'asc' | 'desc'): ORD.Ord<Note> => {
+export const getOrdering = (field: Field | RawField, order: 'asc' | 'desc'): ORD.Ord<Note> => {
     return pipe(
         getFieldOrdering(field.type),
         (o): ORD.Ord<any> => (field.list ? listOrdering(o) : o),

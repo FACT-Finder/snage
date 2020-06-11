@@ -14,8 +14,8 @@ import {ConfigParameterName, printAndExit} from '../command/common';
 import {flow} from 'fp-ts/lib/function';
 import {extractFieldNamesFromTemplateString, getFields, replacePlaceholders} from '../util/fieldExtractor';
 import {NoteLink} from '../note/note';
-import {createParser} from '../query/parser';
-import {createMatcher} from '../query/match';
+import {createParser, ParserField} from '../query/parser';
+import {createMatcher, MatcherField} from '../query/match';
 import {sequenceS} from 'fp-ts/lib/Apply';
 
 export const getConfig = (): E.Either<string, Config> => E.either.chain(getConfigFile(), loadConfig);
@@ -94,7 +94,7 @@ const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string,
     const sortField = rawConfig.fields.find((f) => f.name === rawConfig.standard.sort.field)!;
     const ordering = getOrdering(sortField, rawConfig.standard.sort.order);
     return pipe(
-        A.array.traverse(E.either)(rawConfig.fields, toField),
+        A.array.traverse(E.either)(rawConfig.fields, toField(rawConfig.fields)),
         E.chain((fields) =>
             pipe(
                 sequenceS(E.either)({
@@ -134,7 +134,7 @@ const createSingleLinkProvider = (fields: Field[]) => (index: number, link: Link
     );
 };
 
-const createStyleProvider = (fields: Field[], styles: ConditionalStyle[]): E.Either<string, CSSProvider> => {
+const createStyleProvider = (fields: Array<ParserField & MatcherField>, styles: ConditionalStyle[]): E.Either<string, CSSProvider> => {
     const parser = createParser(fields);
 
     return pipe(
@@ -147,7 +147,7 @@ const createStyleProvider = (fields: Field[], styles: ConditionalStyle[]): E.Eit
         ),
         E.map(
             (providers): CSSProvider => {
-                return (values) => providers.find(({matcher}) => matcher(values))?.css ?? {};
+                return (values) => providers.find(({matcher}) => matcher(values))?.css;
             }
         )
     );
@@ -156,13 +156,14 @@ const createStyleProvider = (fields: Field[], styles: ConditionalStyle[]): E.Eit
 const mergeProviders = (providers: LinkProvider[]): LinkProvider => (values) =>
     providers.reduce((all: NoteLink[], func: LinkProvider) => [...all, ...func(values)], []);
 
-const toField = (field: RawField): E.Either<string, Field> => {
+const toField = (fields: RawField[]) => (field: RawField): E.Either<string, Field> => {
+    const partial = E.either.map(createStyleProvider(fields, field.styles ?? []), (styleProvider): Field => ({...field, styleProvider}));
     if (!hasProvided(field)) {
-        return E.right(field);
+        return partial;
     }
     return pipe(
         getValueProvider(field),
-        E.map((valueProvider) => ({...field, provider: valueProvider}))
+        E.chain((valueProvider) => E.either.map(partial, (f) => ({...f, valueProvider})))
     );
 };
 

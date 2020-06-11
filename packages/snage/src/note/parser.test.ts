@@ -34,6 +34,7 @@ describe('parseNote', () => {
             summary: 'cool summary line',
             content: 'body text\n\n**test**\n',
             file: 'filename',
+            valueStyles: {},
             links: [
                 {
                     href: 'Hello',
@@ -99,7 +100,7 @@ describe('parseNote', () => {
         const gitProvider = git.providerFactory(providedField);
         assertRight(gitProvider);
 
-        const fields: Field[] = [{name: 'version', type: 'semver', provider: gitProvider.right}];
+        const fields: Field[] = [{name: 'version', type: 'semver', valueProvider: gitProvider.right}];
         const changelogFile = path.resolve(path.join(__dirname, '../../../../changelog/7-config.md'));
         const noIssue: RawNote = {
             file: changelogFile,

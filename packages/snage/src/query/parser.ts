@@ -28,6 +28,7 @@ export type Operator = CompareOperator | '~' | '~~' | typeof StatusOP;
 export const isCompareOperator = (op: Operator): op is CompareOperator => (compareOperators as readonly string[]).includes(op);
 
 export type Expression = true | SingleExpression | [Expression, 'or' | 'and', Expression];
+export type ParserField = Pick<Field, 'name' | 'type' | 'enum'>;
 
 export enum StatusValue {
     Present = 'present',
@@ -43,9 +44,9 @@ export interface ParseError {
     expected: string[];
 }
 
-export const createParser = (fields: Field[]): ((q: string) => Either<ParseError, Expression>) => {
+export const createParser = (fields: ParserField[]): ((q: string) => Either<ParseError, Expression>) => {
     const rules: any = {};
-    const addField = (field: Field): void => {
+    const addField = (field: ParserField): void => {
         const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> => {
             return P.alt(
                 P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]),

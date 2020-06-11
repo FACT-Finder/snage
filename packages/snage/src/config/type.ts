@@ -31,7 +31,7 @@ export interface ConditionalStyle {
     css: CSS;
 }
 
-export type CSSProvider = (values: MatcherNote) => CSS;
+export type CSSProvider = (values: MatcherNote) => CSS | undefined;
 export type CSS = Record<string, string>;
 
 export interface RawConfig {
@@ -53,7 +53,7 @@ export interface RawConfig {
     };
 }
 
-export type Field = RawField & {provider?: ValueProvider};
+export type Field = RawField & {valueProvider?: ValueProvider; styleProvider?: CSSProvider};
 
 export interface RawField {
     name: string;
@@ -61,6 +61,7 @@ export interface RawField {
     list?: boolean;
     enum?: string[];
     optional?: true;
+    styles?: ConditionalStyle[];
     provided?: Provider;
     description?: string;
     alias?: string;
@@ -70,10 +71,10 @@ export type FieldType = 'string' | 'boolean' | 'date' | 'number' | 'semver' | 'f
 
 type RequiredProperty<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
 export type RawProvidedField = RequiredProperty<RawField, 'provided'>;
-export type ProvidedField = RequiredProperty<Field, 'provider'>;
+export type ProvidedField = RequiredProperty<Field, 'valueProvider'>;
 
 export const hasProvided = (field: RawField): field is RawProvidedField => typeof field.provided !== 'undefined';
-export const hasProvider = (field: Field): field is ProvidedField => typeof field.provider !== 'undefined';
+export const hasProvider = (field: Field): field is ProvidedField => typeof field.valueProvider !== 'undefined';
 
 export interface FilterPreset {
     name: string;

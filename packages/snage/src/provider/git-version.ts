@@ -1,4 +1,4 @@
-import {Field, FieldValue, RawProvidedField} from '../config/type';
+import {FieldValue, RawProvidedField} from '../config/type';
 import * as O from 'fp-ts/lib/Option';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -14,7 +14,7 @@ export const providerFactory: ProviderFactory = (field: RawProvidedField): E.Eit
         E.map((versionRegex) => (file: string): TE.TaskEither<string, FieldValue | undefined> => getVersion(versionRegex, file, field))
     );
 
-const getVersion = (versionRegex: string, file: string, field: Field): TE.TaskEither<string, FieldValue | undefined> => {
+const getVersion = (versionRegex: string, file: string, field: RawProvidedField): TE.TaskEither<string, FieldValue | undefined> => {
     return pipe(
         getFirstTagContainingFile(file),
         TE.map(O.map((tag) => extractVersion(tag, versionRegex))),

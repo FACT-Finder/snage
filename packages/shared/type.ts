@@ -2,8 +2,9 @@ export interface ApiNote {
     id: string;
     content: string;
     summary: string;
-    style: Record<string, string>;
+    style?: Record<string, string>;
     links: ApiNoteLink[];
+    valueStyles: Record<string, Record<string, string>>;
 
     values: {[key: string]: string | string[]};
 }
