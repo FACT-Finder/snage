@@ -32,9 +32,6 @@ note:
     - name: "GitHub#${issue}"
       link: "https://github.com/FACT-Finder/snage/issues/${issue}"
 fields:
-  - name: issue
-    type: number
-    description: The github issue number
   - name: type
     type: string
     enum: [ add, change, deprecate, remove, fix, security ]
@@ -59,10 +56,18 @@ fields:
       - on: 'type = change'
         css:
           background: '#f39c12' # orange
+  - name: issue
+    type: number
+    description: The github issue number
   - name: audience
     type: string
     enum: [ user, developer ]
     description: The audience affected by the change
+  - name: components
+    type: string
+    list: true
+    enum: [ server, ui, cli, api, config, docs ]
+    optional: true
   - name: version
     type: semver
     optional: true
@@ -73,11 +78,6 @@ fields:
   - name: date
     type: date
     description: date in 'YYYY-MM-DD' format
-  - name: components
-    type: string
-    list: true
-    enum: [ server, ui, cli, api, config, docs ]
-    optional: true
 filterPresets: []
 standard:
   query: ""
