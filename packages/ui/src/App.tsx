@@ -3,7 +3,7 @@ import './App.css';
 import {ApiNote} from '../../shared/type';
 import Chip from '@material-ui/core/Chip';
 import axios from 'axios';
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, TextField, InputAdornment, IconButton, useTheme} from '@material-ui/core';
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, TextField, InputAdornment, IconButton} from '@material-ui/core';
 import {useDebounce} from 'use-debounce';
 import CloseIcon from '@material-ui/icons/Close';
 import HelpIcon from '@material-ui/icons/Help';
@@ -35,7 +35,7 @@ const useUrlChangeableQuery = (): [DebounceableQuery, (v: DebounceableQuery) => 
 };
 
 const App: React.FC = () => {
-    const [entries, setEntries] = React.useState<ApiNote[]>([]);
+    const [{notes, fieldOrder}, setEntries] = React.useState<{notes: ApiNote[]; fieldOrder: string[]}>(() => ({notes: [], fieldOrder: []}));
     const [query, setQuery] = useUrlChangeableQuery();
     const [debounceQuery] = useDebounce(query.query, query.debounce ? 500 : 0);
 
@@ -55,8 +55,8 @@ const App: React.FC = () => {
             <h1 style={{textAlign: 'center'}}>Changelog</h1>
             <Search query={query.query} setQuery={setQuery} />
             <div>
-                {entries.map((entry) => (
-                    <Entry key={entry.id} entry={entry} setQuery={setQuery} />
+                {notes.map((entry) => (
+                    <Entry key={entry.id} entry={entry} fieldOrder={fieldOrder} setQuery={setQuery} />
                 ))}
             </div>
         </div>
@@ -96,44 +96,60 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => {
     );
 };
 
-const Entry = React.memo(({entry: {content, summary, values, links, style, valueStyles}, setQuery}: {entry: ApiNote; setQuery: SetQuery}) => {
-    const handleClick = (key: string, value: string | string[]) => (e) => {
-        e.stopPropagation();
-        const arrayValue = Array.isArray(value) ? value : [value];
-        setQuery({query: arrayValue.map((v) => `${key}=${v}`).join(' or '), debounce: false});
-    };
-    return (
-        <ExpansionPanel style={style}>
-            <ExpansionPanelSummary>
-                <div>
-                    <Markdown content={'# ' + summary} />
-                    {Object.entries(values).map(([key, value]) => (
-                        <Chip
-                            size="small"
-                            key={key}
-                            style={{marginRight: 10, ...valueStyles[key]}}
-                            label={key + ': ' + value}
-                            onClick={handleClick(key, value)}
-                        />
-                    ))}
-                    {links.map(({href, label}) => (
-                        <Link
-                            key={label + href}
-                            style={{marginRight: 5}}
-                            href={href}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            onClick={(e) => e.stopPropagation()}>
-                            {label}
-                        </Link>
-                    ))}
-                </div>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-                <div style={{width: '100%'}}>{content === '' ? '-- no content --' : <Markdown content={content} />}</div>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
-    );
-});
+const Entry = React.memo(
+    ({
+        entry: {content, summary, values, links, style, valueStyles},
+        setQuery,
+        fieldOrder,
+    }: {
+        entry: ApiNote;
+        setQuery: SetQuery;
+        fieldOrder: string[];
+    }) => {
+        const handleClick = (key: string, value: string | string[]) => (e) => {
+            e.stopPropagation();
+            const arrayValue = Array.isArray(value) ? value : [value];
+            setQuery({query: arrayValue.map((v) => `${key}=${v}`).join(' or '), debounce: false});
+        };
+        return (
+            <ExpansionPanel style={style}>
+                <ExpansionPanelSummary>
+                    <div>
+                        <Markdown content={'# ' + summary} />
+                        {fieldOrder.map((key) => {
+                            const value = values[key];
+                            if (value === null || value === undefined) {
+                                return undefined;
+                            }
+                            return (
+                                <Chip
+                                    size="small"
+                                    key={key}
+                                    style={{marginRight: 10, ...valueStyles[key]}}
+                                    label={key + ': ' + value}
+                                    onClick={handleClick(key, value)}
+                                />
+                            );
+                        })}
+                        {links.map(({href, label}) => (
+                            <Link
+                                key={label + href}
+                                style={{marginRight: 5}}
+                                href={href}
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                onClick={(e) => e.stopPropagation()}>
+                                {label}
+                            </Link>
+                        ))}
+                    </div>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <div style={{width: '100%'}}>{content === '' ? '-- no content --' : <Markdown content={content} />}</div>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+        );
+    }
+);
 
 export default App;
