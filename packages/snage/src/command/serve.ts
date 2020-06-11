@@ -76,7 +76,7 @@ export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]
             ),
             E.map(A.sort(config.standard.sort)),
             E.map(A.map((note) => convertToApiNote(note, config.fields))),
-            E.fold(identity, (notes): Response => ({status: 200, body: notes})),
+            E.fold(identity, (notes): Response => ({status: 200, body: {notes, fieldOrder: config.fields.map((f) => f.name)}})),
             ({status, body}) => {
                 res.status(status).json(body);
                 endTimer(status);
