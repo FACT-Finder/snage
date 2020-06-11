@@ -1,5 +1,5 @@
 import {getFieldOrdering, getOrdering} from './sort';
-import {Note} from '../note/note';
+import {Note, partialNote} from '../note/note';
 import * as A from 'fp-ts/lib/Array';
 import * as O from 'fp-ts/lib/Option';
 import * as R from 'fp-ts/lib/Record';
@@ -10,10 +10,10 @@ import {LocalDate} from '@js-joda/core';
 describe('sort', () => {
     describe('getOrdering', () => {
         const notes: Note[] = [
-            {content: '', file: '', id: '', summary: '', links: [], values: {number: 3, list: [1, 2]}},
-            {content: '', file: '', id: '', summary: '', links: [], values: {number: 5, list: [2]}},
-            {content: '', file: '', id: '', summary: '', links: [], values: {number: 1, list: [0]}},
-            {content: '', file: '', id: '', summary: '', links: [], values: {}},
+            partialNote({values: {number: 3, list: [1, 2]}}),
+            partialNote({values: {number: 5, list: [2]}}),
+            partialNote({values: {number: 1, list: [0]}}),
+            partialNote({values: {}}),
         ];
 
         test('number:desc', () => {

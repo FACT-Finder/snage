@@ -30,6 +30,7 @@ describe('parseNote', () => {
 
         const expected: Note = {
             id: 'filename',
+            style: {background: 'green'},
             summary: 'cool summary line',
             content: 'body text\n\n**test**\n',
             file: 'filename',
@@ -45,7 +46,13 @@ describe('parseNote', () => {
                 date: LocalDate.parse('2019-03-03'),
             },
         };
-        expect(await parseNote(fields, () => [{href: 'Hello', label: 'World'}])(rawNote)()).toStrictEqual(right(expected));
+        expect(
+            await parseNote(
+                fields,
+                () => [{href: 'Hello', label: 'World'}],
+                () => ({background: 'green'})
+            )(rawNote)()
+        ).toStrictEqual(right(expected));
     });
     it('returns all errors', async () => {
         const noIssue: RawNote = {
@@ -57,9 +64,13 @@ describe('parseNote', () => {
             summary: '# test',
             content: '',
         };
-        expect(await parseNote(fields, () => [])(noIssue)()).toStrictEqual(
-            left(['filename: Invalid value "bugfixi" supplied to : note/type: "bugfix" | "feature" | "refactoring"'])
-        );
+        expect(
+            await parseNote(
+                fields,
+                () => [],
+                () => ({})
+            )(noIssue)()
+        ).toStrictEqual(left(['filename: Invalid value "bugfixi" supplied to : note/type: "bugfix" | "feature" | "refactoring"']));
     });
     it('checks for required fields', async () => {
         const noIssue: RawNote = {
@@ -70,9 +81,13 @@ describe('parseNote', () => {
             summary: '# test',
             content: '',
         };
-        expect(await parseNote(fields, () => [])(noIssue)()).toStrictEqual(
-            left(['Missing value for required field issue', 'Missing value for required field type'])
-        );
+        expect(
+            await parseNote(
+                fields,
+                () => [],
+                () => ({})
+            )(noIssue)()
+        ).toStrictEqual(left(['Missing value for required field issue', 'Missing value for required field type']));
     });
     it('runs providers', async () => {
         const providedField: RawProvidedField = {
@@ -92,7 +107,13 @@ describe('parseNote', () => {
             summary: '# test',
             content: '',
         };
-        expect(await parseNote(fields, () => [])(noIssue)()).toMatchObject(
+        expect(
+            await parseNote(
+                fields,
+                () => [],
+                () => ({})
+            )(noIssue)()
+        ).toMatchObject(
             right({
                 values: {
                     version: semver.parse('0.0.2'),

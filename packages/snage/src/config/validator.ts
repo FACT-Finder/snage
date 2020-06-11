@@ -10,7 +10,7 @@ const fieldsWithDefaults: Partial<RawConfig> = {
     fields: [],
     filterPresets: [],
     template: {text: '', file: ''},
-    note: {links: []},
+    note: {links: [], styles: []},
 };
 
 export const parseRawConfig = (yamlDoc: Document): E.Either<string, RawConfig> => {
@@ -18,7 +18,12 @@ export const parseRawConfig = (yamlDoc: Document): E.Either<string, RawConfig> =
         migrateConfig(yamlDoc),
         E.map((parsedConfig) => {
             const json = parsedConfig.toJSON();
-            return {...fieldsWithDefaults, ...json, template: {...fieldsWithDefaults.template, ...json.template, note: {...fieldsWithDefaults.note, ...json.note}}};
+            return {
+                ...fieldsWithDefaults,
+                ...json,
+                template: {...fieldsWithDefaults.template, ...json.template},
+                note: {...fieldsWithDefaults.note, ...json.note},
+            };
         })
     );
 };

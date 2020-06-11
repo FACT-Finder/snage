@@ -2,7 +2,7 @@ import * as E from 'fp-ts/lib/Either';
 import {decodeStringValue, decodeValue, encodeHeader} from './convert';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
-import {Note} from './note';
+import {Note, partialNote} from './note';
 import {LocalDate} from '@js-joda/core';
 
 describe('decode', () => {
@@ -69,12 +69,7 @@ describe('decode', () => {
     });
 });
 describe('encodeHeader', () => {
-    const note: Note = {
-        content: '',
-        id: '',
-        file: '',
-        summary: '',
-        links: [],
+    const note: Note = partialNote({
         values: {
             version: semver.parse('1.0.5')!,
             ffversion: '1.0.5-15',
@@ -83,7 +78,7 @@ describe('encodeHeader', () => {
             number: 1.53,
             list: [true, false],
         },
-    };
+    });
     const fields: Field[] = [
         {name: 'version', type: 'semver'},
         {name: 'ffversion', type: 'ffversion'},

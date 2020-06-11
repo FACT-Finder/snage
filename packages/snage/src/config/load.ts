@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import YAML, {Document} from 'yaml';
 import {parseRawConfig} from './validator';
-import {Config, Field, hasProvided, Link, LinkProvider, RawConfig, RawField} from './type';
+import {ConditionalStyle, Config, CSSProvider, Field, hasProvided, Link, LinkProvider, RawConfig, RawField} from './type';
 import * as E from 'fp-ts/lib/Either';
 import {Either, left, right} from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
@@ -14,6 +14,9 @@ import {ConfigParameterName, printAndExit} from '../command/common';
 import {flow} from 'fp-ts/lib/function';
 import {extractFieldNamesFromTemplateString, getFields, replacePlaceholders} from '../util/fieldExtractor';
 import {NoteLink} from '../note/note';
+import {createParser} from '../query/parser';
+import {createMatcher} from '../query/match';
+import {sequenceS} from 'fp-ts/lib/Apply';
 
 export const getConfig = (): E.Either<string, Config> => E.either.chain(getConfigFile(), loadConfig);
 
@@ -93,18 +96,21 @@ const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string,
     return pipe(
         A.array.traverse(E.either)(rawConfig.fields, toField),
         E.chain((fields) =>
-            E.either.map(
-                createLinkProvider(fields, rawConfig.links),
-                (linkProvider): Config => ({
+            pipe(
+                sequenceS(E.either)({
+                    links: createLinkProvider(fields, rawConfig.note.links),
+                    styles: createStyleProvider(fields, rawConfig.note.styles),
+                }),
+                E.map(({links, styles}) => ({
                     ...rawConfig,
                     basedir,
-                    note: {links: linkProvider},
+                    note: {links, styles},
                     fields,
                     standard: {sort: ordering},
-                })
+                })),
+                E.chain(validateNoteFileTemplate)
             )
-        ),
-        E.chain(validateNoteFileTemplate)
+        )
     );
 };
 
@@ -123,6 +129,25 @@ const createSingleLinkProvider = (fields: Field[]) => (index: number, link: Link
                     return [{href: replacePlaceholders(values, fields, link.link), label: replacePlaceholders(values, fields, link.name)}];
                 }
                 return [];
+            }
+        )
+    );
+};
+
+const createStyleProvider = (fields: Field[], styles: ConditionalStyle[]): E.Either<string, CSSProvider> => {
+    const parser = createParser(fields);
+
+    return pipe(
+        A.array.traverse(E.either)(styles, ({on, css}) =>
+            E.either.bimap(
+                parser(on),
+                (e) => `Invalid expression "${on}" ${JSON.stringify(e)}`,
+                (expression) => ({matcher: createMatcher(expression, fields), css} as const)
+            )
+        ),
+        E.map(
+            (providers): CSSProvider => {
+                return (values) => providers.find(({matcher}) => matcher(values))?.css ?? {};
             }
         )
     );

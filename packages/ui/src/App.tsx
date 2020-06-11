@@ -96,7 +96,7 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => {
     );
 };
 
-const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: {entry: ApiNote; setQuery: SetQuery}) => {
+const Entry = React.memo(({entry: {content, summary, values, links, style}, setQuery}: {entry: ApiNote; setQuery: SetQuery}) => {
     const handleClick = (key: string, value: string | string[]) => (e) => {
         e.stopPropagation();
         const arrayValue = Array.isArray(value) ? value : [value];
@@ -104,7 +104,7 @@ const Entry = React.memo(({entry: {content, summary, values, links}, setQuery}: 
     };
 
     return (
-        <ExpansionPanel>
+        <ExpansionPanel style={style}>
             <ExpansionPanelSummary>
                 <div>
                     <Markdown content={'# ' + summary} />

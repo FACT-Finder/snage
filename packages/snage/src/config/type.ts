@@ -3,6 +3,7 @@ import {ValueProvider} from '../provider/provider';
 import {Note, NoteLink, NoteValues} from '../note/note';
 import * as ORD from 'fp-ts/lib/Ord';
 import {LocalDate} from '@js-joda/core';
+import {MatcherNote} from '../query/match';
 
 export type Config = {
     basedir: string;
@@ -11,6 +12,7 @@ export type Config = {
         text: string;
     };
     note: {
+        styles: CSSProvider;
         links: LinkProvider;
     };
     fields: Field[];
@@ -24,6 +26,14 @@ export interface LinkProvider {
     (values: NoteValues): NoteLink[];
 }
 
+export interface ConditionalStyle {
+    on: string;
+    css: CSS;
+}
+
+export type CSSProvider = (values: MatcherNote) => CSS;
+export type CSS = Record<string, string>;
+
 export interface RawConfig {
     version: number;
     basedir: string;
@@ -32,6 +42,7 @@ export interface RawConfig {
         text: string;
     };
     note: {
+        styles: ConditionalStyle[];
         links: Link[];
     };
     fields: RawField[];

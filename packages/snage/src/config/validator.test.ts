@@ -28,7 +28,7 @@ describe('parseConfig', () => {
             right({
                 ...minimal,
                 filterPresets: [],
-                note: {links: []},
+                note: {links: [], styles: []},
             })
         );
     });

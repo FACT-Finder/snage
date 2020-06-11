@@ -3,6 +3,8 @@ import {parseConfig} from './load';
 import semver from 'semver';
 import {assertRight} from '../fp/fp';
 import {document} from '../util/yaml';
+import {RawConfig} from './type';
+import {partialNote} from '../note/note';
 
 describe('parseConfig', () => {
     it('fails on not existing fields in fieldName', () => {
@@ -54,6 +56,43 @@ describe('parseConfig', () => {
         assertRight(conf);
         const links = conf.right.note.links({version: semver.parse('1.0.0')!, name: 'hello'});
         expect(links).toEqual([{label: 'Name hello 1.0.0', href: 'http://github.com'}]);
+    });
+    it('creates css provider', () => {
+        const config: RawConfig = {
+            basedir: 'aeu',
+            filterPresets: [],
+            template: {
+                text: '',
+                file: '',
+            },
+            version: 2,
+            note: {
+                links: [],
+                styles: [
+                    {
+                        css: {background: 'green'},
+                        on: 'name = hello',
+                    },
+                ],
+            },
+            fields: [
+                {name: 'name', type: 'string'},
+                {name: 'version', type: 'semver'},
+            ],
+            standard: {
+                query: '',
+                sort: {
+                    field: 'version',
+                    order: 'desc',
+                },
+            },
+        };
+        const conf = parseConfig('.snage.yaml', document(config));
+        assertRight(conf);
+        const filledStyle = conf.right.note.styles(partialNote({values: {version: semver.parse('1.0.0')!, name: 'hello'}}));
+        expect(filledStyle).toEqual({background: 'green'});
+        const emptyStyle = conf.right.note.styles(partialNote({values: {version: semver.parse('1.0.0')!, name: 'nope'}}));
+        expect(emptyStyle).toEqual({});
     });
     it('fails on optional field in fieldName', () => {
         const config = {
