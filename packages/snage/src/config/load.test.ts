@@ -52,7 +52,7 @@ describe('parseConfig', () => {
         };
         const conf = parseConfig('.snage.yaml', document(config));
         assertRight(conf);
-        const links = conf.right.links({version: semver.parse('1.0.0')!, name: 'hello'});
+        const links = conf.right.note.links({version: semver.parse('1.0.0')!, name: 'hello'});
         expect(links).toEqual([{label: 'Name hello 1.0.0', href: 'http://github.com'}]);
     });
     it('fails on optional field in fieldName', () => {

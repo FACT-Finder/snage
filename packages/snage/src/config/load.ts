@@ -87,7 +87,7 @@ export const parseConfig = (filePath: string, yamlDoc: Document): E.Either<strin
     );
 
 const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string, Config> => {
-    const basedir = resolveBasedir(rawConfig.note.basedir, configFilePath);
+    const basedir = resolveBasedir(rawConfig.basedir, configFilePath);
     const sortField = rawConfig.fields.find((f) => f.name === rawConfig.standard.sort.field)!;
     const ordering = getOrdering(sortField, rawConfig.standard.sort.order);
     return pipe(
@@ -97,8 +97,8 @@ const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string,
                 createLinkProvider(fields, rawConfig.links),
                 (linkProvider): Config => ({
                     ...rawConfig,
-                    note: {basedir: basedir, file: rawConfig.note.file},
-                    links: linkProvider,
+                    basedir,
+                    note: {links: linkProvider},
                     fields,
                     standard: {sort: ordering},
                 })
@@ -148,7 +148,7 @@ const resolveBasedir = (basedir: string, configFilePath: string): string => {
 
 const validateNoteFileTemplate = (config: Config): E.Either<string, Config> => {
     return pipe(
-        getFields(config.fields, extractFieldNamesFromTemplateString(config.note.file)),
+        getFields(config.fields, extractFieldNamesFromTemplateString(config.template.file)),
         E.chain(fieldsNot('optional', 'list')),
         E.bimap(
             (error) => `error in note.file: ${error}`,

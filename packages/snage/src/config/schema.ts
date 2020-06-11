@@ -1,14 +1,16 @@
 import schemaV0 from './schema/v0.json';
 import schemaV1 from './schema/v1.json';
+import schemaV2 from './schema/v2.json';
 import {Document} from 'yaml';
 import * as E from 'fp-ts/lib/Either';
 
 export const schema: Record<number, object> = {
     0: schemaV0,
     1: schemaV1,
+    2: schemaV2,
 };
 
-export const currentVersion = 1;
+export const currentVersion = 2;
 export const currentSchema: object = schema[currentVersion];
 
 export const getSchema = (config: Document): E.Either<string, [number, object]> => {
