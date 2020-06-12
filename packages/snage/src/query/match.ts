@@ -1,4 +1,12 @@
-import {CompareOperator, Expression, isCompareOperator, Operator, SingleExpression, StatusOP, StatusValue} from './parser';
+import {
+    CompareOperator,
+    Expression,
+    isCompareOperator,
+    Operator,
+    SingleExpression,
+    StatusOP,
+    StatusValue,
+} from './parser';
 import {expectNever, ffVersionRegex} from '../util/util';
 import semver from 'semver';
 import stringsimi from 'string-similarity';
@@ -111,7 +119,12 @@ const compare = (noteValue: any, queryValue: any, type: FieldType, operator: Com
     return checkOrd(getFieldOrdering(type), noteValue, queryValue, operator);
 };
 
-const checkOrd = <T>(ord: ORD.Ord<T>, left: T | undefined, right: T | undefined, operator: CompareOperator): boolean => {
+const checkOrd = <T>(
+    ord: ORD.Ord<T>,
+    left: T | undefined,
+    right: T | undefined,
+    operator: CompareOperator
+): boolean => {
     if (left === undefined || right === undefined) {
         return false;
     }

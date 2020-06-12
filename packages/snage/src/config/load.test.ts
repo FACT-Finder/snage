@@ -19,7 +19,9 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(left("error in note.file: Referenced field 'banana' does not exist."));
+        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(
+            left("error in note.file: Referenced field 'banana' does not exist.")
+        );
     });
     it('fails on not existing fields in link', () => {
         const config = {
@@ -34,7 +36,9 @@ describe('parseConfig', () => {
                 },
             },
         };
-        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(left("error in links/0: Referenced field 'banana' does not exist."));
+        expect(parseConfig('.snage.yaml', document(config))).toMatchObject(
+            left("error in links/0: Referenced field 'banana' does not exist.")
+        );
     });
     it('creates link provider', () => {
         const config = {
@@ -71,7 +75,11 @@ describe('parseConfig', () => {
                 styles: [],
             },
             fields: [
-                {name: 'name', type: 'string', styles: [{on: 'name = hello', css: {color: 'blue'}}]},
+                {
+                    name: 'name',
+                    type: 'string',
+                    styles: [{on: 'name = hello', css: {color: 'blue'}}],
+                },
                 {name: 'version', type: 'semver'},
             ],
             standard: {
@@ -85,9 +93,13 @@ describe('parseConfig', () => {
         };
         const conf = parseConfig('.snage.yaml', document(config));
         assertRight(conf);
-        const filledStyle = conf.right.fields[0].styleProvider?.(partialNote({values: {version: semver.parse('1.0.0')!, name: 'hello'}}));
+        const filledStyle = conf.right.fields[0].styleProvider?.(
+            partialNote({values: {version: semver.parse('1.0.0')!, name: 'hello'}})
+        );
         expect(filledStyle).toEqual({color: 'blue'});
-        const emptyStyle = conf.right.fields[0].styleProvider?.(partialNote({values: {version: semver.parse('1.0.0')!, name: 'nope'}}));
+        const emptyStyle = conf.right.fields[0].styleProvider?.(
+            partialNote({values: {version: semver.parse('1.0.0')!, name: 'nope'}})
+        );
         expect(emptyStyle).toEqual(undefined);
     });
     it('creates note css provider', () => {
@@ -123,9 +135,13 @@ describe('parseConfig', () => {
         };
         const conf = parseConfig('.snage.yaml', document(config));
         assertRight(conf);
-        const filledStyle = conf.right.note.styles(partialNote({values: {version: semver.parse('1.0.0')!, name: 'hello'}}));
+        const filledStyle = conf.right.note.styles(
+            partialNote({values: {version: semver.parse('1.0.0')!, name: 'hello'}})
+        );
         expect(filledStyle).toEqual({background: 'green'});
-        const emptyStyle = conf.right.note.styles(partialNote({values: {version: semver.parse('1.0.0')!, name: 'nope'}}));
+        const emptyStyle = conf.right.note.styles(
+            partialNote({values: {version: semver.parse('1.0.0')!, name: 'nope'}})
+        );
         expect(emptyStyle).toEqual(undefined);
     });
     it('fails on optional field in fieldName', () => {

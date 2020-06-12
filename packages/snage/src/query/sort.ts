@@ -59,4 +59,7 @@ const parseFFVersion = (s: string): [number, number, number, number] => {
     return [a, b, c, d];
 };
 
-const ffVersionOrd: ORD.Ord<string> = ORD.ord.contramap(ORD.getTupleOrd(ORD.ordNumber, ORD.ordNumber, ORD.ordNumber, ORD.ordNumber), parseFFVersion);
+const ffVersionOrd: ORD.Ord<string> = ORD.ord.contramap(
+    ORD.getTupleOrd(ORD.ordNumber, ORD.ordNumber, ORD.ordNumber, ORD.ordNumber),
+    parseFFVersion
+);

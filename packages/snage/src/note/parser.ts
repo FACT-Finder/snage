@@ -19,14 +19,24 @@ export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> =>
         TE.chain((files) => readNotes(config.fields, config.note.links, config.note.styles, files))
     );
 
-const readNotes = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider, files: string[]): TE.TaskEither<string[], Note[]> =>
+const readNotes = (
+    fields: Field[],
+    linkProvider: LinkProvider,
+    styleProvider: CSSProvider,
+    files: string[]
+): TE.TaskEither<string[], Note[]> =>
     pipe(
         A.array.traverse(T.task)(files, (file) => readNote(fields, linkProvider, styleProvider, file)),
         T.map(sequenceKeepAllLefts),
         TE.mapLeft(A.flatten)
     );
 
-export const readNote = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider, fileName: string): TE.TaskEither<string[], Note> =>
+export const readNote = (
+    fields: Field[],
+    linkProvider: LinkProvider,
+    styleProvider: CSSProvider,
+    fileName: string
+): TE.TaskEither<string[], Note> =>
     pipe(
         readFile(fileName),
         TE.mapLeft((e) => [e]),
@@ -46,7 +56,10 @@ export const parseNote = (fields: Field[], linkProvider: LinkProvider, styleProv
         TE.map(fillStyle(fields, styleProvider))
     );
 
-const fillLinks = (linkProvider: LinkProvider) => (note: Note): Note => ({...note, links: linkProvider(note.values)});
+const fillLinks = (linkProvider: LinkProvider) => (note: Note): Note => ({
+    ...note,
+    links: linkProvider(note.values),
+});
 const fillStyle = (fields: Field[], noteStyle: CSSProvider) => (note: Note): Note => ({
     ...note,
     style: noteStyle(note),

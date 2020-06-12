@@ -11,10 +11,16 @@ import {decodeValue} from '../note/convert';
 export const providerFactory: ProviderFactory = (field: RawProvidedField): E.Either<string, ValueProvider> =>
     pipe(
         requireArgument(field, 'version-regex', 'string'),
-        E.map((versionRegex) => (file: string): TE.TaskEither<string, FieldValue | undefined> => getVersion(versionRegex, file, field))
+        E.map((versionRegex) => (file: string): TE.TaskEither<string, FieldValue | undefined> =>
+            getVersion(versionRegex, file, field)
+        )
     );
 
-const getVersion = (versionRegex: string, file: string, field: RawProvidedField): TE.TaskEither<string, FieldValue | undefined> =>
+const getVersion = (
+    versionRegex: string,
+    file: string,
+    field: RawProvidedField
+): TE.TaskEither<string, FieldValue | undefined> =>
     pipe(
         getFirstTagContainingFile(file),
         TE.map(O.map((tag) => extractVersion(tag, versionRegex))),
@@ -22,7 +28,8 @@ const getVersion = (versionRegex: string, file: string, field: RawProvidedField)
         TE.chainEitherK(
             O.fold(
                 () => E.right<string, FieldValue | undefined>(undefined),
-                (version): E.Either<string, FieldValue | undefined> => E.either.mapLeft(decodeValue(field, version), (errors) => errors.join('\n'))
+                (version): E.Either<string, FieldValue | undefined> =>
+                    E.either.mapLeft(decodeValue(field, version), (errors) => errors.join('\n'))
             )
         )
     );
@@ -43,7 +50,9 @@ const getFirstTagContainingFile = (file: string): TE.TaskEither<string, O.Option
 
 const fetchCommit = (directory: string, filename: string): TE.TaskEither<string, O.Option<string>> =>
     pipe(
-        tryExec(`git log -n 1 --diff-filter=A --pretty=format:%H -- "${filename}"`, {cwd: directory}),
+        tryExec(`git log -n 1 --diff-filter=A --pretty=format:%H -- "${filename}"`, {
+            cwd: directory,
+        }),
         TE.map(O.fromPredicate((commit) => typeof commit !== 'undefined' && commit !== ''))
     );
 
@@ -55,4 +64,5 @@ const getTag = (directory: string, commit: string): TE.TaskEither<string, O.Opti
         TE.map(O.map((rawTag) => rawTag.replace(/[~^].*/, '')))
     );
 
-const extractVersion = (tag: string, versionRegex: string): string => tag.replace(RegExp(versionRegex), (match, version) => version);
+const extractVersion = (tag: string, versionRegex: string): string =>
+    tag.replace(RegExp(versionRegex), (match, version) => version);

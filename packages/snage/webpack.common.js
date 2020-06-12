@@ -12,7 +12,10 @@ const config = {
     node: {
         __dirname: false,
     },
-    plugins: [new CopyWebpackPlugin([{from: '../ui/build', to: 'ui'}]), new webpack.BannerPlugin({banner: '#!/usr/bin/env node', raw: true})],
+    plugins: [
+        new CopyWebpackPlugin([{from: '../ui/build', to: 'ui'}]),
+        new webpack.BannerPlugin({banner: '#!/usr/bin/env node', raw: true}),
+    ],
     resolve: {
         extensions: ['.ts', '.js'],
     },

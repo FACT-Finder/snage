@@ -41,7 +41,11 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
             .example('$0', 'set --on "issue = #22"   issue   # unset issue field')
             .describe('on', 'Condition for setting values')
             .positional('field', {type: 'string', describe: 'The field name'})
-            .positional('value', {array: true, type: 'string', describe: 'The field values (Empty if unset)'}) as any,
+            .positional('value', {
+                array: true,
+                type: 'string',
+                describe: 'The field values (Empty if unset)',
+            }) as any,
     handler: async ({field: fieldName, value: stringValue, on}) =>
         pipe(
             TE.fromEither(getConfig()),
@@ -49,14 +53,26 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
                 pipe(
                     parseNotes(config),
                     TE.mapLeft((errors) => errors.join('\n')),
-                    TE.chainEitherK((notes) => updateNotes({fields: config.fields, notes, condition: on, stringValue, fieldName}))
+                    TE.chainEitherK((notes) =>
+                        updateNotes({
+                            fields: config.fields,
+                            notes,
+                            condition: on,
+                            stringValue,
+                            fieldName,
+                        })
+                    )
                 )
             ),
             TE.fold(T.fromIOK(printAndExit), writeNotes)
         )(),
 };
 
-const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): E.Either<string, FieldValue | undefined> => {
+const parseValue = (
+    fields: Field[],
+    fieldName: string,
+    stringValue: string[]
+): E.Either<string, FieldValue | undefined> => {
     const field = fields.find((field) => field.name === fieldName);
     if (!field) {
         return E.left(`Field ${fieldName} does not exist`);
@@ -78,7 +94,13 @@ const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): 
     );
 };
 
-export const updateNotes = ({fields, condition, fieldName, stringValue, notes}: Options): E.Either<string, Array<{file: string; content: string}>> =>
+export const updateNotes = ({
+    fields,
+    condition,
+    fieldName,
+    stringValue,
+    notes,
+}: Options): E.Either<string, Array<{file: string; content: string}>> =>
     pipe(
         parseValue(fields, fieldName, stringValue),
         E.chain((value) =>
@@ -102,7 +124,12 @@ const filterNotes = (condition: string | undefined, fields: Field[], notes: Note
         )
     );
 
-const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({file, summary, content, values}): FileResult => {
+const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({
+    file,
+    summary,
+    content,
+    values,
+}): FileResult => {
     const copy = {...values};
     if (value === undefined) {
         delete copy[fieldName];

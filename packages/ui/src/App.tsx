@@ -3,7 +3,15 @@ import './App.css';
 import {ApiNote} from '../../shared/type';
 import Chip from '@material-ui/core/Chip';
 import axios from 'axios';
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Link, TextField, InputAdornment, IconButton} from '@material-ui/core';
+import {
+    ExpansionPanel,
+    ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    Link,
+    TextField,
+    InputAdornment,
+    IconButton,
+} from '@material-ui/core';
 import {useDebounce} from 'use-debounce';
 import CloseIcon from '@material-ui/icons/Close';
 import HelpIcon from '@material-ui/icons/Help';
@@ -25,7 +33,10 @@ interface DebounceableQuery {
 }
 
 const useUrlChangeableQuery = (): [DebounceableQuery, (v: DebounceableQuery) => void] => {
-    const [state, setState] = React.useState<DebounceableQuery>(() => ({query: getQueryFromSearch(window.location.search), debounce: false}));
+    const [state, setState] = React.useState<DebounceableQuery>(() => ({
+        query: getQueryFromSearch(window.location.search),
+        debounce: false,
+    }));
     React.useEffect(() => {
         const onChange = (): void => setState({query: getQueryFromSearch(window.location.search), debounce: false});
         window.addEventListener('popstate', onChange);
@@ -35,7 +46,10 @@ const useUrlChangeableQuery = (): [DebounceableQuery, (v: DebounceableQuery) => 
 };
 
 const App: React.FC = () => {
-    const [{notes, fieldOrder}, setEntries] = React.useState<{notes: ApiNote[]; fieldOrder: string[]}>(() => ({notes: [], fieldOrder: []}));
+    const [{notes, fieldOrder}, setEntries] = React.useState<{
+        notes: ApiNote[];
+        fieldOrder: string[];
+    }>(() => ({notes: [], fieldOrder: []}));
     const [query, setQuery] = useUrlChangeableQuery();
     const [debounceQuery] = useDebounce(query.query, query.debounce ? 500 : 0);
 
@@ -69,30 +83,30 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({query, setQuery}) => (
-        <div style={{textAlign: 'center', padding: 30}}>
-            <TextField
-                type="text"
-                variant="outlined"
-                style={{maxWidth: 600, width: '100%'}}
-                value={query}
-                onChange={(e) => setQuery({query: e.target.value, debounce: true})}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            {query !== '' ? (
-                                <IconButton onClick={() => setQuery({query: '', debounce: false})} size="small">
-                                    <CloseIcon />
-                                </IconButton>
-                            ) : null}
-                            <IconButton href="https://snage.dev/query" size="small">
-                                <HelpIcon />
+    <div style={{textAlign: 'center', padding: 30}}>
+        <TextField
+            type="text"
+            variant="outlined"
+            style={{maxWidth: 600, width: '100%'}}
+            value={query}
+            onChange={(e) => setQuery({query: e.target.value, debounce: true})}
+            InputProps={{
+                endAdornment: (
+                    <InputAdornment position="end">
+                        {query !== '' ? (
+                            <IconButton onClick={() => setQuery({query: '', debounce: false})} size="small">
+                                <CloseIcon />
                             </IconButton>
-                        </InputAdornment>
-                    ),
-                }}
-            />
-        </div>
-    );
+                        ) : null}
+                        <IconButton href="https://snage.dev/query" size="small">
+                            <HelpIcon />
+                        </IconButton>
+                    </InputAdornment>
+                ),
+            }}
+        />
+    </div>
+);
 
 const Entry = React.memo(
     ({
@@ -143,7 +157,9 @@ const Entry = React.memo(
                     </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    <div style={{width: '100%'}}>{content === '' ? '-- no content --' : <Markdown content={content} />}</div>
+                    <div style={{width: '100%'}}>
+                        {content === '' ? '-- no content --' : <Markdown content={content} />}
+                    </div>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         );

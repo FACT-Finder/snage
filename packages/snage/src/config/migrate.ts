@@ -22,13 +22,21 @@ export const migrate = (from: number, to: number) => (yamlDoc: Document): Docume
     if (!(yamlDoc.contents instanceof YAMLMap)) {
         throw new Error(`expected MAP, got ${yamlDoc.contents === null ? 'undefined' : yamlDoc.contents.type}`);
     }
-    A.range(from, to - 1).reduce<YAMLMap>((c, version) => setVersion(version + 1, getMigration(version)(c)), yamlDoc.contents as any);
+    A.range(from, to - 1).reduce<YAMLMap>(
+        (c, version) => setVersion(version + 1, getMigration(version)(c)),
+        yamlDoc.contents as any
+    );
     return yamlDoc;
 };
 
 const setVersion = (to: number, contents: YAMLMap): YAMLMap => upsert(contents, 'version', new Pair('version', to), 0);
 
-export const upsert = (contents: YAMLMap, key: any, pair: Pair, defaultIndex: number | undefined = undefined): YAMLMap => {
+export const upsert = (
+    contents: YAMLMap,
+    key: any,
+    pair: Pair,
+    defaultIndex: number | undefined = undefined
+): YAMLMap => {
     const existingPair = findPair(contents.items, key);
     if (typeof existingPair !== 'undefined') {
         existingPair.key = pair.key;
