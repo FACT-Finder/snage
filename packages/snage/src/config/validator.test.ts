@@ -20,6 +20,7 @@ describe('parseConfig', () => {
             sort: {
                 field: 'version',
                 order: 'desc',
+                absent: 'last',
             },
         },
     };

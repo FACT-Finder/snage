@@ -79,6 +79,7 @@ describe('parseConfig', () => {
                 sort: {
                     field: 'version',
                     order: 'desc',
+                    absent: 'last',
                 },
             },
         };
@@ -116,6 +117,7 @@ describe('parseConfig', () => {
                 sort: {
                     field: 'version',
                     order: 'desc',
+                    absent: 'last',
                 },
             },
         };

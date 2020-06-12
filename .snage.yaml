@@ -84,3 +84,4 @@ standard:
   sort:
     field: version
     order: desc
+    absent: first
