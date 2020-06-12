@@ -20,12 +20,11 @@ import {sequenceS} from 'fp-ts/lib/Apply';
 
 export const getConfig = (): E.Either<string, Config> => E.either.chain(getConfigFile(), loadConfig);
 
-export const getConfigOrExit = (): Config => {
-    return pipe(
+export const getConfigOrExit = (): Config =>
+    pipe(
         getConfig(),
         E.getOrElse((err): Config => printAndExit(err)())
     );
-};
 
 export const getConfigFile = (): E.Either<string, string> =>
     pipe(
@@ -67,8 +66,8 @@ export const loadConfig = (filePath: string): E.Either<string, Config> => {
     );
 };
 
-export const parseYAMLDocument = (resolvedPath: string): E.Either<string, Document> => {
-    return pipe(
+export const parseYAMLDocument = (resolvedPath: string): E.Either<string, Document> =>
+    pipe(
         E.tryCatch(
             () => fs.readFileSync(resolvedPath, 'utf-8'),
             (e) => `Could not read ${resolvedPath}: ${e}`
@@ -80,7 +79,6 @@ export const parseYAMLDocument = (resolvedPath: string): E.Either<string, Docume
             )
         )
     );
-};
 
 export const parseConfig = (filePath: string, yamlDoc: Document): E.Either<string, Config> =>
     pipe(
@@ -145,11 +143,7 @@ const createStyleProvider = (fields: Array<ParserField & MatcherField>, styles: 
                 (expression) => ({matcher: createMatcher(expression, fields), css} as const)
             )
         ),
-        E.map(
-            (providers): CSSProvider => {
-                return (values) => providers.find(({matcher}) => matcher(values))?.css;
-            }
-        )
+        E.map((providers): CSSProvider => (values) => providers.find(({matcher}) => matcher(values))?.css)
     );
 };
 
@@ -172,8 +166,8 @@ const resolveBasedir = (basedir: string, configFilePath: string): string => {
     return path.isAbsolute(basedir) ? basedir : path.join(configDir, basedir);
 };
 
-const validateNoteFileTemplate = (config: Config): E.Either<string, Config> => {
-    return pipe(
+const validateNoteFileTemplate = (config: Config): E.Either<string, Config> =>
+    pipe(
         getFields(config.fields, extractFieldNamesFromTemplateString(config.template.file)),
         E.chain(fieldsNot('optional', 'list')),
         E.bimap(
@@ -181,7 +175,6 @@ const validateNoteFileTemplate = (config: Config): E.Either<string, Config> => {
             () => config
         )
     );
-};
 export const fieldsNot = (...checks: Array<'optional' | 'list'>) => (fields: Field[]): Either<string, Field[]> => {
     for (const field of fields) {
         if (checks.includes('optional') && field.optional) {

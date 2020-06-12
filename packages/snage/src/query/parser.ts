@@ -47,12 +47,11 @@ export interface ParseError {
 export const createParser = (fields: ParserField[]): ((q: string) => Either<ParseError, Expression>) => {
     const rules: any = {};
     const addField = (field: ParserField): void => {
-        const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> => {
-            return P.alt(
+        const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> =>
+            P.alt(
                 P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]),
                 P.seqMap(word(field.name), r.status, (field, status): SingleExpression => ({field, op: StatusOP, value: status}))
             );
-        };
         switch (field.type) {
             case 'boolean':
                 rules['field' + field.name] = (r: Language) => create(r, r.boolOp, P.alt(r.true, r.false));

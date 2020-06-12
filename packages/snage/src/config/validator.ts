@@ -13,8 +13,8 @@ const fieldsWithDefaults: Partial<RawConfig> = {
     note: {links: [], styles: []},
 };
 
-export const parseRawConfig = (yamlDoc: Document): E.Either<string, RawConfig> => {
-    return pipe(
+export const parseRawConfig = (yamlDoc: Document): E.Either<string, RawConfig> =>
+    pipe(
         migrateConfig(yamlDoc),
         E.map((parsedConfig) => {
             const json = parsedConfig.toJSON();
@@ -26,10 +26,9 @@ export const parseRawConfig = (yamlDoc: Document): E.Either<string, RawConfig> =
             };
         })
     );
-};
 
-export const migrateConfig = (yamlDoc: Document): E.Either<string, Document> => {
-    return pipe(
+export const migrateConfig = (yamlDoc: Document): E.Either<string, Document> =>
+    pipe(
         yamlDoc,
         getSchema,
         E.chain(([version, schema]) =>
@@ -40,7 +39,6 @@ export const migrateConfig = (yamlDoc: Document): E.Either<string, Document> => 
             )
         )
     );
-};
 
 export const validateConfig = (schema: object, config: Document): E.Either<string, Document> => {
     const ajv = Ajv();

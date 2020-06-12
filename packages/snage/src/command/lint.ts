@@ -10,8 +10,8 @@ export const lint: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'lint',
     describe: 'Lint all notes.',
     builder: (y) => y.example('$0', 'lint'),
-    handler: async () => {
-        return pipe(
+    handler: async () =>
+        pipe(
             TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
@@ -20,6 +20,5 @@ export const lint: yargs.CommandModule<DefaultCli, DefaultCli> = {
                 )
             ),
             TE.fold(T.fromIOK(printAndExit), () => T.fromIO(() => console.log('All good :D')))
-        )();
-    },
+        )(),
 };

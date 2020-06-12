@@ -32,6 +32,7 @@ rules:
   default-case: error
   default-param-last: error
   no-loop-func: off
+  arrow-body-style: [error, as-needed]
 
   import/no-useless-path-segments: error
   import/group-exports: off

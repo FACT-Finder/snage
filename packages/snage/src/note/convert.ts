@@ -13,23 +13,20 @@ import {NoteValues} from './note';
 
 export type ConvertField = Pick<Field, 'name' | 'type' | 'enum' | 'list'>;
 
-export const decodeHeader = (fields: ConvertField[], values): E.Either<string[], Record<string, FieldValue>> => {
-    return pipe(getNoteIOType(fields).decode(values), E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')), report);
-};
+export const decodeHeader = (fields: ConvertField[], values): E.Either<string[], Record<string, FieldValue>> =>
+    pipe(getNoteIOType(fields).decode(values), E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')), report);
 
-export const encodeHeader = (fields: ConvertField[], values: NoteValues): NoteValues => {
-    return pipe(
+export const encodeHeader = (fields: ConvertField[], values: NoteValues): NoteValues =>
+    pipe(
         getNoteIOType(fields).encode(values),
         R.filter((v): v is FieldValue => typeof v !== 'undefined')
     );
-};
 
-export const stringEncodeHeader = (fields: ConvertField[], values: NoteValues): Record<string, string | string[]> => {
-    return pipe(
+export const stringEncodeHeader = (fields: ConvertField[], values: NoteValues): Record<string, string | string[]> =>
+    pipe(
         getNoteStringIOType(fields).encode(values),
         R.filter((v): v is string | string[] => typeof v !== 'undefined')
     );
-};
 
 export const decodeValue = (field: ConvertField, value: unknown): E.Either<string[], FieldValue> => {
     const decoded: E.Either<Errors, FieldValue> = getIOFieldType(field.type, field).decode(value);
@@ -55,35 +52,30 @@ const getIOFieldType = <Type extends FieldType>(type: Type, field: ConvertField)
 const getIOStringFieldType = <Type extends FieldType>(type: Type, field: ConvertField): IOStringType[Type] | t.ArrayC<IOStringType[Type]> =>
     field.list ? t.array(getSingletonStringType(type, field), field.name) : getSingletonStringType(type, field);
 
-const getSingletonStringType = <Type extends FieldType>(type: Type, field: ConvertField): IOStringType[Type] => {
-    return {
+const getSingletonStringType = <Type extends FieldType>(type: Type, field: ConvertField): IOStringType[Type] =>
+    ({
         boolean: booleanFromStringType,
         date: dateType,
         number: numberFromStringType,
         semver: semverType,
         ffversion: ffversionType,
         string: stringType(field),
-    }[type];
-};
+    }[type]);
 
-const getSingletonType = <Type extends FieldType>(type: Type, field: ConvertField): IOType[Type] => {
-    return {
+const getSingletonType = <Type extends FieldType>(type: Type, field: ConvertField): IOType[Type] =>
+    ({
         boolean: t.boolean,
         date: dateType,
         number: number,
         semver: semverType,
         ffversion: ffversionType,
         string: stringType(field),
-    }[type];
-};
+    }[type]);
 
 const number = new t.Type<number, number, unknown>(
     'number',
     (u): u is number => typeof u === 'number' && !isNaN(u),
-    (u, c) =>
-        E.either.chain(t.number.validate(u, c), (s) => {
-            return isNaN(s) ? t.failure(u, c) : t.success(s);
-        }),
+    (u, c) => E.either.chain(t.number.validate(u, c), (s) => (isNaN(s) ? t.failure(u, c) : t.success(s))),
     (a) => a
 );
 
@@ -119,9 +111,7 @@ const ffversionType = new t.Type<string, string, unknown>(
     (version) => version
 );
 
-const enumType = (values: string[]): t.Type<string> => {
-    return t.keyof(toRecord(values.map((a): [string, null] => [a, null]))) as t.Type<string>;
-};
+const enumType = (values: string[]): t.Type<string> => t.keyof(toRecord(values.map((a): [string, null] => [a, null]))) as t.Type<string>;
 
 const stringType = (field: ConvertField): t.Type<string> => {
     if (typeof field.enum !== 'undefined') {
@@ -133,10 +123,7 @@ const stringType = (field: ConvertField): t.Type<string> => {
 const booleanFromStringType = new t.Type<boolean, string, unknown>(
     'boolean',
     (u): u is boolean => typeof u === 'boolean',
-    (u, c) =>
-        E.either.chain(enumType(['true', 'false']).validate(u, c), (s) => {
-            return t.success(s === 'true');
-        }),
+    (u, c) => E.either.chain(enumType(['true', 'false']).validate(u, c), (s) => t.success(s === 'true')),
     (a) => a.toString()
 );
 

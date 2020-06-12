@@ -68,8 +68,7 @@ interface SearchProps {
     setQuery: SetQuery;
 }
 
-const Search: React.FC<SearchProps> = ({query, setQuery}) => {
-    return (
+const Search: React.FC<SearchProps> = ({query, setQuery}) => (
         <div style={{textAlign: 'center', padding: 30}}>
             <TextField
                 type="text"
@@ -94,7 +93,6 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => {
             />
         </div>
     );
-};
 
 const Entry = React.memo(
     ({

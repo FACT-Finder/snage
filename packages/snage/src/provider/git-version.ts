@@ -14,21 +14,18 @@ export const providerFactory: ProviderFactory = (field: RawProvidedField): E.Eit
         E.map((versionRegex) => (file: string): TE.TaskEither<string, FieldValue | undefined> => getVersion(versionRegex, file, field))
     );
 
-const getVersion = (versionRegex: string, file: string, field: RawProvidedField): TE.TaskEither<string, FieldValue | undefined> => {
-    return pipe(
+const getVersion = (versionRegex: string, file: string, field: RawProvidedField): TE.TaskEither<string, FieldValue | undefined> =>
+    pipe(
         getFirstTagContainingFile(file),
         TE.map(O.map((tag) => extractVersion(tag, versionRegex))),
         TE.mapLeft((error): string => `provider error on field '${field.name}': ${error}`),
         TE.chainEitherK(
             O.fold(
                 () => E.right<string, FieldValue | undefined>(undefined),
-                (version): E.Either<string, FieldValue | undefined> => {
-                    return E.either.mapLeft(decodeValue(field, version), (errors) => errors.join('\n'));
-                }
+                (version): E.Either<string, FieldValue | undefined> => E.either.mapLeft(decodeValue(field, version), (errors) => errors.join('\n'))
             )
         )
     );
-};
 
 const getFirstTagContainingFile = (file: string): TE.TaskEither<string, O.Option<string>> => {
     const filename = path.basename(file);
