@@ -60,10 +60,17 @@ describe('decode', () => {
     });
     test('list', () => {
         const field: Field = {name: 'date', type: 'date', list: true};
-        expect(decodeValue(field, ['1.1.0'])).toStrictEqual(E.left(['Invalid value "1.1.0" supplied to : date/0: YYYY-MM-DD']));
-        expect(decodeValue(field, ['2018-05-05', '1.1.0'])).toStrictEqual(E.left(['Invalid value "1.1.0" supplied to : date/1: YYYY-MM-DD']));
+        expect(decodeValue(field, ['1.1.0'])).toStrictEqual(
+            E.left(['Invalid value "1.1.0" supplied to : date/0: YYYY-MM-DD'])
+        );
+        expect(decodeValue(field, ['2018-05-05', '1.1.0'])).toStrictEqual(
+            E.left(['Invalid value "1.1.0" supplied to : date/1: YYYY-MM-DD'])
+        );
         expect(decodeValue(field, ['1.1.0', '1.1.1'])).toStrictEqual(
-            E.left(['Invalid value "1.1.0" supplied to : date/0: YYYY-MM-DD', 'Invalid value "1.1.1" supplied to : date/1: YYYY-MM-DD'])
+            E.left([
+                'Invalid value "1.1.0" supplied to : date/0: YYYY-MM-DD',
+                'Invalid value "1.1.1" supplied to : date/1: YYYY-MM-DD',
+            ])
         );
         expect(decodeValue(field, ['2018-05-05'])).toStrictEqual(E.right([LocalDate.parse('2018-05-05')]));
     });

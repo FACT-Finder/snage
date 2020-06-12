@@ -44,7 +44,9 @@ export const semverValidator = (value: any, isOptional?: boolean): boolean | str
 };
 
 export const semverSetValidator = (value: any, isOptional?: boolean): boolean | string => {
-    return validatorForSets(value, semverValidator, isOptional) ? true : "Must be a correct list of SemVer values separated by ','.";
+    return validatorForSets(value, semverValidator, isOptional)
+        ? true
+        : "Must be a correct list of SemVer values separated by ','.";
 };
 
 export const numberValidator = (value: any, isOptional?: boolean): boolean | string => {
@@ -56,14 +58,20 @@ export const numberValidator = (value: any, isOptional?: boolean): boolean | str
 };
 
 export const numberSetValidator = (value: any, isOptional?: boolean): boolean | string => {
-    return validatorForSets(value, numberValidator, isOptional) ? true : "Must be a correct list of numbers separated by separated by ','.";
+    return validatorForSets(value, numberValidator, isOptional)
+        ? true
+        : "Must be a correct list of numbers separated by separated by ','.";
 };
 
 export const stringSetValidator = (value: any, isOptional?: boolean): boolean | string => {
     return validatorForSets(value, undefined, isOptional);
 };
 
-const validatorForSets = (value: any, validator?: (value: any, isOptional?: boolean) => boolean | string, isOptional?: boolean): boolean | string => {
+const validatorForSets = (
+    value: any,
+    validator?: (value: any, isOptional?: boolean) => boolean | string,
+    isOptional?: boolean
+): boolean | string => {
     value += '';
     const values = value.split(',');
     if (!hasNoDuplicate(values)) {
@@ -79,7 +87,9 @@ const validatorForSets = (value: any, validator?: (value: any, isOptional?: bool
 };
 
 export const booleanSetValidator = (value: any, isOptional?: boolean): boolean | string => {
-    return validatorForSets(value, booleanValidator, isOptional) ? true : `Must be a correct set of booleans separated by ','.`;
+    return validatorForSets(value, booleanValidator, isOptional)
+        ? true
+        : `Must be a correct set of booleans separated by ','.`;
 };
 
 export const booleanValidator = (value: any, isOptional?: boolean): boolean | string => {
@@ -93,7 +103,9 @@ export const booleanValidator = (value: any, isOptional?: boolean): boolean | st
 };
 
 export const dateSetValidator = (value: any, isOptional?: boolean): boolean | string => {
-    return validatorForSets(value, dateValidator, isOptional) ? true : `Must be a correct list of dates separated by ','.`;
+    return validatorForSets(value, dateValidator, isOptional)
+        ? true
+        : `Must be a correct list of dates separated by ','.`;
 };
 
 const hasNoDuplicate = (values: any[]): boolean => {

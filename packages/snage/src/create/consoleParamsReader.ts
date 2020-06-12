@@ -66,12 +66,17 @@ export const addToYargs = (builder: yargs.Argv, config: Config): yargs.Argv => {
     return builder;
 };
 
-export const handleFieldValues = (fields: Field[], consoleArguments: Record<string, unknown>): TE.TaskEither<string[], NoteValues> => {
+export const handleFieldValues = (
+    fields: Field[],
+    consoleArguments: Record<string, unknown>
+): TE.TaskEither<string[], NoteValues> => {
     const decoded = decodeHeader(fields, consoleArguments);
     return E.either.traverse(T.task)(decoded, askForMissingValues(fields, consoleArguments));
 };
 
-export const askForMissingValues = (fields: Field[], consoleArguments: Record<string, unknown>) => (values: NoteValues): T.Task<NoteValues> => {
+export const askForMissingValues = (fields: Field[], consoleArguments: Record<string, unknown>) => (
+    values: NoteValues
+): T.Task<NoteValues> => {
     const missingFields = fields.filter((f) => O.isNone(R.lookup(f.name, values)));
     return pipe(
         A.array.traverse(T.taskSeq)(missingFields, (f) => askValue(f, consoleArguments)),

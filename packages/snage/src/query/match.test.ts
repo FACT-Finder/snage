@@ -65,8 +65,16 @@ describe('match', () => {
 
     [
         createFullTest('summary = "cool story"', {summary: 'cool story', content: 'irrelevant', values: {}}, true),
-        createFullTest('content ~ "ClassCastException"', {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}}, true),
-        createFullTest('content ~ "ClassCastExcption"', {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}}, false),
+        createFullTest(
+            'content ~ "ClassCastException"',
+            {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}},
+            true
+        ),
+        createFullTest(
+            'content ~ "ClassCastExcption"',
+            {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}},
+            false
+        ),
 
         createTest('booleanName absent', {booleanName: true}, false),
         createTest('booleanName present', {booleanName: true}, true),
@@ -153,9 +161,21 @@ describe('match', () => {
         createTest('dateName = 2019-01-31', {dateName: LocalDate.parse('2019-01-31')}, true),
         createTest('dateName = 2019-01-31', {dateName: LocalDate.parse('2019-01-30')}, false),
 
-        createTest('booleanName = true or (booleanName = false and stringName = "test")', {booleanName: true, stringName: 'nah'}, true),
-        createTest('booleanName = true or (booleanName = false and stringName = "test")', {booleanName: false, stringName: 'nah'}, false),
-        createTest('booleanName = true or (booleanName = false and stringName = "test")', {booleanName: false, stringName: 'test'}, true),
+        createTest(
+            'booleanName = true or (booleanName = false and stringName = "test")',
+            {booleanName: true, stringName: 'nah'},
+            true
+        ),
+        createTest(
+            'booleanName = true or (booleanName = false and stringName = "test")',
+            {booleanName: false, stringName: 'nah'},
+            false
+        ),
+        createTest(
+            'booleanName = true or (booleanName = false and stringName = "test")',
+            {booleanName: false, stringName: 'test'},
+            true
+        ),
 
         createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('1.4.0')!}, false),
         createTest('semverName >= 1.5.0 and semverName <= 2.0.0', {semverName: semver.parse('2.1.0')!}, false),

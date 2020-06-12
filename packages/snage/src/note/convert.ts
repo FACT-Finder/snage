@@ -14,7 +14,11 @@ import {NoteValues} from './note';
 export type ConvertField = Pick<Field, 'name' | 'type' | 'enum' | 'list'>;
 
 export const decodeHeader = (fields: ConvertField[], values): E.Either<string[], Record<string, FieldValue>> =>
-    pipe(getNoteIOType(fields).decode(values), E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')), report);
+    pipe(
+        getNoteIOType(fields).decode(values),
+        E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')),
+        report
+    );
 
 export const encodeHeader = (fields: ConvertField[], values: NoteValues): NoteValues =>
     pipe(
@@ -38,18 +42,27 @@ export const decodeStringValue = (field: ConvertField, value: string | string[])
     return report(decoded);
 };
 
-const report = <T>(decoded: E.Either<Errors, T>): E.Either<string[], T> => E.mapLeft(() => PathReporter.report(decoded))(decoded);
+const report = <T>(decoded: E.Either<Errors, T>): E.Either<string[], T> =>
+    E.mapLeft(() => PathReporter.report(decoded))(decoded);
 
 const getNoteIOType = (fields: ConvertField[]): t.Type<Record<string, FieldValue | undefined>> =>
     t.partial(toRecord(fields.map((field) => [field.name, getIOFieldType(field.type, field)])), 'note');
 
-const getNoteStringIOType = (fields: ConvertField[]): t.Type<Record<string, FieldValue | undefined>, Record<string, string | string[] | undefined>> =>
+const getNoteStringIOType = (
+    fields: ConvertField[]
+): t.Type<Record<string, FieldValue | undefined>, Record<string, string | string[] | undefined>> =>
     t.partial(toRecord(fields.map((field) => [field.name, getIOStringFieldType(field.type, field)])), 'note');
 
-const getIOFieldType = <Type extends FieldType>(type: Type, field: ConvertField): IOType[Type] | t.ArrayC<IOType[Type]> =>
+const getIOFieldType = <Type extends FieldType>(
+    type: Type,
+    field: ConvertField
+): IOType[Type] | t.ArrayC<IOType[Type]> =>
     field.list ? t.array(getSingletonType(type, field), field.name) : getSingletonType(type, field);
 
-const getIOStringFieldType = <Type extends FieldType>(type: Type, field: ConvertField): IOStringType[Type] | t.ArrayC<IOStringType[Type]> =>
+const getIOStringFieldType = <Type extends FieldType>(
+    type: Type,
+    field: ConvertField
+): IOStringType[Type] | t.ArrayC<IOStringType[Type]> =>
     field.list ? t.array(getSingletonStringType(type, field), field.name) : getSingletonStringType(type, field);
 
 const getSingletonStringType = <Type extends FieldType>(type: Type, field: ConvertField): IOStringType[Type] =>
@@ -107,11 +120,15 @@ const dateType = new t.Type<LocalDate, string, unknown>(
 const ffversionType = new t.Type<string, string, unknown>(
     'ffversion',
     (u): u is string => typeof u === 'string',
-    (u, c) => E.either.chain(t.string.validate(u, c), (s) => (requiredFFVersionRegex.exec(s) ? t.success(s) : t.failure(u, c))),
+    (u, c) =>
+        E.either.chain(t.string.validate(u, c), (s) =>
+            requiredFFVersionRegex.exec(s) ? t.success(s) : t.failure(u, c)
+        ),
     (version) => version
 );
 
-const enumType = (values: string[]): t.Type<string> => t.keyof(toRecord(values.map((a): [string, null] => [a, null]))) as t.Type<string>;
+const enumType = (values: string[]): t.Type<string> =>
+    t.keyof(toRecord(values.map((a): [string, null] => [a, null]))) as t.Type<string>;
 
 const stringType = (field: ConvertField): t.Type<string> => {
     if (typeof field.enum !== 'undefined') {

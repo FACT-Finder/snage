@@ -25,7 +25,8 @@ const compareOperators = ['=', '<=', '>=', '!=', '<', '>'] as const;
 export type CompareOperator = typeof compareOperators[number];
 export type Operator = CompareOperator | '~' | '~~' | typeof StatusOP;
 
-export const isCompareOperator = (op: Operator): op is CompareOperator => (compareOperators as readonly string[]).includes(op);
+export const isCompareOperator = (op: Operator): op is CompareOperator =>
+    (compareOperators as readonly string[]).includes(op);
 
 export type Expression = true | SingleExpression | [Expression, 'or' | 'and', Expression];
 export type ParserField = Pick<Field, 'name' | 'type' | 'enum'>;
@@ -50,14 +51,19 @@ export const createParser = (fields: ParserField[]): ((q: string) => Either<Pars
         const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> =>
             P.alt(
                 P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]),
-                P.seqMap(word(field.name), r.status, (field, status): SingleExpression => ({field, op: StatusOP, value: status}))
+                P.seqMap(
+                    word(field.name),
+                    r.status,
+                    (field, status): SingleExpression => ({field, op: StatusOP, value: status})
+                )
             );
         switch (field.type) {
             case 'boolean':
                 rules['field' + field.name] = (r: Language) => create(r, r.boolOp, P.alt(r.true, r.false));
                 break;
             case 'string':
-                const values = (r: Language): Parser<any> => (field.enum !== undefined ? P.alt(...field.enum.map(word)) : r.string);
+                const values = (r: Language): Parser<any> =>
+                    field.enum !== undefined ? P.alt(...field.enum.map(word)) : r.string;
                 rules['field' + field.name] = (r: Language) => create(r, r.stringOp, values(r));
                 break;
             case 'number':
@@ -124,7 +130,11 @@ export const createParser = (fields: ParserField[]): ((q: string) => Either<Pars
         singleExpression: (r) => P.alt(...Object.keys(rules).map((key) => r[key])),
         orOrAnd: (r) => P.alt(r.or, r.and).thru((x) => whitespace.then(x)),
         orAndExpression: (r) =>
-            P.seq(P.alt(r.braceExpression, r.singleExpression), r.orOrAnd, P.alt(r.braceExpression, r.orAndExpression, r.singleExpression)),
+            P.seq(
+                P.alt(r.braceExpression, r.singleExpression),
+                r.orOrAnd,
+                P.alt(r.braceExpression, r.orAndExpression, r.singleExpression)
+            ),
         braceExpression: (r) => P.seqMap(r.lbrace, P.alt(r.expression), r.rbrace, (_1, e) => e),
         expression: (r) => P.alt(r.orAndExpression, r.braceExpression, r.singleExpression),
     }).expression;

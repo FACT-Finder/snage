@@ -5,14 +5,22 @@ import {pipe} from 'fp-ts/lib/pipeable';
 import {Config, Field} from '../config/type';
 import {FrontMatterBuilder} from './frontMatterBuilder';
 
-export const generateChangeLogFile = (fieldValues: Record<string, unknown>, config: Config, fieldsForFileName: Field[]): Either<string, string> => {
+export const generateChangeLogFile = (
+    fieldValues: Record<string, unknown>,
+    config: Config,
+    fieldsForFileName: Field[]
+): Either<string, string> => {
     const content: string = generateFrontMatterFileContent(fieldValues, config.fields, config.template.text);
     const fileName: string = createFileName(fieldValues, fieldsForFileName, config.template.file);
     const filePath = path.join(config.basedir, fileName);
     return createFile(filePath, content);
 };
 
-export const generateFrontMatterFileContent = (fieldValues: Record<string, unknown>, fields: Field[], fileText: string): string => {
+export const generateFrontMatterFileContent = (
+    fieldValues: Record<string, unknown>,
+    fields: Field[],
+    fileText: string
+): string => {
     let builder: FrontMatterBuilder = new FrontMatterBuilder();
     fields.forEach((field) => {
         if (field.name in fieldValues) {
@@ -26,7 +34,11 @@ export const generateFrontMatterFileContent = (fieldValues: Record<string, unkno
     return builder.appendContent(fileText).build();
 };
 
-export const createFileName = (fieldValues: Record<string, unknown>, fields: Field[], fileNameTemplate: string): string => {
+export const createFileName = (
+    fieldValues: Record<string, unknown>,
+    fields: Field[],
+    fileNameTemplate: string
+): string => {
     return fields
         .filter((field) => !field.optional)
         .filter((field) => !field.list)

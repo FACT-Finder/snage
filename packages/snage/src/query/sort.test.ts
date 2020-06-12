@@ -91,13 +91,9 @@ describe('sort', () => {
             ).toStrictEqual(['1.1.0', '1.2.0', '1.12.5', '2.0.0', '2.0.1']);
         });
         test('ffversion', () => {
-            expect(pipe(['5.0.0-0', '1.1.0-15', '1.1.0-13', '1.12.5-0', '1.2.0-0'], A.sort(getFieldOrdering('ffversion')))).toStrictEqual([
-                '1.1.0-13',
-                '1.1.0-15',
-                '1.2.0-0',
-                '1.12.5-0',
-                '5.0.0-0',
-            ]);
+            expect(
+                pipe(['5.0.0-0', '1.1.0-15', '1.1.0-13', '1.12.5-0', '1.2.0-0'], A.sort(getFieldOrdering('ffversion')))
+            ).toStrictEqual(['1.1.0-13', '1.1.0-15', '1.2.0-0', '1.12.5-0', '5.0.0-0']);
         });
         test('date', () => {
             expect(
@@ -113,7 +109,13 @@ describe('sort', () => {
             expect(pipe([true, false, true], A.sort(getFieldOrdering('boolean')))).toStrictEqual([false, true, true]);
         });
         test('string', () => {
-            expect(pipe(['b', 'a', 'ab', 'aa', 'ba'], A.sort(getFieldOrdering('string')))).toStrictEqual(['a', 'aa', 'ab', 'b', 'ba']);
+            expect(pipe(['b', 'a', 'ab', 'aa', 'ba'], A.sort(getFieldOrdering('string')))).toStrictEqual([
+                'a',
+                'aa',
+                'ab',
+                'b',
+                'ba',
+            ]);
         });
     });
 });

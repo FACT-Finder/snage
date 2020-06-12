@@ -53,7 +53,13 @@ const askForStringInput = async (field: Field) => {
         const values = String(value).split(',');
         return replaceBlankAndEmptyWithNull(values);
     }
-    value = await askForUserInput('input', prefix + 'Please enter value for ' + field.name, field.name, noBlankValuesValidator, field.optional);
+    value = await askForUserInput(
+        'input',
+        prefix + 'Please enter value for ' + field.name,
+        field.name,
+        noBlankValuesValidator,
+        field.optional
+    );
     return replaceBlankAndEmptyWithNull(value);
 };
 
@@ -71,7 +77,13 @@ const askForNumberInput = async (field: Field) => {
         return values.map(Number).map(replaceBlankAndEmptyWithNull);
     }
     //work around till NaN-problem is fixed: https://github.com/SBoudrias/Inquirer.js/pull/706
-    let value = await askForUserInput('input', prefix + 'Please enter value for ' + field.name, field.name, numberValidator, field.optional);
+    let value = await askForUserInput(
+        'input',
+        prefix + 'Please enter value for ' + field.name,
+        field.name,
+        numberValidator,
+        field.optional
+    );
     value = replaceBlankAndEmptyWithNull(value);
     return value == null ? null : Number(value);
 };
@@ -144,13 +156,21 @@ const select = async <T>(
     optional: boolean = false
 ) => (list ? multiSelect(message, choices, optional) : singleSelect(message, choices, optional));
 
-const multiSelect = async <T>(message: string, choices: Array<string | {name: string; value: T | null}>, optional = false) => {
+const multiSelect = async <T>(
+    message: string,
+    choices: Array<string | {name: string; value: T | null}>,
+    optional = false
+) => {
     const answer = await inquirer.prompt({type: 'checkbox', message, name: 'field', choices});
     const value = answer['field'];
     return optional && Array.isArray(value) && value.length === 0 ? null : value;
 };
 
-const singleSelect = async <T>(message: string, choices: Array<string | {name: string; value: T | null}>, optional = false) => {
+const singleSelect = async <T>(
+    message: string,
+    choices: Array<string | {name: string; value: T | null}>,
+    optional = false
+) => {
     const noChoice = {name: '[no value]', value: null};
 
     const answer = await inquirer.prompt({

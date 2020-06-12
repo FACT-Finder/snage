@@ -62,7 +62,11 @@ bool: true
             ],
             condition: 'bool = false',
             fieldName: 'issue',
-            notes: [note('one', {issue: '#31', bool: true}), note('two', {issue: '#33', bool: false}), note('three', {issue: '#2', bool: false})],
+            notes: [
+                note('one', {issue: '#31', bool: true}),
+                note('two', {issue: '#33', bool: false}),
+                note('three', {issue: '#2', bool: false}),
+            ],
             stringValue: ['#22'],
         });
         expect(result).toStrictEqual(
@@ -179,7 +183,9 @@ bool: true
             stringValue: ['true'],
         });
         expect(result).toStrictEqual(
-            left(`Invalid expression bool = notfalse {"expected":["'false'","'true'"],"index":{"offset":7,"line":1,"column":8}}`)
+            left(
+                `Invalid expression bool = notfalse {"expected":["'false'","'true'"],"index":{"offset":7,"line":1,"column":8}}`
+            )
         );
     });
 });

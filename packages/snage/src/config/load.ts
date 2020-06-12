@@ -2,7 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import YAML, {Document} from 'yaml';
 import {parseRawConfig} from './validator';
-import {ConditionalStyle, Config, CSSProvider, Field, hasProvided, Link, LinkProvider, RawConfig, RawField} from './type';
+import {
+    ConditionalStyle,
+    Config,
+    CSSProvider,
+    Field,
+    hasProvided,
+    Link,
+    LinkProvider,
+    RawConfig,
+    RawField,
+} from './type';
 import * as E from 'fp-ts/lib/Either';
 import {Either, left, right} from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
@@ -116,7 +126,9 @@ const createLinkProvider = (fields: Field[], links: Link[]): E.Either<string, Li
     E.either.map(A.array.traverseWithIndex(E.either)(links, createSingleLinkProvider(fields)), mergeProviders);
 
 const createSingleLinkProvider = (fields: Field[]) => (index: number, link: Link): Either<string, LinkProvider> => {
-    const requiredFields = extractFieldNamesFromTemplateString(link.name).concat(extractFieldNamesFromTemplateString(link.link));
+    const requiredFields = extractFieldNamesFromTemplateString(link.name).concat(
+        extractFieldNamesFromTemplateString(link.link)
+    );
     return pipe(
         getFields(fields, requiredFields),
         E.chain(fieldsNot('list')),
@@ -124,7 +136,12 @@ const createSingleLinkProvider = (fields: Field[]) => (index: number, link: Link
             (error) => `error in links/${index}: ${error}`,
             (fields): LinkProvider => (values) => {
                 if (fields.every((field) => values[field.name] !== undefined)) {
-                    return [{href: replacePlaceholders(values, fields, link.link), label: replacePlaceholders(values, fields, link.name)}];
+                    return [
+                        {
+                            href: replacePlaceholders(values, fields, link.link),
+                            label: replacePlaceholders(values, fields, link.name),
+                        },
+                    ];
                 }
                 return [];
             }
@@ -132,7 +149,10 @@ const createSingleLinkProvider = (fields: Field[]) => (index: number, link: Link
     );
 };
 
-const createStyleProvider = (fields: Array<ParserField & MatcherField>, styles: ConditionalStyle[]): E.Either<string, CSSProvider> => {
+const createStyleProvider = (
+    fields: Array<ParserField & MatcherField>,
+    styles: ConditionalStyle[]
+): E.Either<string, CSSProvider> => {
     const parser = createParser(fields);
 
     return pipe(
@@ -151,7 +171,10 @@ const mergeProviders = (providers: LinkProvider[]): LinkProvider => (values) =>
     providers.reduce((all: NoteLink[], func: LinkProvider) => [...all, ...func(values)], []);
 
 const toField = (fields: RawField[]) => (field: RawField): E.Either<string, Field> => {
-    const partial = E.either.map(createStyleProvider(fields, field.styles ?? []), (styleProvider): Field => ({...field, styleProvider}));
+    const partial = E.either.map(
+        createStyleProvider(fields, field.styles ?? []),
+        (styleProvider): Field => ({...field, styleProvider})
+    );
     if (!hasProvided(field)) {
         return partial;
     }
