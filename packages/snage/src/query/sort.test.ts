@@ -16,8 +16,8 @@ describe('sort', () => {
             partialNote({values: {}}),
         ];
 
-        test('number:desc', () => {
-            const ordering = getOrdering({name: 'number', type: 'number'}, 'desc');
+        test('number:desc nullLast', () => {
+            const ordering = getOrdering({name: 'number', type: 'number'}, 'desc', 'last');
             expect(
                 pipe(
                     notes,
@@ -26,8 +26,8 @@ describe('sort', () => {
                 )
             ).toStrictEqual([O.some(5), O.some(3), O.some(1), O.none]);
         });
-        test('number:asc', () => {
-            const ordering = getOrdering({name: 'number', type: 'number'}, 'asc');
+        test('number:asc nullLast', () => {
+            const ordering = getOrdering({name: 'number', type: 'number'}, 'asc', 'last');
             expect(
                 pipe(
                     notes,
@@ -36,8 +36,39 @@ describe('sort', () => {
                 )
             ).toStrictEqual([O.some(1), O.some(3), O.some(5), O.none]);
         });
-        test('list number:asc', () => {
-            const ordering = getOrdering({name: 'list', type: 'number', list: true}, 'asc');
+
+        test('number:desc nullFirst', () => {
+            const ordering = getOrdering({name: 'number', type: 'number'}, 'desc', 'first');
+            expect(
+                pipe(
+                    notes,
+                    A.sort(ordering),
+                    A.map((note) => R.lookup('number', note.values))
+                )
+            ).toStrictEqual([O.none, O.some(5), O.some(3), O.some(1)]);
+        });
+        test('number:asc nullFirst', () => {
+            const ordering = getOrdering({name: 'number', type: 'number'}, 'asc', 'first');
+            expect(
+                pipe(
+                    notes,
+                    A.sort(ordering),
+                    A.map((note) => R.lookup('number', note.values))
+                )
+            ).toStrictEqual([O.none, O.some(1), O.some(3), O.some(5)]);
+        });
+        test('list number:asc nullFirst', () => {
+            const ordering = getOrdering({name: 'list', type: 'number', list: true}, 'asc', 'first');
+            expect(
+                pipe(
+                    notes,
+                    A.sort(ordering),
+                    A.map((note) => R.lookup('list', note.values))
+                )
+            ).toStrictEqual([O.none, O.some([0]), O.some([1, 2]), O.some([2])]);
+        });
+        test('list number:asc nullLast', () => {
+            const ordering = getOrdering({name: 'list', type: 'number', list: true}, 'asc', 'last');
             expect(
                 pipe(
                     notes,

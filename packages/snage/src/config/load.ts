@@ -92,7 +92,7 @@ export const parseConfig = (filePath: string, yamlDoc: Document): E.Either<strin
 const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string, Config> => {
     const basedir = resolveBasedir(rawConfig.basedir, configFilePath);
     const sortField = rawConfig.fields.find((f) => f.name === rawConfig.standard.sort.field)!;
-    const ordering = getOrdering(sortField, rawConfig.standard.sort.order);
+    const ordering = getOrdering(sortField, rawConfig.standard.sort.order, rawConfig.standard.sort.absent ?? 'last');
     return pipe(
         A.array.traverse(E.either)(rawConfig.fields, toField(rawConfig.fields)),
         E.chain((fields) =>

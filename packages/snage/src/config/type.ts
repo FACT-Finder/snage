@@ -85,6 +85,7 @@ export interface FilterPreset {
 export interface Sort {
     field: string;
     order: 'asc' | 'desc';
+    absent?: 'first' | 'last';
 }
 
 export interface Link {

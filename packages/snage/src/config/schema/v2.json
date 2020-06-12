@@ -42,7 +42,8 @@
       "type": "object",
       "properties": {
         "field": { "type": "string" },
-        "order": { "type": "string", "enum": ["asc", "desc"] }
+        "order": { "type": "string", "enum": ["asc", "desc"] },
+        "absent": { "type": "string", "enum": ["first", "last"], "default": "last" }
       },
       "additionalProperties": false,
       "required": ["field", "order"]
