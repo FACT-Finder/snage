@@ -15,8 +15,8 @@ export const find: yargs.CommandModule<DefaultCli, DefaultCli & {condition?: str
     command: 'find [condition]',
     describe: 'Find notes matching [condition]',
     builder: (y) => y.example('$0', 'find').example('$0', 'find "issue = 21"'),
-    handler: async ({condition = ''}) => {
-        return pipe(
+    handler: async ({condition = ''}) =>
+        pipe(
             TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
@@ -43,8 +43,7 @@ export const find: yargs.CommandModule<DefaultCli, DefaultCli & {condition?: str
                     notes.forEach((note) => console.log(note.file));
                 })
             )
-        )();
-    },
+        )(),
 };
 
 const match = (config: Config, notes: Note[], expression: Expression): Note[] => {

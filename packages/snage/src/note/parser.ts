@@ -12,48 +12,39 @@ import {merge, readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp
 import {decodeHeader} from './convert';
 import YAML from 'yaml';
 
-export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> => {
-    return pipe(
+export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> =>
+    pipe(
         readdir(config.basedir),
         TE.mapLeft((e) => [e]),
         TE.chain((files) => readNotes(config.fields, config.note.links, config.note.styles, files))
     );
-};
 
-const readNotes = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider, files: string[]): TE.TaskEither<string[], Note[]> => {
-    return pipe(
+const readNotes = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider, files: string[]): TE.TaskEither<string[], Note[]> =>
+    pipe(
         A.array.traverse(T.task)(files, (file) => readNote(fields, linkProvider, styleProvider, file)),
         T.map(sequenceKeepAllLefts),
         TE.mapLeft(A.flatten)
     );
-};
 
-export const readNote = (
-    fields: Field[],
-    linkProvider: LinkProvider,
-    styleProvider: CSSProvider,
-    fileName: string
-): TE.TaskEither<string[], Note> => {
-    return pipe(
+export const readNote = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider, fileName: string): TE.TaskEither<string[], Note> =>
+    pipe(
         readFile(fileName),
         TE.mapLeft((e) => [e]),
         TE.map((content) => parseRawNote(content, fileName)),
         TE.chain(parseNote(fields, linkProvider, styleProvider)),
         TE.mapLeft((errors) => errors.map((error) => `${fileName}: ${error}`))
     );
-};
 
 export const parseNote = (fields: Field[], linkProvider: LinkProvider, styleProvider: CSSProvider) => (
     rawNote: RawNote
-): TE.TaskEither<string[], Note> => {
-    return pipe(
+): TE.TaskEither<string[], Note> =>
+    pipe(
         parseNoteValues(fields, rawNote),
         TE.chain(runProviders(fields)),
         TE.chainEitherK(verifyRequiredFields(fields)),
         TE.map(fillLinks(linkProvider)),
         TE.map(fillStyle(fields, styleProvider))
     );
-};
 
 const fillLinks = (linkProvider: LinkProvider) => (note: Note): Note => ({...note, links: linkProvider(note.values)});
 const fillStyle = (fields: Field[], noteStyle: CSSProvider) => (note: Note): Note => ({
@@ -84,8 +75,8 @@ export const parseRawNote = (note: string, fileName: string): RawNote => {
     return {file: fileName, header: meta.data, summary: head, content: rest.join('\n\n')};
 };
 
-export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEither<string[], Note> => {
-    return pipe(
+export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEither<string[], Note> =>
+    pipe(
         decodeHeader(fields, rawNote.header),
         TE.fromEither,
         TE.mapLeft(A.map((error) => `${rawNote.file}: ${error}`)),
@@ -100,15 +91,13 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
             summary: rawNote.summary.replace(/^\s*#\s*/, ''),
         }))
     );
-};
 
 const runProviders = (fields: Field[]) => (note: Note): TE.TaskEither<string[], Note> => {
-    const runProvider = (field: ProvidedField): TE.TaskEither<string, [string, FieldValue | undefined]> => {
-        return pipe(
+    const runProvider = (field: ProvidedField): TE.TaskEither<string, [string, FieldValue | undefined]> =>
+        pipe(
             field.valueProvider(note.file),
             TE.map((value) => [field.name, value])
         );
-    };
 
     return pipe(
         fields,

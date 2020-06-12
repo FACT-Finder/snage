@@ -42,8 +42,8 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
             .describe('on', 'Condition for setting values')
             .positional('field', {type: 'string', describe: 'The field name'})
             .positional('value', {array: true, type: 'string', describe: 'The field values (Empty if unset)'}) as any,
-    handler: async ({field: fieldName, value: stringValue, on}) => {
-        return pipe(
+    handler: async ({field: fieldName, value: stringValue, on}) =>
+        pipe(
             TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
@@ -53,8 +53,7 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
                 )
             ),
             TE.fold(T.fromIOK(printAndExit), writeNotes)
-        )();
-    },
+        )(),
 };
 
 const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): E.Either<string, FieldValue | undefined> => {
@@ -79,14 +78,8 @@ const parseValue = (fields: Field[], fieldName: string, stringValue: string[]): 
     );
 };
 
-export const updateNotes = ({
-    fields,
-    condition,
-    fieldName,
-    stringValue,
-    notes,
-}: Options): E.Either<string, Array<{file: string; content: string}>> => {
-    return pipe(
+export const updateNotes = ({fields, condition, fieldName, stringValue, notes}: Options): E.Either<string, Array<{file: string; content: string}>> =>
+    pipe(
         parseValue(fields, fieldName, stringValue),
         E.chain((value) =>
             pipe(
@@ -96,10 +89,9 @@ export const updateNotes = ({
             )
         )
     );
-};
 
-const filterNotes = (condition: string | undefined, fields: Field[], notes: Note[]): E.Either<string, Note[]> => {
-    return pipe(
+const filterNotes = (condition: string | undefined, fields: Field[], notes: Note[]): E.Either<string, Note[]> =>
+    pipe(
         createParser(fields)(condition ?? ''),
         E.bimap(
             (e) => `Invalid expression ${condition} ${JSON.stringify(e)}`,
@@ -109,7 +101,6 @@ const filterNotes = (condition: string | undefined, fields: Field[], notes: Note
             }
         )
     );
-};
 
 const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({file, summary, content, values}): FileResult => {
     const copy = {...values};
@@ -123,22 +114,20 @@ const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({file,
     return {file: file, content: result};
 };
 
-const writeNotes = (files: FileResult[]): T.Task<string[]> => {
-    return pipe(
+const writeNotes = (files: FileResult[]): T.Task<string[]> =>
+    pipe(
         A.array.traverse(T.task)(files, writeNote),
         T.map((results) => T.fromIO(A.array.traverse(IO.io)(results, reportResult))),
         T.flatten,
         T.map((results) => A.array.sequence(E.either)(results)),
         TE.getOrElse(() => T.fromIO<string[]>(printAndExit('Could not write all files :/')))
     );
-};
 
-const writeNote = (file: FileResult): TE.TaskEither<string, string> => {
-    return pipe(
+const writeNote = (file: FileResult): TE.TaskEither<string, string> =>
+    pipe(
         writeFile(file.file, file.content),
         TE.map(() => `${file.file}`)
     );
-};
 
 const reportResult = (result: E.Either<string, string>): IOE.IOEither<string, string> => () =>
     pipe(

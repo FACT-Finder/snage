@@ -26,9 +26,7 @@ export const migrate = (from: number, to: number) => (yamlDoc: Document): Docume
     return yamlDoc;
 };
 
-const setVersion = (to: number, contents: YAMLMap): YAMLMap => {
-    return upsert(contents, 'version', new Pair('version', to), 0);
-};
+const setVersion = (to: number, contents: YAMLMap): YAMLMap => upsert(contents, 'version', new Pair('version', to), 0);
 
 export const upsert = (contents: YAMLMap, key: any, pair: Pair, defaultIndex: number | undefined = undefined): YAMLMap => {
     const existingPair = findPair(contents.items, key);

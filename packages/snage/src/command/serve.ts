@@ -34,8 +34,8 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
             .number('port')
             .default('port', 8080)
             .describe('port', 'The port snage should listen on'),
-    handler: async ({port}) => {
-        return pipe(
+    handler: async ({port}) =>
+        pipe(
             TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
@@ -47,8 +47,7 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
                 )
             ),
             TE.fold(T.fromIOK(printAndExit), T.fromIOK(startExpress(port)))
-        )();
-    },
+        )(),
 };
 
 export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]): IO.IO<void> => () => {

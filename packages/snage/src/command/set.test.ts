@@ -2,9 +2,7 @@ import {updateNotes} from './set';
 import {Note, NoteValues, partialNote} from '../note/note';
 import {left, right} from 'fp-ts/lib/Either';
 
-const note = (id: string, values: NoteValues): Note => {
-    return partialNote({file: id, summary: id, id, values});
-};
+const note = (id: string, values: NoteValues): Note => partialNote({file: id, summary: id, id, values});
 
 describe('updateNotes', () => {
     it('should unset issue', () => {

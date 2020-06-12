@@ -11,15 +11,14 @@ import {LocalDate} from '@js-joda/core';
 import {sign} from 'fp-ts/lib/Ordering';
 import {identity} from 'fp-ts/lib/function';
 
-export const getOrdering = (field: Field | RawField, order: 'asc' | 'desc', absent: 'last' | 'first'): ORD.Ord<Note> => {
-    return pipe(
+export const getOrdering = (field: Field | RawField, order: 'asc' | 'desc', absent: 'last' | 'first'): ORD.Ord<Note> =>
+    pipe(
         getFieldOrdering(field.type),
         (o): ORD.Ord<any> => (field.list ? listOrdering(o) : o),
         order === 'asc' ? identity : ORD.getDualOrd,
         ordOptional(absent),
         ORD.contramap((note: Note) => R.lookup(field.name, note.values))
     );
-};
 
 type OptionOrd = <T>(ord: ORD.Ord<T>) => ORD.Ord<O.Option<T>>;
 const ordOptional = (absent: 'last' | 'first'): OptionOrd => (absent === 'first' ? nullFirst : nullLast);
@@ -28,9 +27,7 @@ const nullFirst: OptionOrd = (ord) =>
 const nullLast: OptionOrd = (ord) =>
     ORD.fromCompare((a, b) => (O.isSome(a) ? (O.isSome(b) ? ord.compare(a.value, b.value) : -1) : O.isSome(b) ? 1 : 0));
 
-const listOrdering = <T>(ordering: ORD.Ord<T>): ORD.Ord<T[]> => {
-    return ORD.ord.contramap(O.getOrd(ordering), A.head);
-};
+const listOrdering = <T>(ordering: ORD.Ord<T>): ORD.Ord<T[]> => ORD.ord.contramap(O.getOrd(ordering), A.head);
 
 export const getFieldOrdering = (type: FieldType): ORD.Ord<any> => {
     switch (type) {
