@@ -53,6 +53,7 @@
     "@types/winston": "^2.4.4",
     "@types/yaml": "^1.9.7",
     "copy-webpack-plugin": "^5.1.1",
+    "env-editor": "^0.4.1",
     "get-port": "^5.0.0",
     "jest": "^24.9.0",
     "jest-junit": "^9.0.0",
