@@ -8,6 +8,8 @@ import {extractFieldNamesFromTemplateString, getFields} from '../util/fieldExtra
 import {pipe} from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
+import {identity} from 'fp-ts/lib/function';
+import {openInEditor} from '../fp/fp';
 
 export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'create',
@@ -15,6 +17,9 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     builder: (y) => {
         y.example('$0', 'create');
         y.example('$0', 'create --no-interactive --issue 12345');
+        y.boolean('editor')
+            .describe('editor', 'Open the created note inside your $EDITOR.')
+            .default('editor', true);
         const config = getConfig();
         if (isLeft(config)) {
             y.epilog(config.left);
@@ -23,6 +28,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
         return addToYargs(y, config.right) as yargs.Argv<DefaultCli>;
     },
     handler: async (args) => {
+        const {editor} = args;
         const config = getConfigOrExit();
         const fieldsForFileName = getFields(config.fields, extractFieldNamesFromTemplateString(config.template.file));
         if (isLeft(fieldsForFileName)) {
@@ -34,6 +40,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
             handleFieldValues(config.fields, args),
             TE.mapLeft((e) => e.join('\n')),
             TE.chainEitherK((fieldValues) => generateChangeLogFile(fieldValues, config, fieldsForFileName.right)),
+            editor ? TE.chain(openInEditor) : identity,
             TE.fold(T.fromIOK(printAndExit), T.fromIOK(print))
         )();
     },

@@ -4,9 +4,11 @@ import * as E from 'fp-ts/lib/Either';
 import * as IOE from 'fp-ts/lib/IOEither';
 import fs from 'fs';
 import path from 'path';
+import {defaultEditor, getEditor} from 'env-editor';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {getFirstSemigroup} from 'fp-ts/lib/Semigroup';
 import * as R from 'fp-ts/lib/Record';
+import {spawn} from 'child_process';
 
 export function assertRight<L, R>(either: E.Either<L, R>): asserts either is E.Right<R> {
     if (E.isLeft(either)) {
@@ -59,3 +61,30 @@ export const merge = <V>(a: Record<string, V>, b: Record<string, V>): Record<str
     const First = getFirstSemigroup<V>();
     return R.getMonoid(First).concat(a, b);
 };
+
+const unsetEditor = `\
+Snage wants to open the note file inside an editor but
+your $EDITOR environment variable is not set.
+Using vim as default.`;
+
+export const openInEditor = (file: string): TE.TaskEither<string, string> =>
+    pipe(
+        E.tryCatch(defaultEditor, () => unsetEditor),
+        E.getOrElse((err) => {
+            console.log(err);
+            return getEditor('vim');
+        }),
+        ({isTerminalEditor, binary}) =>
+            TE.tryCatch(
+                () =>
+                    new Promise((resolve, reject) => {
+                        const cmd = spawn(binary, [file], {
+                            detached: true,
+                            stdio: isTerminalEditor ? 'inherit' : 'ignore',
+                        });
+                        cmd.on('exit', () => resolve(file));
+                        cmd.on('error', reject);
+                    }),
+                (err) => `editor error: ${err}`
+            )
+    );
