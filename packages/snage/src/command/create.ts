@@ -1,15 +1,19 @@
 import yargs from 'yargs';
 import {DefaultCli, print, printAndExit} from './common';
-import {isLeft} from 'fp-ts/lib/Either';
-import {addToYargs, handleFieldValues} from '../create/consoleParamsReader';
-import {generateChangeLogFile} from '../create/changelogFileWriter';
 import {getConfig, getConfigOrExit} from '../config/load';
-import {extractFieldNamesFromTemplateString, getFields} from '../util/fieldExtractor';
+import {replacePlaceholders} from '../util/fieldExtractor';
 import {pipe} from 'fp-ts/lib/pipeable';
 import * as TE from 'fp-ts/lib/TaskEither';
+import * as E from 'fp-ts/lib/Either';
 import * as T from 'fp-ts/lib/Task';
 import {identity} from 'fp-ts/lib/function';
-import {openInEditor} from '../fp/fp';
+import {createDirectoryOfFile, openInEditor, toRecord, writeFile} from '../fp/fp';
+import * as A from 'fp-ts/lib/Array';
+import {decodeStringHeader, encodeHeader} from '../note/convert';
+import {StringNoteValues} from '../note/note';
+import {toYamlString} from '../note/tostring';
+import path from 'path';
+import {askForMissingValues} from "../create/interactive";
 
 export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'create',
@@ -20,26 +24,56 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
         y.boolean('editor')
             .describe('editor', 'Open the created note inside your $EDITOR.')
             .default('editor', true);
-        const config = getConfig();
-        if (isLeft(config)) {
-            y.epilog(config.left);
-            return y;
-        }
-        return addToYargs(y, config.right) as yargs.Argv<DefaultCli>;
+        y.boolean('interactive')
+            .describe('interactive', 'Ask for missing values interactively.')
+            .default('interactive', true);
+        return pipe(
+            getConfig(),
+            E.map((c) => c.fields),
+            E.map(
+                A.reduce(y, (y, current) => {
+                    y.string(current.name);
+                    if (current.list) {
+                        y.array(current.name);
+                    }
+
+                    y.describe(current.name, current.description ?? 'No description.');
+                    return y;
+                })
+            ),
+            E.getOrElse((err) => y.epilogue(err))
+        );
     },
     handler: async (args) => {
-        const {editor} = args;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {editor, interactive} = args;
         const config = getConfigOrExit();
-        const fieldsForFileName = getFields(config.fields, extractFieldNamesFromTemplateString(config.template.file));
-        if (isLeft(fieldsForFileName)) {
-            console.error(fieldsForFileName.left);
-            process.exit(1);
-        }
+        const fieldValues: StringNoteValues = toRecord(
+            config.fields
+                .map((f) => [f.name, args[f.name]] as const)
+                .filter((x): x is [string, string[] | string] => x[1] !== undefined && x[1] !== null)
+        );
 
         return pipe(
-            handleFieldValues(config.fields, args),
-            TE.mapLeft((e) => e.join('\n')),
-            TE.chainEitherK((fieldValues) => generateChangeLogFile(fieldValues, config, fieldsForFileName.right)),
+            decodeStringHeader(config.fields, fieldValues),
+            E.mapLeft((e) => e.join('\n')),
+            interactive
+                ? (values) => E.either.traverse(T.task)(values, askForMissingValues(config.fields))
+                : TE.fromEither,
+            TE.chain((values) =>
+                pipe(
+                    replacePlaceholders(values, config.fields, config.template.file),
+                    (file) => path.join(config.basedir, file),
+                    TE.right,
+                    TE.chainFirst(createDirectoryOfFile),
+                    TE.chain((file) =>
+                        writeFile(
+                            file,
+                            toYamlString(encodeHeader(config.fields, values), config.fields, config.template.text)
+                        )
+                    )
+                )
+            ),
             editor ? TE.chain(openInEditor) : identity,
             TE.fold(T.fromIOK(printAndExit), T.fromIOK(print))
         )();

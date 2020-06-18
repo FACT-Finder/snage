@@ -1,7 +1,8 @@
 import YAML from 'yaml';
 import {YAMLMap} from 'yaml/types';
+import {FieldValue} from '../config/type';
 
-export class FrontMatterBuilder {
+export class YamlStringBuilder {
     content: string[];
     header: YAMLMap;
     comments: string[];
@@ -12,18 +13,18 @@ export class FrontMatterBuilder {
         this.comments = [];
     }
 
-    appendYamlComment(comment: string): FrontMatterBuilder {
+    appendYamlComment(comment: string): YamlStringBuilder {
         this.comments.push(comment);
         return this;
     }
 
-    appendYamlPair(key: string, value: unknown): FrontMatterBuilder {
+    appendYamlPair(key: string, value: FieldValue): YamlStringBuilder {
         const node = YAML.createNode(key);
         this.header.set(node, value);
         return this;
     }
 
-    appendContent(content: string): FrontMatterBuilder {
+    appendContent(content: string): YamlStringBuilder {
         this.content.push(content);
         return this;
     }
