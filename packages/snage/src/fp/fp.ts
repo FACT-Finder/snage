@@ -49,7 +49,10 @@ export const readFileSync = (fileName: string): IOE.IOEither<string, string> =>
 export const writeFile = (fileName: string, content: string): TE.TaskEither<string, string> =>
     pipe(
         TE.taskify<string, string, NodeJS.ErrnoException, string>(fs.writeFile)(fileName, content),
-        TE.bimap((e: NodeJS.ErrnoException): string => `Could not write file ${fileName}: ${e}`, () => fileName)
+        TE.bimap(
+            (e: NodeJS.ErrnoException): string => `Could not write file ${fileName}: ${e}`,
+            () => fileName
+        )
     );
 
 export const toRecord = <V>(values: Array<[string, V]>): Record<string, V> => {
@@ -65,7 +68,7 @@ export const merge = <V>(a: Record<string, V>, b: Record<string, V>): Record<str
 export const createDirectoryOfFile = (fileName: string): TE.TaskEither<string, void> => {
     const directory = path.dirname(fileName);
     return pipe(
-        TE.taskify<string, { recursive: boolean }, NodeJS.ErrnoException, string>(fs.mkdir)(directory, {
+        TE.taskify<string, {recursive: boolean}, NodeJS.ErrnoException, string>(fs.mkdir)(directory, {
             recursive: true,
         }),
         TE.bimap(
