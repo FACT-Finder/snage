@@ -1,8 +1,8 @@
-import {NoteValues} from './note';
+import {YamlNoteValues} from './note';
 import {Field} from '../config/type';
 import {YamlStringBuilder} from '../util/yamlStringBuilder';
 
-export const toYamlString = (fieldValues: NoteValues, fields: Field[], fileText: string): string =>
+export const toYamlString = (fieldValues: YamlNoteValues, fields: Field[], fileText: string): string =>
     fields
         .reduce((builder, field) => {
             if (fieldValues[field.name] !== null && fieldValues[field.name] !== undefined) {

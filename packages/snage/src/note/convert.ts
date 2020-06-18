@@ -9,7 +9,7 @@ import {LocalDate} from '@js-joda/core';
 import {toRecord} from '../fp/fp';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {PathReporter} from 'io-ts/lib/PathReporter';
-import {NoteValues, StringNoteValues} from './note';
+import {NoteValues, StringNoteValues, YamlFieldValue, YamlNoteValues} from './note';
 
 export type ConvertField = Pick<Field, 'name' | 'type' | 'enum' | 'list'>;
 
@@ -29,10 +29,10 @@ export const decodeStringHeader = (
         report
     );
 
-export const encodeHeader = (fields: ConvertField[], values: NoteValues): NoteValues =>
+export const encodeHeader = (fields: ConvertField[], values: NoteValues): YamlNoteValues =>
     pipe(
         getNoteIOType(fields).encode(values),
-        R.filter((v): v is FieldValue => typeof v !== 'undefined')
+        R.filter((v): v is YamlFieldValue => typeof v !== 'undefined')
     );
 
 export const stringEncodeHeader = (fields: ConvertField[], values: NoteValues): Record<string, string | string[]> =>

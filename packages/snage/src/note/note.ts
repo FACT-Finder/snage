@@ -1,4 +1,4 @@
-import {CSS, FieldValue} from '../config/type';
+import {CSS, FieldValue, PrimitiveFieldValue} from '../config/type';
 
 export interface Note {
     id: string;
@@ -29,4 +29,7 @@ export interface NoteLink {
     href: string;
 }
 export type NoteValues = Record<string, FieldValue>;
+type PrimitiveYamlFieldValue = string | number | boolean;
+export type YamlFieldValue = PrimitiveFieldValue | PrimitiveYamlFieldValue[];
+export type YamlNoteValues = Record<string, YamlFieldValue>;
 export type StringNoteValues = Record<string, string | string[]>;
