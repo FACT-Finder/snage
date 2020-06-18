@@ -13,7 +13,7 @@ import {decodeStringHeader, encodeHeader} from '../note/convert';
 import {StringNoteValues} from '../note/note';
 import {toYamlString} from '../note/tostring';
 import path from 'path';
-import {askForMissingValues} from "../create/interactive";
+import {askForMissingValues} from '../util/interactive';
 
 export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'create',
@@ -57,9 +57,8 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
         return pipe(
             decodeStringHeader(config.fields, fieldValues),
             E.mapLeft((e) => e.join('\n')),
-            interactive
-                ? (values) => E.either.traverse(T.task)(values, askForMissingValues(config.fields))
-                : TE.fromEither,
+            TE.fromEither,
+            interactive ? TE.chain(askForMissingValues(config.fields)) : identity,
             TE.chain((values) =>
                 pipe(
                     replacePlaceholders(values, config.fields, config.template.file),

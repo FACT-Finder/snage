@@ -23,11 +23,13 @@ const getFieldByName = (fields: Field[], name: string): Either<string, Field> =>
 
 export const replacePlaceholders = (fieldValues: NoteValues, fields: Field[], fileNameTemplate: string): string => {
     const stringValues = stringEncodeHeader(fields, fieldValues);
-    return fields.reduce((name, field) => {
-        const stringValue = stringValues[field.name];
-        if (Array.isArray(stringValue)) {
-            throw new Error('Array values may not be used for placeholders');
-        }
-        return name.replace(`\${${field.name}}`, stringValue);
-    }, fileNameTemplate);
+    return fields
+        .filter((f) => !f.list)
+        .reduce((name, field) => {
+            const stringValue = stringValues[field.name];
+            if (Array.isArray(stringValue)) {
+                throw new Error('Array values may not be used for placeholders');
+            }
+            return name.replace(`\${${field.name}}`, stringValue);
+        }, fileNameTemplate);
 };
