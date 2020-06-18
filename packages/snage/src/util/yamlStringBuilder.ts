@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 import {YAMLMap} from 'yaml/types';
-import {FieldValue} from '../config/type';
+import {YamlFieldValue} from '../note/note';
 
 export class YamlStringBuilder {
     content: string[];
@@ -18,7 +18,7 @@ export class YamlStringBuilder {
         return this;
     }
 
-    appendYamlPair(key: string, value: FieldValue): YamlStringBuilder {
+    appendYamlPair(key: string, value: YamlFieldValue): YamlStringBuilder {
         const node = YAML.createNode(key);
         this.header.set(node, value);
         return this;
