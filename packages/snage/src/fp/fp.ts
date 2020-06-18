@@ -49,7 +49,7 @@ export const readFileSync = (fileName: string): IOE.IOEither<string, string> =>
 export const writeFile = (fileName: string, content: string): TE.TaskEither<string, string> =>
     pipe(
         TE.taskify<string, string, NodeJS.ErrnoException, string>(fs.writeFile)(fileName, content),
-        TE.mapLeft((e: NodeJS.ErrnoException): string => `Could not write file ${fileName}: ${e}`)
+        TE.bimap((e: NodeJS.ErrnoException): string => `Could not write file ${fileName}: ${e}`, () => fileName)
     );
 
 export const toRecord = <V>(values: Array<[string, V]>): Record<string, V> => {
@@ -60,6 +60,19 @@ export const toRecord = <V>(values: Array<[string, V]>): Record<string, V> => {
 export const merge = <V>(a: Record<string, V>, b: Record<string, V>): Record<string, V> => {
     const First = getFirstSemigroup<V>();
     return R.getMonoid(First).concat(a, b);
+};
+
+export const createDirectoryOfFile = (fileName: string): TE.TaskEither<string, void> => {
+    const directory = path.dirname(fileName);
+    return pipe(
+        TE.taskify<string, { recursive: boolean }, NodeJS.ErrnoException, string>(fs.mkdir)(directory, {
+            recursive: true,
+        }),
+        TE.bimap(
+            (err) => `Could not create directory ${directory}: ${err}`,
+            () => undefined
+        )
+    );
 };
 
 const unsetEditor = `\

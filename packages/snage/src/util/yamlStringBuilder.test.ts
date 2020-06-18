@@ -1,19 +1,19 @@
-import {FrontMatterBuilder} from './frontMatterBuilder';
+import {YamlStringBuilder} from './yamlStringBuilder';
 import matter from 'gray-matter';
 
-describe('generateCorrectFrontMatter', () => {
-    const contentToSave: string = 'Did you ever hear the Tragedy of Darth Plagueis the Wise?';
+describe('create yaml string', () => {
+    const contentToSave = 'Did you ever hear the Tragedy of Darth Plagueis the Wise?';
     const list: string[] = ['A New Hope', 'The Empire Strikes Back', 'Return of the Jedi'];
-    const listKey: string = 'Original Trilogy';
-    const bool: boolean = true;
-    const boolKey: string = 'JarJar sucks';
-    const num: number = 2;
-    const numKey: string = 'Number of Sith';
-    const str: string = 'Death Star/Planet';
-    const strKey: string = 'Default Empire Power Fantasy';
-    const comment: string = 'May the force be with you';
+    const listKey = 'Original Trilogy';
+    const bool = true;
+    const boolKey = 'JarJar sucks';
+    const num = 2;
+    const numKey = 'Number of Sith';
+    const str = 'Death Star/Planet';
+    const strKey = 'Default Empire Power Fantasy';
+    const comment = 'May the force be with you';
 
-    const frontMatter: string = new FrontMatterBuilder()
+    const builder: string = new YamlStringBuilder()
         .appendYamlComment(comment)
         .appendYamlPair(numKey, num)
         .appendYamlPair(strKey, str)
@@ -21,8 +21,8 @@ describe('generateCorrectFrontMatter', () => {
         .appendYamlPair(listKey, list)
         .appendContent(contentToSave)
         .build();
-    const {content: content, data} = matter(frontMatter);
-    it('frontMatter file has expected content', () => {
+    const {content: content, data} = matter(builder);
+    it('file has expected content', () => {
         expect(content).toEqual(contentToSave);
     });
     it('has correct values inside', () => {
@@ -31,7 +31,7 @@ describe('generateCorrectFrontMatter', () => {
         expect(data[numKey]).toEqual(num);
         expect(data[strKey]).toEqual(str);
     });
-    const lines: string[] = frontMatter.split('\n');
+    const lines: string[] = builder.split('\n');
     it('header is correctly enclosed', () => {
         expect(lines[0]).toEqual('---');
         expect(lines[6 + list.length]).toEqual('---');

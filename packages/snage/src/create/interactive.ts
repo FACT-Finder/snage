@@ -14,6 +14,23 @@ import {LocalDate} from '@js-joda/core';
 import * as T from 'fp-ts/lib/Task';
 import * as O from 'fp-ts/lib/Option';
 import * as A from 'fp-ts/lib/Array';
+import {NoteValues} from "../note/note";
+import {pipe} from "fp-ts/lib/pipeable";
+import {merge, toRecord} from "../fp/fp";
+
+export const askForMissingValues = (fields: Field[]) => (values: NoteValues): T.Task<NoteValues> => {
+    const existing = Object.keys(values);
+    const missingFields = fields.filter((f) => !existing.includes(f.name));
+    return pipe(
+        A.array.traverse(T.taskSeq)(missingFields, (f) => askValue(f)),
+        T.map(A.filterMap((x) => x)),
+        T.map((xs) => merge(values, toRecord(xs)))
+    );
+};
+
+const askValue = (field: Field): T.Task<O.Option<[string, FieldValue]>> => {
+    return pipe(askUserForFieldValue(field), T.map(O.map((v): [string, FieldValue] => [field.name, v])));
+};
 
 export const askUserForFieldValue = (field: Field): T.Task<O.Option<FieldValue>> =>
     T.task.map(() => askForInputForFieldByTypes(field), O.fromNullable);

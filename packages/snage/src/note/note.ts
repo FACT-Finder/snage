@@ -29,3 +29,4 @@ export interface NoteLink {
     href: string;
 }
 export type NoteValues = Record<string, FieldValue>;
+export type StringNoteValues = Record<string, string | string[]>;

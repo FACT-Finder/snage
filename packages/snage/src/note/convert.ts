@@ -9,13 +9,22 @@ import {LocalDate} from '@js-joda/core';
 import {toRecord} from '../fp/fp';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {PathReporter} from 'io-ts/lib/PathReporter';
-import {NoteValues} from './note';
+import {NoteValues, StringNoteValues} from './note';
 
 export type ConvertField = Pick<Field, 'name' | 'type' | 'enum' | 'list'>;
 
 export const decodeHeader = (fields: ConvertField[], values): E.Either<string[], Record<string, FieldValue>> =>
     pipe(
         getNoteIOType(fields).decode(values),
+        E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')),
+        report
+    );
+export const decodeStringHeader = (
+    fields: ConvertField[],
+    values: StringNoteValues
+): E.Either<string[], Record<string, FieldValue>> =>
+    pipe(
+        getNoteStringIOType(fields).decode(values),
         E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')),
         report
     );
