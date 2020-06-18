@@ -27,6 +27,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
         y.boolean('interactive')
             .describe('interactive', 'Ask for missing values interactively.')
             .default('interactive', true);
+        y.version(false);
         return pipe(
             getConfig(),
             E.map((c) => c.fields),
