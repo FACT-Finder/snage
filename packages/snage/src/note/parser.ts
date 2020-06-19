@@ -92,7 +92,6 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
     pipe(
         decodeHeader(fields, rawNote.header),
         TE.fromEither,
-        TE.mapLeft(A.map((error) => `${rawNote.file}: ${error}`)),
         TE.map((values) => ({
             values: values,
             id: rawNote.file,
