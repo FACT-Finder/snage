@@ -98,7 +98,11 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => (
                                 <CloseIcon />
                             </IconButton>
                         ) : null}
-                        <IconButton href="https://snage.dev/query" size="small">
+                        <IconButton
+                            href="https://snage.dev/query"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            size="small">
                             <HelpIcon />
                         </IconButton>
                     </InputAdornment>
