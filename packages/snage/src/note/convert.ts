@@ -8,16 +8,18 @@ import * as R from 'fp-ts/lib/Record';
 import {LocalDate} from '@js-joda/core';
 import {toRecord} from '../fp/fp';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {PathReporter} from 'io-ts/lib/PathReporter';
 import {NoteValues, StringNoteValues, YamlFieldValue, YamlNoteValues} from './note';
+import {ReportMode, stringifyErrors} from './reporter';
 
 export type ConvertField = Pick<Field, 'name' | 'type' | 'enum' | 'list'>;
 
 export const decodeHeader = (fields: ConvertField[], values): E.Either<string[], Record<string, FieldValue>> =>
     pipe(
         getNoteIOType(fields).decode(values),
-        E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')),
-        report
+        E.bimap(
+            stringifyErrors(ReportMode.WithPath),
+            R.filter((v): v is FieldValue => typeof v !== 'undefined')
+        )
     );
 export const decodeStringHeader = (
     fields: ConvertField[],
@@ -25,8 +27,10 @@ export const decodeStringHeader = (
 ): E.Either<string[], Record<string, FieldValue>> =>
     pipe(
         getNoteStringIOType(fields).decode(values),
-        E.map(R.filter((v): v is FieldValue => typeof v !== 'undefined')),
-        report
+        E.bimap(
+            stringifyErrors(ReportMode.WithPath),
+            R.filter((v): v is FieldValue => typeof v !== 'undefined')
+        )
     );
 
 export const encodeHeader = (fields: ConvertField[], values: NoteValues): YamlNoteValues =>
@@ -43,16 +47,13 @@ export const stringEncodeHeader = (fields: ConvertField[], values: NoteValues): 
 
 export const decodeValue = (field: ConvertField, value: unknown): E.Either<string[], FieldValue> => {
     const decoded: E.Either<Errors, FieldValue> = getIOFieldType(field.type, field).decode(value);
-    return report(decoded);
+    return E.either.mapLeft(decoded, stringifyErrors(ReportMode.Simple));
 };
 
 export const decodeStringValue = (field: ConvertField, value: string | string[]): E.Either<string[], FieldValue> => {
     const decoded: E.Either<Errors, FieldValue> = getIOStringFieldType(field.type, field).decode(value);
-    return report(decoded);
+    return E.either.mapLeft(decoded, stringifyErrors(ReportMode.Simple));
 };
-
-const report = <T>(decoded: E.Either<Errors, T>): E.Either<string[], T> =>
-    E.mapLeft(() => PathReporter.report(decoded))(decoded);
 
 const getNoteIOType = (fields: ConvertField[]): t.Type<Record<string, FieldValue | undefined>> =>
     t.partial(toRecord(fields.map((field) => [field.name, getIOFieldType(field.type, field)])), 'note');
@@ -113,7 +114,7 @@ const semverType = new t.Type<semver.SemVer, string, unknown>(
 );
 
 const dateType = new t.Type<LocalDate, string, unknown>(
-    'YYYY-MM-DD',
+    'date(YYYY-MM-DD)',
     (u): u is LocalDate => u instanceof LocalDate,
     (u, c) =>
         E.either.chain(t.string.validate(u, c), (s) => {

@@ -78,8 +78,11 @@ const label = ({name, type, list, optional, enum: fenum}: Field, format?: string
 };
 
 const validate = (field: Field) => (value: string): string | boolean => {
-    if (value === '' && field.optional) {
-        return true;
+    if (value === '') {
+        if (field.optional) {
+            return true;
+        }
+        return 'value is required';
     }
     return pipe(
         decodeStringValue(field, field.list ? value.split(',').map((v) => v.trim()) : value),

@@ -71,9 +71,7 @@ describe('parseNote', () => {
                 () => [],
                 () => ({})
             )(noIssue)()
-        ).toStrictEqual(
-            left(['filename: Invalid value "bugfixi" supplied to : note/type: "bugfix" | "feature" | "refactoring"'])
-        );
+        ).toStrictEqual(left(['invalid value "bugfixi" on type, expected "bugfix" | "feature" | "refactoring"']));
     });
     it('checks for required fields', async () => {
         const noIssue: RawNote = {
