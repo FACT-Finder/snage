@@ -156,7 +156,7 @@ bool: true
             notes: [note('one', {issue: '#31', bool: true})],
             stringValue: ['notvalid'],
         });
-        expect(result).toStrictEqual(left(`Invalid value "notvalid" supplied to : boolean`));
+        expect(result).toStrictEqual(left(`invalid value "notvalid", expected boolean`));
     });
     it('should fail on invalid value (list)', () => {
         const result = updateNotes({
@@ -169,7 +169,7 @@ bool: true
             notes: [note('one', {issue: '#31', bool: [true]})],
             stringValue: ['true', 'notvalid'],
         });
-        expect(result).toStrictEqual(left('Invalid value "notvalid" supplied to : bool/1: boolean'));
+        expect(result).toStrictEqual(left('invalid value "notvalid", expected boolean'));
     });
     it('should fail on invalid condition', () => {
         const result = updateNotes({
