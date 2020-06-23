@@ -1,52 +1,27 @@
 import yargs from 'yargs';
 import {DefaultCli, printAndExit} from './common';
-import {getConfig} from '../config/load';
+import {getConfigOrExit} from '../config/load';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
-import * as E from 'fp-ts/lib/Either';
-import {parseNotes} from '../note/parser';
-import {createParser, Expression} from '../query/parser';
-import {createMatcher} from '../query/match';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {Config} from '../config/type';
-import {Note} from '../note/note';
+import {parseNotes} from '../note/parser';
+import {filterNotes} from '../query/filter';
 
 export const find: yargs.CommandModule<DefaultCli, DefaultCli & {condition?: string}> = {
     command: 'find [condition]',
     describe: 'Find notes matching [condition]',
     builder: (y) => y.example('$0', 'find').example('$0', 'find "issue = 21"'),
-    handler: async ({condition = ''}) =>
-        pipe(
-            TE.fromEither(getConfig()),
-            TE.chain((config) =>
-                pipe(
-                    parseNotes(config),
-                    TE.bimap(
-                        (errors) => errors.join('\n'),
-                        (notes) => [config, notes] as const
-                    )
-                )
-            ),
-            TE.chainEitherK(([config, notes]) => {
-                const parser = createParser(config.fields);
-                return pipe(
-                    parser(condition),
-                    E.bimap(
-                        (e) => `Invalid expression "${condition}" ${JSON.stringify(e)}`,
-                        (expression) => [config, notes, expression] as const
-                    )
-                );
-            }),
-            TE.map(([config, notes, expression]) => match(config, notes, expression)),
+    handler: async ({condition = ''}) => {
+        const config = getConfigOrExit();
+        return pipe(
+            parseNotes(config),
+            TE.mapLeft((errors) => errors.join('\n')),
+            TE.chainEitherK(filterNotes(config, condition)),
             TE.fold(T.fromIOK(printAndExit), (notes) =>
                 T.fromIO<void>(() => {
                     notes.forEach((note) => console.log(note.file));
                 })
             )
-        )(),
-};
-
-const match = (config: Config, notes: Note[], expression: Expression): Note[] => {
-    const matcher = createMatcher(expression, config.fields);
-    return notes.filter(matcher);
+        )();
+    },
 };

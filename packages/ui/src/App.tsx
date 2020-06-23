@@ -4,18 +4,21 @@ import {ApiNote} from '../../shared/type';
 import Chip from '@material-ui/core/Chip';
 import axios from 'axios';
 import {
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
+    IconButton,
+    InputAdornment,
     Link,
     TextField,
-    InputAdornment,
-    IconButton,
+    Tooltip,
+    ExpansionPanel,
+    ExpansionPanelSummary,
+    ExpansionPanelDetails,
 } from '@material-ui/core';
 import {useDebounce} from 'use-debounce';
 import CloseIcon from '@material-ui/icons/Close';
 import HelpIcon from '@material-ui/icons/Help';
+import Export from '@material-ui/icons/FileCopy';
 import {Markdown} from './Markdown';
+import {ExportDialog} from './ExportDialog';
 
 type SetQuery = (x: DebounceableQuery) => void;
 const getQueryFromSearch = (search: string): string =>
@@ -82,35 +85,44 @@ interface SearchProps {
     setQuery: SetQuery;
 }
 
-const Search: React.FC<SearchProps> = ({query, setQuery}) => (
-    <div style={{textAlign: 'center', padding: 30}}>
-        <TextField
-            type="text"
-            variant="outlined"
-            style={{maxWidth: 600, width: '100%'}}
-            value={query}
-            onChange={(e) => setQuery({query: e.target.value, debounce: true})}
-            InputProps={{
-                endAdornment: (
-                    <InputAdornment position="end">
-                        {query !== '' ? (
-                            <IconButton onClick={() => setQuery({query: '', debounce: false})} size="small">
-                                <CloseIcon />
+const Search: React.FC<SearchProps> = ({query, setQuery}) => {
+    const [exportOpen, setExportOpen] = React.useState(false);
+    return (
+        <div style={{textAlign: 'center', padding: 30}}>
+            <TextField
+                type="text"
+                variant="outlined"
+                style={{maxWidth: 600, width: '100%'}}
+                value={query}
+                onChange={(e) => setQuery({query: e.target.value, debounce: true})}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            {query !== '' ? (
+                                <IconButton onClick={() => setQuery({query: '', debounce: false})} size="small">
+                                    <CloseIcon />
+                                </IconButton>
+                            ) : null}
+                            <IconButton
+                                href="https://snage.dev/query"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                size="small">
+                                <HelpIcon />
                             </IconButton>
-                        ) : null}
-                        <IconButton
-                            href="https://snage.dev/query"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            size="small">
-                            <HelpIcon />
-                        </IconButton>
-                    </InputAdornment>
-                ),
-            }}
-        />
-    </div>
-);
+                            <Tooltip title="Export">
+                                <IconButton onClick={() => setExportOpen(true)}>
+                                    <Export />
+                                </IconButton>
+                            </Tooltip>
+                        </InputAdornment>
+                    ),
+                }}
+            />
+            <ExportDialog query={query} open={exportOpen} setOpen={setExportOpen} />
+        </div>
+    );
+};
 
 const Entry = React.memo(
     ({
