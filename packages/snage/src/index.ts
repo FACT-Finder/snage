@@ -7,6 +7,7 @@ import {ConfigParameterName, DefaultSnageConfig, EnvPrefix} from './command/comm
 import {find} from './command/find';
 import {set} from './command/set';
 import {migrate} from './command/migrate';
+import {exportCmd} from './command/export';
 
 const handleExitSignal = (): void => process.exit(1);
 
@@ -26,6 +27,7 @@ yargs
     .command(lint)
     .command(set)
     .command(migrate)
+    .command(exportCmd)
     .help()
     .demandCommand()
     .recommendCommands().argv;

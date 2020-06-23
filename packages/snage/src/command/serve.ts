@@ -18,6 +18,8 @@ import {Config} from '../config/type';
 import {convertToApiNote} from '../note/convertapi';
 import {collectDefaultMetrics, register} from 'prom-client';
 import {startRequestTimer, totalNotes} from '../util/prometheus';
+import {exportToString} from '../note/export';
+import {LocalDate} from '@js-joda/core';
 
 interface Response {
     status: number;
@@ -88,6 +90,30 @@ export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]
             }
         );
     });
+    app.get('/export', ({query: {query, tags = 'true'}}, res) => {
+        const endTimer = startRequestTimer('export');
+        pipe(
+            parser(query),
+            E.bimap(
+                (e): Response => ({status: 400, body: e}),
+                (expression) => {
+                    const matcher = createMatcher(expression, config.fields);
+                    return notes.filter(matcher);
+                }
+            ),
+            E.map(A.sort(config.standard.sort)),
+            E.map((notes) => exportToString(notes, config.fields, {tags: tags === 'true'})),
+            E.fold(identity, (notes): Response => ({status: 200, body: notes})),
+            ({status, body}) => {
+                res.set('Content-disposition', `attachment; filename=export.${LocalDate.now().toString()}.md`)
+                    .set('Content-Type', 'text/plain')
+                    .status(status)
+                    .send(body);
+                endTimer(status);
+            }
+        );
+    });
+
     app.use(express.static(path.join(__dirname, 'ui')));
     app.get('/metrics', (req, res) => {
         res.set('Content-Type', register.contentType);
