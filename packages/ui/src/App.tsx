@@ -111,7 +111,7 @@ const Search: React.FC<SearchProps> = ({query, setQuery}) => {
                                 <HelpIcon />
                             </IconButton>
                             <Tooltip title="Export">
-                                <IconButton onClick={() => setExportOpen(true)}>
+                                <IconButton size="small" onClick={() => setExportOpen(true)}>
                                     <Export />
                                 </IconButton>
                             </Tooltip>
