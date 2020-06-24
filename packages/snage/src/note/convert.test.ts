@@ -4,6 +4,7 @@ import semver from 'semver/preload';
 import {Field} from '../config/type';
 import {Note, partialNote} from './note';
 import {LocalDate} from '@js-joda/core';
+import {extractLeft, extractRight} from '../fp/fp';
 
 describe('decode', () => {
     test('boolean', () => {
@@ -38,13 +39,21 @@ describe('decode', () => {
     });
     test('semver', () => {
         const field: Field = {name: 'version', type: 'semver'};
-        expect(decodeValue(field, '1.1')).toStrictEqual(E.left(['invalid value "1.1", expected semver']));
-        expect(decodeValue(field, '1.1.0')).toStrictEqual(E.right(semver.parse('1.1.0')));
+        expect(extractLeft(decodeValue(field, '1.1'))).toMatchInlineSnapshot(`
+            Array [
+              "invalid value \\"1.1\\", expected semver(major.minor.patch[-prerelease])",
+            ]
+        `);
+        expect(extractRight(decodeValue(field, '1.1.0'))).toStrictEqual(semver.parse('1.1.0'));
     });
     test('ffversion', () => {
         const field: Field = {name: 'version', type: 'ffversion'};
-        expect(decodeValue(field, '1.1.0')).toStrictEqual(E.left(['invalid value "1.1.0", expected ffversion']));
-        expect(decodeValue(field, '1.1.0-53')).toStrictEqual(E.right('1.1.0-53'));
+        expect(extractLeft(decodeValue(field, '1.1.0'))).toMatchInlineSnapshot(`
+            Array [
+              "invalid value \\"1.1.0\\", expected ffversion(marketing.major.minor-patch)",
+            ]
+        `);
+        expect(extractRight(decodeValue(field, '1.1.0-53'))).toMatchInlineSnapshot(`"1.1.0-53"`);
     });
     test('string', () => {
         const field: Field = {name: 'issue', type: 'string'};

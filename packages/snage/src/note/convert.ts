@@ -103,7 +103,7 @@ const number = new t.Type<number, number, unknown>(
 );
 
 const semverType = new t.Type<semver.SemVer, string, unknown>(
-    'semver',
+    'semver(major.minor.patch[-prerelease])',
     (u): u is semver.SemVer => u instanceof semver.SemVer,
     (u, c) =>
         E.either.chain(t.string.validate(u, c), (s) => {
@@ -128,7 +128,7 @@ const dateType = new t.Type<LocalDate, string, unknown>(
 );
 
 const ffversionType = new t.Type<string, string, unknown>(
-    'ffversion',
+    'ffversion(marketing.major.minor-patch)',
     (u): u is string => typeof u === 'string',
     (u, c) =>
         E.either.chain(t.string.validate(u, c), (s) =>
