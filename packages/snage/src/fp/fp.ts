@@ -16,10 +16,20 @@ export function assertRight<L, R>(either: E.Either<L, R>): asserts either is E.R
     }
 }
 
+export function extractRight<L, R>(either: E.Either<L, R>): R {
+    assertRight(either);
+    return either.right;
+}
+
 export function assertLeft<L, R>(either: E.Either<L, R>): asserts either is E.Left<L> {
     if (E.isRight(either)) {
         throw new Error(`expected left, got ${JSON.stringify(either)}`);
     }
+}
+
+export function extractLeft<L, R>(either: E.Either<L, R>): L {
+    assertLeft(either);
+    return either.left;
 }
 
 export const sequenceKeepAllLefts = <L, R>(eithers: Array<E.Either<L, R>>): E.Either<L[], R[]> => {
