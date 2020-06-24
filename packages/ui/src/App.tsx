@@ -154,7 +154,7 @@ const Entry = React.memo(
                                     size="small"
                                     key={key}
                                     style={{marginRight: 10, ...valueStyles[key]}}
-                                    label={key + ': ' + value}
+                                    label={key + '=' + value}
                                     onClick={handleClick(key, value)}
                                 />
                             );
