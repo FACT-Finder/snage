@@ -56,7 +56,7 @@ version: 0.0.2
 ### 2. Header
 
 After the metadata a markdown header must follow. 
-The header is the summary for whole change log note.
+The header is the summary for the whole change log note.
 
 ```markdown
 # Add `snage-lint` command
