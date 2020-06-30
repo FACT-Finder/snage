@@ -60,7 +60,11 @@ describe('parser', () => {
     });
     test('enum', () => {
         expect(parser('enumName = abc')).toEqual(right({field: 'enumName', op: '=', value: 'abc'}));
+        expect(parser('enumName = "abc"')).toEqual(right({field: 'enumName', op: '=', value: 'abc'}));
         expect(parser('enumName = xxx')).toEqual(
+            left({expected: ["'abc'", "'cde'"], index: {column: 12, line: 1, offset: 11}})
+        );
+        expect(parser('enumName = abcde')).toEqual(
             left({expected: ["'abc'", "'cde'"], index: {column: 12, line: 1, offset: 11}})
         );
     });
