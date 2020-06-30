@@ -644,44 +644,86 @@
                 
                   <h1>Config</h1>
                 
-                <p>Description about .snage.yaml.</p>
-<p>Example config:
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+                <p>You configure Snage using a YAML file. Snage searches for a file named
+<code>.snage.yaml</code> or <code>.snage.yml</code> in the current and all parent directories. You
+can specify a different path using the <code>--config</code> argument or the
+<code>SNAGE_CONFIG</code> environment variable.</p>
+<p>Let's take a quick look at a sample configuration that contains the most
+important features.
+<div class="highlight"><pre><span></span><code><span class="c1"># The version of the configuration format.</span>
+<span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="c1"># The directory containing all the changelog notes. It is relative to the path</span>
+<span class="c1"># of the `.snage.yaml` it&#39;s defined in, except if it&#39;s an absolute path</span>
+<span class="c1"># starting with a slash.</span>
+<span class="nt">basedir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">changelog</span>
+<span class="nt">template</span><span class="p">:</span>
+  <span class="c1"># A template used by `snage create` for the path of new changelog notes. The</span>
+  <span class="c1"># path is interpreted as relative to `basedir`.</span>
+  <span class="nt">file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${issue}-${type}.md</span>
+  <span class="c1"># A default text for new changelog notes created with `snage create`. It can</span>
+  <span class="c1"># guide your changelog authors.</span>
+  <span class="nt">text</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no"># Choose a summarizing headline</span>
+
+    <span class="no">- Don&#39;t just copy your commit message (you can, if it&#39;s appropriate).</span>
+      <span class="no">Instead write the changelog from the audience&#39;s point of view, e.g. include the error message the user has seen.</span>
+    <span class="no">- Don&#39;t write a changelog if the change doesn&#39;t affect any of the audiences.</span>
+    <span class="no">- Are there multiple changes for different audiences in your PR? Then add multiple changelog notes.</span>
+    <span class="no">- Use active language (&quot;Use `ABC` to configure feature X&quot; instead of &quot;Feature X can be configured using `ABC`&quot;)</span>
+    <span class="no">- Use present tense (&quot;Remove support for ...&quot; instead of &quot;Removed support for ...&quot;)</span>
 <span class="nt">note</span><span class="p">:</span>
-    <span class="nt">basedir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">changelog</span>
-    <span class="nt">file</span><span class="p">:</span> <span class="s">&quot;${issue}-${type}.md&quot;</span>
+  <span class="c1"># Define links from your changelog entry to the corresponding Github issue,</span>
+  <span class="c1"># pull request or other related information.</span>
+  <span class="nt">links</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;GitHub#${issue}&quot;</span>
+      <span class="nt">link</span><span class="p">:</span> <span class="s">&quot;https://github.com/FACT-Finder/snage/issues/${issue}&quot;</span>
+<span class="c1"># Defines the fields for your YAML headers.</span>
 <span class="nt">fields</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">issue</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">type</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">add</span><span class="p p-Indicator">,</span> <span class="nv">change</span><span class="p p-Indicator">,</span> <span class="nv">deprecate</span><span class="p p-Indicator">,</span> <span class="nv">remove</span><span class="p p-Indicator">,</span> <span class="nv">fix</span><span class="p p-Indicator">,</span> <span class="nv">security</span><span class="p p-Indicator">]</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">audience</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">user</span><span class="p p-Indicator">,</span> <span class="nv">developer</span><span class="p p-Indicator">]</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">version</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">semver</span>
-      <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">provided</span><span class="p">:</span>
-          <span class="nt">by</span><span class="p">:</span> <span class="s">&#39;git-version&#39;</span>
-          <span class="nt">arguments</span><span class="p">:</span>
-              <span class="nt">version-regex</span><span class="p">:</span> <span class="s">&#39;^v(.*)$&#39;</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">components</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">server</span><span class="p p-Indicator">,</span> <span class="nv">ui</span><span class="p p-Indicator">,</span> <span class="nv">cli</span><span class="p p-Indicator">,</span> <span class="nv">api</span><span class="p p-Indicator">,</span> <span class="nv">config</span><span class="p p-Indicator">]</span>
-      <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">issue</span>
+    <span class="c1"># Valid types are string, boolean, date, number, semver and ffversion.</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">number</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">type</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+    <span class="c1"># You can restrict string fields to a finite set of values.</span>
+    <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="nv">add</span><span class="p p-Indicator">,</span> <span class="nv">change</span><span class="p p-Indicator">,</span> <span class="nv">deprecate</span><span class="p p-Indicator">,</span> <span class="nv">remove</span><span class="p p-Indicator">,</span> <span class="nv">fix</span><span class="p p-Indicator">,</span> <span class="nv">security</span> <span class="p p-Indicator">]</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">audience</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+    <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="nv">user</span><span class="p p-Indicator">,</span> <span class="nv">developer</span> <span class="p p-Indicator">]</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">version</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">semver</span>
+    <span class="c1"># Some fields only make sense for some of your changes. Mark such fields</span>
+    <span class="c1"># as optional.</span>
+    <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="c1"># At the time of writing a new changelog note some values might not be</span>
+    <span class="c1"># known. E.g. if your continuous integration process creates a new</span>
+    <span class="c1">#  version after merging your pull request, you don&#39;t know the correct</span>
+    <span class="c1">#  version in advance. In that case you can use the `git-version` provider</span>
+    <span class="c1">#  which will extract the correct version from your git history when snage</span>
+    <span class="c1">#  renders your changelog.</span>
+    <span class="nt">provided</span><span class="p">:</span>
+      <span class="nt">by</span><span class="p">:</span> <span class="s">&#39;git-version&#39;</span>
+      <span class="nt">arguments</span><span class="p">:</span>
+        <span class="c1"># The regex must match your version tag and have exactly one</span>
+        <span class="c1"># group extracting the version.</span>
+        <span class="nt">version-regex</span><span class="p">:</span> <span class="s">&#39;^v(.*)$&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">components</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+    <span class="c1"># List fields can have multiple values. In this case a change might touch</span>
+    <span class="c1"># multiple components.</span>
+    <span class="nt">list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">enum</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="nv">server</span><span class="p p-Indicator">,</span> <span class="nv">ui</span><span class="p p-Indicator">,</span> <span class="nv">cli</span><span class="p p-Indicator">,</span> <span class="nv">api</span><span class="p p-Indicator">,</span> <span class="nv">config</span> <span class="p p-Indicator">]</span>
+    <span class="nt">optional</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="nt">filterPresets</span><span class="p">:</span> <span class="p p-Indicator">[]</span>
-<span class="nt">links</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;GitHub#${issue}&quot;</span>
-    <span class="nt">link</span><span class="p">:</span> <span class="s">&quot;https://github.com/FACT-Finder/snage/issues/${issue}&quot;</span>
 <span class="nt">standard</span><span class="p">:</span>
-    <span class="nt">query</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
-    <span class="nt">sort</span><span class="p">:</span>
-        <span class="nt">field</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">version</span>
-        <span class="nt">order</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">desc</span>
+  <span class="c1"># The default query when opening the snage UI. The empty query shows every</span>
+  <span class="c1"># changelog entry.</span>
+  <span class="nt">query</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="c1"># The order of the changelog entries in the snage UI.</span>
+  <span class="nt">sort</span><span class="p">:</span>
+    <span class="nt">field</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">version</span>
+    <span class="nt">order</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">desc</span>
 </code></pre></div></p>
 <h2 id="explanation">Explanation<a class="headerlink" href="#explanation" title="Permanent link">&para;</a></h2>
 <h3 id="version"><code>version</code><a class="headerlink" href="#version" title="Permanent link">&para;</a></h3>
