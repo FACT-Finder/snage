@@ -14,3 +14,11 @@ export interface ApiNoteLink {
     href: string;
 }
 
+export interface ApiParseError {
+    index: {
+        column: number;
+        line: number;
+        offset: number;
+    };
+    expected: string[];
+}
