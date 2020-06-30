@@ -45,6 +45,25 @@ export interface ParseError {
     expected: string[];
 }
 
+const quotedStringRegex = /^["']([^'"]*)['"]/;
+const stringRegex = /^([^\s()]+)/;
+
+const oneOfWords = (words: string[]): Parser<string> =>
+    P.custom((success, failure) => (input, i) => {
+        let groups = quotedStringRegex.exec(input.slice(i));
+        if (groups === null) {
+            groups = stringRegex.exec(input.slice(i));
+        }
+        if (groups === null) {
+            return failure(i, words.map((w) => `'${w}'`) as any);
+        }
+        const [withQuotes, match] = groups;
+        if (words.includes(match)) {
+            return success(i + withQuotes.length, match);
+        }
+        return failure(i, words.map((w) => `'${w}'`) as any);
+    });
+
 export const createParser = (fields: ParserField[]): ((q: string) => Either<ParseError, Expression>) => {
     const rules: any = {};
     const addField = (field: ParserField): void => {
@@ -63,7 +82,7 @@ export const createParser = (fields: ParserField[]): ((q: string) => Either<Pars
                 break;
             case 'string':
                 const values = (r: Language): Parser<any> =>
-                    field.enum !== undefined ? P.alt(...field.enum.map(word)) : r.string;
+                    field.enum !== undefined ? oneOfWords(field.enum) : r.string;
                 rules['field' + field.name] = (r: Language) => create(r, r.stringOp, values(r));
                 break;
             case 'number':
@@ -118,8 +137,8 @@ export const createParser = (fields: ParserField[]): ((q: string) => Either<Pars
                 }),
         true: () => word('true').result(true),
         false: () => word('false').result(false),
-        stringWithoutWhiteSpace: () => P.regex(/([^\s()]+)/, 1).desc('string'),
-        stringWhiteSpace: () => P.regex(/["']([^'"]*)['"]/, 1).desc('string'),
+        stringWithoutWhiteSpace: () => P.regex(stringRegex, 1).desc('string'),
+        stringWhiteSpace: () => P.regex(quotedStringRegex, 1).desc('string'),
         string: (r) => P.alt(r.stringWhiteSpace, r.stringWithoutWhiteSpace),
 
         number: () =>
