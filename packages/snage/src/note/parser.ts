@@ -5,9 +5,9 @@ import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {Config, CSS, CSSProvider, Field, FieldValue, hasProvider, LinkProvider, ProvidedField} from '../config/type';
-import {Note} from './note';
-import {merge, readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
+import {Config, CSS, CSSProvider, Field, hasProvider, LinkProvider, ProvidedField} from '../config/type';
+import {Note, NoteValues} from './note';
+import {readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
 import {decodeHeader} from './convert';
 import YAML from 'yaml';
 
@@ -65,7 +65,7 @@ const fillStyle = (fields: Field[], noteStyle: CSSProvider) => (note: Note): Not
     valueStyles: toRecord(
         fields
             .map((field): [string, CSS | undefined] => [field.name, field.styleProvider?.(note)])
-            .filter((x): x is [string, CSS] => x[1] !== undefined)
+            .filter((x): x is [string, CSS] => typeof x[1] !== 'undefined')
     ),
 });
 
@@ -111,21 +111,28 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
     );
 
 const runProviders = (fields: Field[]) => (note: Note): TE.TaskEither<string[], Note> => {
-    const runProvider = (field: ProvidedField): TE.TaskEither<string, [string, FieldValue | undefined]> =>
+    const runProvider = (field: ProvidedField, values: NoteValues): TE.TaskEither<string, NoteValues> =>
         pipe(
-            field.valueProvider(note.file),
-            TE.map((value) => [field.name, value])
+            field.valueProvider(note.file, fields, values),
+            TE.map((value) => (typeof value === 'undefined' ? values : R.insertAt(field.name, value)(values)))
         );
 
     return pipe(
         fields,
         A.filter(hasProvider),
         A.filter((f) => O.isNone(R.lookup(f.name, note.values))),
-        (fields) => A.array.traverse(TE.taskEither)(fields, runProvider),
-        TE.map(A.filter((pair): pair is [string, FieldValue] => typeof pair[1] !== 'undefined')),
-        TE.map((provided) => ({...note, values: merge(note.values, toRecord(provided))})),
+        reduceProviders(note.values)(runProvider),
+        TE.map((values) => ({...note, values})),
         TE.mapLeft((error) => [error])
     );
+};
+
+const reduceProviders = (values: NoteValues) => (
+    f: (field: ProvidedField, values: NoteValues) => TE.TaskEither<string, NoteValues>
+) => (fields: ProvidedField[]): TE.TaskEither<string, NoteValues> => {
+    const result: TE.TaskEither<string, NoteValues> = TE.right(values);
+
+    return fields.reduce((r, field) => TE.taskEither.chain(r, (v) => f(field, v)), result);
 };
 
 const verifyRequiredFields = (fields: Field[]) => (note: Note): E.Either<string[], Note> => {

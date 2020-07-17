@@ -1,10 +1,12 @@
-import {FieldValue, RawProvidedField} from '../config/type';
+import {Field, FieldValue, RawProvidedField} from '../config/type';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import {providerFactory as GitVersion} from './git-version';
+import {providerFactory as GitDate} from './git-date';
+import {NoteValues} from '../note/note';
 
 export interface ValueProvider {
-    (file: string): TE.TaskEither<string, FieldValue | undefined>;
+    (file: string, fields: Field[], values: NoteValues): TE.TaskEither<string, FieldValue | undefined>;
 }
 
 export interface ProviderFactory {
@@ -13,6 +15,7 @@ export interface ProviderFactory {
 
 const providerFactories: Record<string, ProviderFactory> = {
     'git-version': GitVersion,
+    'git-date': GitDate,
 };
 
 export const getValueProvider = (field: RawProvidedField): E.Either<string, ValueProvider> => {

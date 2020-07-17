@@ -34,7 +34,7 @@ describe('git-version', () => {
 
             const changelogFile = path.resolve(path.join(__dirname, '../../../../changelog/7-config.md'));
             assertRight(provider);
-            const version: TE.TaskEither<string, unknown> = provider.right(changelogFile);
+            const version: TE.TaskEither<string, unknown> = provider.right(changelogFile, [], {});
             expect(await version()).toMatchObject(E.right(semver.parse('0.0.2')));
         });
     });
