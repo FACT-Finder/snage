@@ -2,7 +2,6 @@
 issue: 81
 type: fix
 audience: user
-date: 2020-05-20
 components:
   - cli
 ---
@@ -12,7 +11,6 @@ components:
 
 ```markdown
 ---
-date: 2020-05-20
 ---
 # Summary
 ```

@@ -2,7 +2,6 @@
 issue: 104
 type: change
 audience: user
-date: 2020-06-11
 components:
   - config
 ---

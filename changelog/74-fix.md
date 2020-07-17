@@ -2,7 +2,6 @@
 issue: 74
 type: fix
 audience: user
-date: "2020-05-15"
 components:
   - cli
 ---

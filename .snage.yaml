@@ -78,6 +78,11 @@ fields:
   - name: date
     type: date
     description: date in 'YYYY-MM-DD' format
+    optional: true
+    provided:
+      by: 'git-date'
+      arguments:
+        version-tag: 'v${version}'
 filterPresets: []
 standard:
   query: ""

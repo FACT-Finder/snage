@@ -2,7 +2,6 @@
 issue: 70
 type: add
 audience: user
-date: "2020-05-19"
 components:
   - ui
   - api
