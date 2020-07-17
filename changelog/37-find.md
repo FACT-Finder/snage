@@ -1,11 +1,10 @@
 ---
 issue: 37
-date: 2020-04-24
 audience: user
 type: add
-components: [cli]
+components:
+  - cli
 ---
-
 # Add `snage find <condition>`
 
 You can use `snage find` to find change log notes matching the condition.

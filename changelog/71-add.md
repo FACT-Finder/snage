@@ -4,7 +4,6 @@ issue: 71
 audience: user
 components:
   - cli
-date: 2020-06-23
 ---
 # Add `snage export`
 

@@ -2,7 +2,6 @@
 issue: 65
 type: change
 audience: user
-date: 2020-05-13
 components:
   - cli
 ---

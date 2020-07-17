@@ -2,7 +2,6 @@
 issue: 86
 type: add
 audience: user
-date: 2020-05-25
 components:
   - ui
 ---

@@ -2,7 +2,6 @@
 issue: 13
 type: add
 audience: user
-date: 2020-05-04
 components:
   - ui
 ---

@@ -2,7 +2,6 @@
 issue: 72
 type: fix
 audience: user
-date: 2020-06-11
 components:
   - ui
   - api

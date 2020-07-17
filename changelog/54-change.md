@@ -2,7 +2,6 @@
 issue: 54
 type: change
 audience: user
-date: 2020-05-07
 components:
   - cli
   - config
