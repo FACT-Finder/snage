@@ -45,7 +45,7 @@ bool: true
                 {
                     file: 'one',
                     content: `---
-issue: '#22'
+issue: "#22"
 bool: true
 ---
 # one
@@ -74,7 +74,7 @@ bool: true
                 {
                     file: 'two',
                     content: `---
-issue: '#22'
+issue: "#22"
 bool: false
 ---
 # two
@@ -83,7 +83,7 @@ bool: false
                 {
                     file: 'three',
                     content: `---
-issue: '#22'
+issue: "#22"
 bool: false
 ---
 # three
@@ -109,8 +109,8 @@ bool: false
                     file: 'one',
                     content: `---
 issue:
-  - '#22'
-  - '#1'
+  - "#22"
+  - "#1"
 bool: true
 ---
 # one

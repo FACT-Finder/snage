@@ -14,8 +14,8 @@ import * as A from 'fp-ts/lib/Array';
 import {Note} from '../note/note';
 import {Field, FieldValue} from '../config/type';
 import {writeFile} from '../fp/fp';
-import {decodeStringValue, encodeHeader} from '../note/convert';
-import {summaryWithContent, toYamlString} from '../note/tostring';
+import {decodeStringValue, encodeValue} from '../note/convert';
+import {summaryWithContent, toYamlFromDocument} from '../note/tostring';
 
 interface Options {
     fields: Field[];
@@ -128,17 +128,16 @@ const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({
     file,
     summary,
     content,
-    values,
-}): FileResult => {
-    const copy = {...values};
+    valuesDocument,
+}: Note): FileResult => {
     if (value === undefined) {
-        delete copy[fieldName];
+        valuesDocument.delete(fieldName);
     } else {
-        copy[fieldName] = value;
+        valuesDocument.set(fieldName, encodeValue(fields.find((field) => field.name === fieldName)!, value as any));
     }
     return {
         file: file,
-        content: toYamlString(encodeHeader(fields, copy), fields, summaryWithContent(summary, content)),
+        content: toYamlFromDocument(valuesDocument, summaryWithContent(summary, content)),
     };
 };
 
