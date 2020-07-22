@@ -39,6 +39,9 @@ export const encodeHeader = (fields: ConvertField[], values: NoteValues): YamlNo
         R.filter((v): v is YamlFieldValue => typeof v !== 'undefined')
     );
 
+export const encodeValue = (field: ConvertField, value: FieldValue): YamlFieldValue =>
+    getIOFieldType(field.type, field).encode(value as never);
+
 export const stringEncodeHeader = (fields: ConvertField[], values: NoteValues): Record<string, string | string[]> =>
     pipe(
         getNoteStringIOType(fields).encode(values),

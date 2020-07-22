@@ -2,7 +2,7 @@ import {parseNote, parseRawNote, RawNote} from './parser';
 import {left, right} from 'fp-ts/lib/Either';
 import {Field, RawProvidedField} from '../config/type';
 import * as semver from 'semver';
-import {Note} from './note';
+import {EmptyDocument, Note} from './note';
 import * as git from '../provider/git-version';
 import {assertRight} from '../fp/fp';
 import path from 'path';
@@ -24,6 +24,7 @@ describe('parseNote', () => {
                 type: 'bugfix',
                 date: '2019-03-03',
             },
+            headerDocument: EmptyDocument,
             summary: 'cool summary line',
             content: 'body text\n\n**test**\n',
         };
@@ -46,6 +47,7 @@ describe('parseNote', () => {
                 type: 'bugfix',
                 date: LocalDate.parse('2019-03-03'),
             },
+            valuesDocument: EmptyDocument,
         };
         expect(
             await parseNote(
@@ -64,6 +66,7 @@ describe('parseNote', () => {
             },
             summary: 'test',
             content: '',
+            headerDocument: EmptyDocument,
         };
         expect(
             await parseNote(
@@ -81,6 +84,7 @@ describe('parseNote', () => {
             },
             summary: 'test',
             content: '',
+            headerDocument: EmptyDocument,
         };
         expect(
             await parseNote(
@@ -107,6 +111,7 @@ describe('parseNote', () => {
             header: {},
             summary: 'test',
             content: '',
+            headerDocument: EmptyDocument,
         };
         expect(
             await parseNote(
