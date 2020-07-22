@@ -2,7 +2,6 @@ import yargs from 'yargs';
 import {DefaultCli, printAndExit} from './common';
 import {getConfig} from '../config/load';
 import {parseNotes} from '../note/parser';
-import matter from 'gray-matter';
 import {createParser} from '../query/parser';
 import {createMatcher} from '../query/match';
 import {pipe} from 'fp-ts/lib/pipeable';
@@ -16,6 +15,7 @@ import {Note} from '../note/note';
 import {Field, FieldValue} from '../config/type';
 import {writeFile} from '../fp/fp';
 import {decodeStringValue, encodeHeader} from '../note/convert';
+import {summaryWithContent, toYamlString} from '../note/tostring';
 
 interface Options {
     fields: Field[];
@@ -136,9 +136,10 @@ const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({
     } else {
         copy[fieldName] = value;
     }
-    const mergedContent = `# ${summary}${content.trim() !== '' ? '\n\n' : ''}${content}`;
-    const result = matter.stringify(mergedContent, encodeHeader(fields, copy));
-    return {file: file, content: result};
+    return {
+        file: file,
+        content: toYamlString(encodeHeader(fields, copy), fields, summaryWithContent(summary, content)),
+    };
 };
 
 const writeNotes = (files: FileResult[]): T.Task<string[]> =>

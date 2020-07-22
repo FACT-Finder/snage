@@ -1,8 +1,10 @@
 import {YamlStringBuilder} from './yamlStringBuilder';
-import matter from 'gray-matter';
+import {parseRawNote} from '../note/parser';
+import {summaryWithContent} from '../note/tostring';
 
 describe('create yaml string', () => {
-    const contentToSave = 'Did you ever hear the Tragedy of Darth Plagueis the Wise?';
+    const content = 'Did you ever hear the Tragedy of Darth Plagueis the Wise?';
+    const summary = 'Star Wars: Episode IV – A New Hope';
     const list: string[] = ['A New Hope', 'The Empire Strikes Back', 'Return of the Jedi'];
     const listKey = 'Original Trilogy';
     const bool = true;
@@ -19,17 +21,18 @@ describe('create yaml string', () => {
         .appendYamlPair(strKey, str)
         .appendYamlPair(boolKey, bool)
         .appendYamlPair(listKey, list)
-        .appendContent(contentToSave)
+        .appendContent(summaryWithContent(summary, content))
         .build();
-    const {content: content, data} = matter(builder);
+    const {content: parsedContent, summary: parsedSummary, header} = parseRawNote(builder, 'filename');
     it('file has expected content', () => {
-        expect(content).toEqual(contentToSave);
+        expect(parsedContent).toEqual(content);
+        expect(parsedSummary).toEqual(summary);
     });
     it('has correct values inside', () => {
-        expect(data[listKey]).toEqual(list);
-        expect(data[boolKey]).toEqual(bool);
-        expect(data[numKey]).toEqual(num);
-        expect(data[strKey]).toEqual(str);
+        expect(header[listKey]).toEqual(list);
+        expect(header[boolKey]).toEqual(bool);
+        expect(header[numKey]).toEqual(num);
+        expect(header[strKey]).toEqual(str);
     });
     const lines: string[] = builder.split('\n');
     it('header is correctly enclosed', () => {
