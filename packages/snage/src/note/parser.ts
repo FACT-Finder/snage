@@ -72,6 +72,7 @@ const fillStyle = (fields: Field[], noteStyle: CSSProvider) => (note: Note): Not
 export interface RawNote {
     file: string;
     header: Record<string, unknown>;
+    headerDocument: YAML.Document;
     summary: string;
     content: string;
 }
@@ -86,6 +87,7 @@ export const parseRawNote = (note: string, fileName: string): RawNote => {
     return {
         file: fileName,
         header: YAML.parse(head),
+        headerDocument: YAML.parseDocument(head),
         summary: summary.trim().replace(/^\s*#\s*/, ''),
         content: body.join('\n\n'),
     };
@@ -97,6 +99,7 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
         TE.fromEither,
         TE.map((values) => ({
             values: values,
+            valuesDocument: rawNote.headerDocument,
             id: rawNote.file,
             file: rawNote.file,
             links: [],

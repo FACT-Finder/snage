@@ -1,4 +1,5 @@
 import {CSS, FieldValue, PrimitiveFieldValue} from '../config/type';
+import YAML from 'yaml';
 
 export interface Note {
     id: string;
@@ -10,6 +11,7 @@ export interface Note {
     valueStyles: Record<string, Record<string, string>>;
 
     values: NoteValues;
+    valuesDocument: YAML.Document;
 }
 
 export const partialNote = (note: Partial<Note>): Note => ({
@@ -21,8 +23,11 @@ export const partialNote = (note: Partial<Note>): Note => ({
     links: [],
     values: {},
     valueStyles: {},
+    valuesDocument: YAML.parseDocument(YAML.stringify(note.values ?? {})),
     ...note,
 });
+
+export const EmptyDocument = YAML.parseDocument('');
 
 export interface NoteLink {
     label: string;
