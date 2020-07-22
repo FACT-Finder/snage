@@ -1,5 +1,6 @@
 import {YamlNoteValues} from './note';
 import {Field} from '../config/type';
+import YAML from 'yaml';
 import {YamlStringBuilder} from '../util/yamlStringBuilder';
 
 export const toYamlString = (fieldValues: YamlNoteValues, fields: Field[], fileText: string): string =>
@@ -13,3 +14,13 @@ export const toYamlString = (fieldValues: YamlNoteValues, fields: Field[], fileT
         }, new YamlStringBuilder())
         .appendContent(fileText)
         .build();
+
+export const toYamlFromDocument = (document: YAML.Document, fileText: string): string =>
+    `---
+${document.toString()}---
+${fileText}`;
+
+export const summaryWithContent = (summary: string, content: string): string => {
+    const body = content.trim() === '' ? '' : '\n\n' + content.trim();
+    return '# ' + summary.trim() + body + '\n';
+};

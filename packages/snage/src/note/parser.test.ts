@@ -24,7 +24,7 @@ describe('parseNote', () => {
                 type: 'bugfix',
                 date: '2019-03-03',
             },
-            summary: '# cool summary line',
+            summary: 'cool summary line',
             content: 'body text\n\n**test**\n',
         };
 
@@ -62,7 +62,7 @@ describe('parseNote', () => {
                 type: 'bugfixi',
                 date: '2019-03-03',
             },
-            summary: '# test',
+            summary: 'test',
             content: '',
         };
         expect(
@@ -79,7 +79,7 @@ describe('parseNote', () => {
             header: {
                 date: '2019-03-03',
             },
-            summary: '# test',
+            summary: 'test',
             content: '',
         };
         expect(
@@ -105,7 +105,7 @@ describe('parseNote', () => {
         const noIssue: RawNote = {
             file: changelogFile,
             header: {},
-            summary: '# test',
+            summary: 'test',
             content: '',
         };
         expect(
@@ -132,13 +132,32 @@ date: 2020-05-20
 
 content
 `;
-        expect(parseRawNote(note, 'file')).toStrictEqual({
+        expect(parseRawNote(note, 'file')).toMatchObject({
             file: 'file',
             header: {
                 date: '2020-05-20',
             },
-            summary: '# summary',
-            content: 'content\n',
+            summary: 'summary',
+            content: 'content',
+        });
+    });
+    it('parses multiline content', () => {
+        const note = `---
+date: 2020-05-20
+---
+# summary
+
+content
+
+content2
+`;
+        expect(parseRawNote(note, 'file')).toMatchObject({
+            file: 'file',
+            header: {
+                date: '2020-05-20',
+            },
+            summary: 'summary',
+            content: 'content\n\ncontent2',
         });
     });
 });

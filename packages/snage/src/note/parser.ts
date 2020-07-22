@@ -1,4 +1,3 @@
-import matter from 'gray-matter';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import * as E from 'fp-ts/lib/Either';
@@ -78,14 +77,18 @@ export interface RawNote {
 }
 
 export const parseRawNote = (note: string, fileName: string): RawNote => {
-    const {content, ...meta} = matter(note, {
-        language: 'yaml',
-        engines: {
-            yaml: YAML.parse,
-        },
-    });
-    const [head, ...rest] = content.split('\n\n');
-    return {file: fileName, header: meta.data, summary: head, content: rest.join('\n\n')};
+    const [, head, ...content] = note.split('---');
+    const [summary, ...body] = content
+        .join('---')
+        .trim()
+        .split('\n\n');
+
+    return {
+        file: fileName,
+        header: YAML.parse(head),
+        summary: summary.trim().replace(/^\s*#\s*/, ''),
+        content: body.join('\n\n'),
+    };
 };
 
 export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEither<string[], Note> =>
@@ -100,7 +103,7 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
             style: {},
             valueStyles: {},
             content: rawNote.content,
-            summary: rawNote.summary.replace(/^\s*#\s*/, ''),
+            summary: rawNote.summary,
         }))
     );
 
