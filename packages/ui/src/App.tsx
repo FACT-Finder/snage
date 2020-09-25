@@ -41,11 +41,12 @@ const useUrlChangeableQuery = (): [string, (v: string) => void] => {
 };
 
 const App: React.FC = () => {
-    const [{notes, fieldOrder, error}, setEntries] = React.useState<{
+    const [{notes, fieldOrder, groupByFields, error}, setEntries] = React.useState<{
         notes: ApiNote[];
         fieldOrder: string[];
+        groupByFields: string[];
         error?: ApiParseError & {query: string};
-    }>(() => ({notes: [], fieldOrder: []}));
+    }>(() => ({notes: [], fieldOrder: [], groupByFields: []}));
     const [query, setQuery] = useUrlChangeableQuery();
 
     const executeQuery = React.useCallback(
@@ -76,7 +77,13 @@ const App: React.FC = () => {
     return (
         <div className="App">
             <h1 style={{textAlign: 'center'}}>Changelog</h1>
-            <Search query={query} setQuery={setQuery} executeQuery={executeQuery} error={error} />
+            <Search
+                query={query}
+                setQuery={setQuery}
+                executeQuery={executeQuery}
+                error={error}
+                groupByFields={groupByFields}
+            />
             <div>
                 {notes.map((entry) => (
                     <Entry key={entry.id} entry={entry} fieldOrder={fieldOrder} executeQuery={executeQuery} />
@@ -91,9 +98,10 @@ interface SearchProps {
     executeQuery: FQuery;
     setQuery: FQuery;
     error?: ApiParseError & {query: string};
+    groupByFields: string[];
 }
 
-const Search: React.FC<SearchProps> = ({query, executeQuery, setQuery, error}) => {
+const Search: React.FC<SearchProps> = ({query, executeQuery, setQuery, error, groupByFields}) => {
     const [exportOpen, setExportOpen] = React.useState(false);
     return (
         <div style={{textAlign: 'center', padding: 30}}>
@@ -139,7 +147,7 @@ const Search: React.FC<SearchProps> = ({query, executeQuery, setQuery, error}) =
                     }}
                 />
             </ErrorTooltip>
-            <ExportDialog query={query} open={exportOpen} setOpen={setExportOpen} />
+            <ExportDialog groupByFields={groupByFields} query={query} open={exportOpen} setOpen={setExportOpen} />
         </div>
     );
 };
