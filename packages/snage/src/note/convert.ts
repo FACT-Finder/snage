@@ -48,6 +48,12 @@ export const stringEncodeHeader = (fields: ConvertField[], values: NoteValues): 
         R.filter((v): v is string | string[] => typeof v !== 'undefined')
     );
 
+export const encodeStringValue = <Type extends FieldType>(
+    type: Type,
+    field: ConvertField,
+    value: FieldValue
+): string | string[] => getIOStringFieldType(type, field).encode(value as never);
+
 export const decodeValue = (field: ConvertField, value: unknown): E.Either<string[], FieldValue> => {
     const decoded: E.Either<Errors, FieldValue> = getIOFieldType(field.type, field).decode(value);
     return E.either.mapLeft(decoded, stringifyErrors(ReportMode.Simple));
