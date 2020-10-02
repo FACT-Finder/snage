@@ -13,7 +13,7 @@ import * as O from 'fp-ts/lib/Option';
 
 export const askForMissingValues = (fields: Field[]) => (values: NoteValues): TE.TaskEither<string, NoteValues> => {
     const existing = Object.keys(values);
-    const missingFields = fields.filter((f) => !existing.includes(f.name));
+    const missingFields = fields.filter((f) => !existing.includes(f.name) && !f.provided);
     return pipe(
         A.array.traverse(TE.taskEitherSeq)(missingFields, (f) => askValueTuple(f)),
         TE.map(A.filterMap((x) => x)),
