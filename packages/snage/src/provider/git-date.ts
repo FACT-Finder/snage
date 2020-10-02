@@ -53,7 +53,7 @@ const extractDate = (field: ConvertField, directory: string) => (
     tag: string
 ): TE.TaskEither<string, FieldValue | undefined> =>
     pipe(
-        tryExec(`git log -1 --date=short --format=%ad ${tag}`, {cwd: directory}),
+        tryExec(`git log -1 --date=short --format=%cd ${tag}`, {cwd: directory}),
         TE.map((date) => date.trim()),
         TE.chainEitherK((date) => E.either.mapLeft(decodeValue(field, date), (errors) => errors.join('\n')))
     );
