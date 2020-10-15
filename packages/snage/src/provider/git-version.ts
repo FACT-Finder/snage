@@ -22,7 +22,7 @@ const getVersion = (
     field: RawProvidedField
 ): TE.TaskEither<string, FieldValue | undefined> =>
     pipe(
-        getFirstTagContainingFile(file),
+        getFirstTagContainingFile(file, versionRegex),
         TE.map(O.map((tag) => extractVersion(tag, versionRegex))),
         TE.mapLeft((error): string => `provider error on field '${field.name}': ${error}`),
         TE.chainEitherK(
@@ -34,14 +34,14 @@ const getVersion = (
         )
     );
 
-const getFirstTagContainingFile = (file: string): TE.TaskEither<string, O.Option<string>> => {
+const getFirstTagContainingFile = (file: string, versionRegex: string): TE.TaskEither<string, O.Option<string>> => {
     const filename = path.basename(file);
     const directory = path.dirname(file);
     return pipe(
         fetchCommit(directory, filename),
         TE.chain((commit) =>
             pipe(
-                O.option.traverse(TE.taskEither)(commit, (commit) => getTag(directory, commit)),
+                O.option.traverse(TE.taskEither)(commit, (commit) => getTag(directory, commit, versionRegex)),
                 TE.map(O.flatten)
             )
         )
@@ -56,12 +56,13 @@ const fetchCommit = (directory: string, filename: string): TE.TaskEither<string,
         TE.map(O.fromPredicate((commit) => typeof commit !== 'undefined' && commit !== ''))
     );
 
-const getTag = (directory: string, commit: string): TE.TaskEither<string, O.Option<string>> =>
+const getTag = (directory: string, commit: string, versionRegex: string): TE.TaskEither<string, O.Option<string>> =>
     pipe(
         tryExec(`git name-rev --tags --name-only "${commit}"`, {cwd: directory}),
         TE.map((tag) => tag.trim()),
         TE.map(O.fromPredicate((tag) => typeof tag !== 'undefined' && tag !== '' && tag !== 'undefined')),
-        TE.map(O.map((rawTag) => rawTag.replace(/[~^].*/, '')))
+        TE.map(O.map((rawTag) => rawTag.replace(/[~^].*/, ''))),
+        TE.map(O.filter((tag) => RegExp(versionRegex).test(tag)))
     );
 
 const extractVersion = (tag: string, versionRegex: string): string =>
