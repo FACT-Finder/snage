@@ -137,7 +137,7 @@ const dateType = new t.Type<LocalDate, string, unknown>(
 );
 
 const ffversionType = new t.Type<string, string, unknown>(
-    'ffversion(marketing.major.minor-patch)',
+    'ffversion(marketing.major.minor[-patch])',
     (u): u is string => typeof u === 'string',
     (u, c) =>
         E.either.chain(t.string.validate(u, c), (s) =>

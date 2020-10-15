@@ -48,11 +48,12 @@ describe('decode', () => {
     });
     test('ffversion', () => {
         const field: Field = {name: 'version', type: 'ffversion'};
-        expect(extractLeft(decodeValue(field, '1.1.0'))).toMatchInlineSnapshot(`
+        expect(extractLeft(decodeValue(field, '1.1'))).toMatchInlineSnapshot(`
             Array [
-              "invalid value \\"1.1.0\\", expected ffversion(marketing.major.minor-patch)",
+              "invalid value \\"1.1\\", expected ffversion(marketing.major.minor[-patch])",
             ]
         `);
+        expect(extractRight(decodeValue(field, '1.1.0'))).toMatchInlineSnapshot(`"1.1.0"`);
         expect(extractRight(decodeValue(field, '1.1.0-53'))).toMatchInlineSnapshot(`"1.1.0-53"`);
     });
     test('string', () => {
