@@ -74,7 +74,7 @@ fields:
     provided:
       by: 'git-version'
       arguments:
-        version-regex: '^v(.*)$'
+        version-regex: '^v(\d+.\d+.\d+(-\d+)?)$'
   - name: date
     type: date
     description: date in 'YYYY-MM-DD' format
