@@ -87,6 +87,17 @@ describe('match', () => {
 
         createTest('booleanName = true', {booleanName: true}, true),
         createTest('booleanName = false', {booleanName: true}, false),
+
+        createTest('booleanName = true', {}, false),
+        createTest('booleanName = false', {}, false),
+
+        createTest('booleanName != false', {booleanName: true}, true),
+        createTest('booleanName != false', {booleanName: false}, false),
+        createTest('booleanName != false', {}, true),
+        createTest('booleanName != true', {booleanName: true}, false),
+        createTest('booleanName != true', {booleanName: false}, true),
+        createTest('booleanName != true', {}, true),
+
         createTest('enumName = abc', {enumName: 'abc'}, true),
         createTest('enumName = abc or enumName = cde', {enumName: 'abc'}, true),
         createTest('enumName = abc and enumName = cde', {enumName: 'abc'}, false),
@@ -109,6 +120,7 @@ describe('match', () => {
         createTest('numberName != 5', {numberName: 5}, false),
 
         createTest('numberName <= 5', {numberName: 6}, false),
+        createTest('numberName <= 5', {}, false),
         createTest('numberName <= 5', {numberName: 5}, true),
         createTest('numberName <= 5', {numberName: 4}, true),
 
