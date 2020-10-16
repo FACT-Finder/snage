@@ -126,7 +126,14 @@ const checkOrd = <T>(
     operator: CompareOperator
 ): boolean => {
     if (left === undefined || right === undefined) {
-        return false;
+        switch (operator) {
+            case '!=':
+                return left !== right;
+            case '=':
+                return left === right;
+            default:
+                return false;
+        }
     }
 
     switch (operator) {
