@@ -1,43 +1,56 @@
-import React from 'react';
+import React, {SetStateAction} from 'react';
 import './App.css';
 import {ApiNote, ApiParseError} from '../../shared/type';
-import Chip from '@material-ui/core/Chip';
 import axios, {AxiosError} from 'axios';
-import {
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
-    IconButton,
-    InputAdornment,
-    Link,
-    TextField,
-    Tooltip,
-} from '@material-ui/core';
+import {Backdrop, ClickAwayListener, IconButton, InputAdornment, Paper, TextField, Tooltip} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import HelpIcon from '@material-ui/icons/Help';
 import Export from '@material-ui/icons/FileCopy';
-import {Markdown} from './Markdown';
 import {ExportDialog} from './ExportDialog';
 import {ErrorTooltip, ErrorTooltipBody} from './ErrorTooltip';
+import {FullNote, SummaryNote} from './Note';
 
 type FQuery = (x: string) => void;
-const getQueryFromSearch = (search: string): string =>
-    decodeURIComponent(
-        search
-            .slice(1)
-            .split('&')
-            .find((param) => param.startsWith('q='))
-            ?.split('=')[1] ?? ''
-    );
+const getStateFromURL = (search: string): State => {
+    const pairs = search.slice(1).split('&');
+    const query = pairs.find((param) => param.startsWith('q='))?.split('=')[1] ?? '';
+    const note = pairs.find((param) => param.startsWith('n='))?.split('=')[1] ?? '';
+    return {
+        query: decodeURIComponent(query),
+        note: note === '' ? undefined : decodeURIComponent(note),
+    };
+};
 
-const useUrlChangeableQuery = (): [string, (v: string) => void] => {
-    const [state, setState] = React.useState<string>(() => getQueryFromSearch(window.location.search));
+type State = {query: string; note?: string};
+
+const useUrlChangableState = (): [State, React.Dispatch<SetStateAction<State>>] => {
+    const [state, setState] = React.useState<State>(() => getStateFromURL(window.location.search));
     React.useEffect(() => {
-        const onChange = (): void => setState(getQueryFromSearch(window.location.search));
+        const onChange = (): void => setState(getStateFromURL(window.location.search));
         window.addEventListener('popstate', onChange);
         return () => window.removeEventListener('popstate', onChange);
     }, [setState]);
-    return [state, setState];
+
+    const setStateAndUrl = React.useCallback(
+        (stateF: SetStateAction<State>) => {
+            setState((old) => {
+                const newState = typeof stateF === 'function' ? stateF(old) : stateF;
+                const params = [`q=${encodeURIComponent(newState.query)}`];
+                if (newState.note) {
+                    params.push(`n=${encodeURIComponent(newState.note)}`);
+                }
+
+                const newSearch = `?${params.join('&')}`;
+                if (newSearch !== window.location.search) {
+                    window.history.pushState(newState, '', newSearch);
+                }
+                return newState;
+            });
+        },
+        [setState]
+    );
+
+    return [state, setStateAndUrl];
 };
 
 const App: React.FC = () => {
@@ -47,11 +60,12 @@ const App: React.FC = () => {
         groupByFields: string[];
         error?: ApiParseError & {query: string};
     }>(() => ({notes: [], fieldOrder: [], groupByFields: []}));
-    const [query, setQuery] = useUrlChangeableQuery();
+    const [{query, note}, setState] = useUrlChangableState();
+    const [selectedNote, setSelectedNote] = React.useState<ApiNote>();
 
     const executeQuery = React.useCallback(
         (query: string) => {
-            setQuery(query);
+            setState({query});
             axios
                 .get(`/note?query=${encodeURIComponent(query)}`)
                 .then((resp) => {
@@ -64,31 +78,84 @@ const App: React.FC = () => {
                         setEntries((current) => ({...current, error: {...data, query}}));
                     }
                 });
-            const newSearch = `?q=${encodeURIComponent(query)}`;
-            if (newSearch !== window.location.search) {
-                window.history.pushState({query: query}, '', newSearch);
-            }
         },
-        [setEntries, setQuery]
+        [setEntries, setState]
     );
+
+    React.useEffect(() => {
+        setState(({query}) => ({query, note: selectedNote?.id}));
+    }, [selectedNote]);
+
+    const onChipClick = React.useCallback(
+        (key: string, value: string | string[]) => (e: React.MouseEvent) => {
+            e.stopPropagation();
+            const arrayValue = Array.isArray(value) ? value : [value];
+            executeQuery(arrayValue.map((v) => `${key}=${v}`).join(' or '));
+        },
+        [executeQuery]
+    );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useEffect(() => executeQuery(query), []);
+    React.useEffect(() => {
+        executeQuery(query);
+        if (note) {
+            axios
+                .get(`/note?query=${encodeURIComponent('id=' + note)}`)
+                .then((resp) => {
+                    const [respNote] = resp.data.notes;
+                    if (respNote) {
+                        setSelectedNote(respNote);
+                    } else {
+                        setState(({query}) => ({query}));
+                    }
+                    return;
+                })
+                .catch(() => {
+                    setState(({query}) => ({query}));
+                });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+
 
     return (
         <div className="App">
             <h1 style={{textAlign: 'center'}}>Changelog</h1>
             <Search
                 query={query}
-                setQuery={setQuery}
+                setQuery={(query) => setState({query})}
                 executeQuery={executeQuery}
                 error={error}
                 groupByFields={groupByFields}
             />
             <div>
                 {notes.map((entry) => (
-                    <Entry key={entry.id} entry={entry} fieldOrder={fieldOrder} executeQuery={executeQuery} />
+                    <SummaryNote
+                        key={entry.id}
+                        entry={entry}
+                        selectNote={setSelectedNote}
+                        fieldOrder={fieldOrder}
+                        onChipClick={onChipClick}
+                    />
                 ))}
             </div>
+            {selectedNote ? (
+                <Backdrop open={true} style={{zIndex: 1}}>
+                    <ClickAwayListener onClickAway={() => setSelectedNote(undefined)}>
+                        <Paper className="noteBody">
+                            <FullNote
+                                note={selectedNote}
+                                fieldOrder={fieldOrder}
+                                onChipClick={onChipClick}
+                                close={() => {
+                                    setSelectedNote(undefined);
+                                }}
+                            />
+                        </Paper>
+                    </ClickAwayListener>
+                </Backdrop>
+            ) : null}
         </div>
     );
 };
@@ -151,63 +218,5 @@ const Search: React.FC<SearchProps> = ({query, executeQuery, setQuery, error, gr
         </div>
     );
 };
-
-const Entry = React.memo(
-    ({
-        entry: {content, summary, values, links, style, valueStyles},
-        executeQuery,
-        fieldOrder,
-    }: {
-        entry: ApiNote;
-        executeQuery: FQuery;
-        fieldOrder: string[];
-    }) => {
-        const handleClick = (key: string, value: string | string[]) => (e) => {
-            e.stopPropagation();
-            const arrayValue = Array.isArray(value) ? value : [value];
-            executeQuery(arrayValue.map((v) => `${key}=${v}`).join(' or '));
-        };
-        return (
-            <ExpansionPanel style={style}>
-                <ExpansionPanelSummary>
-                    <div>
-                        <Markdown content={'# ' + summary} />
-                        {fieldOrder.map((key) => {
-                            const value = values[key];
-                            if (value === null || value === undefined) {
-                                return undefined;
-                            }
-                            return (
-                                <Chip
-                                    size="small"
-                                    key={key}
-                                    style={{marginRight: 10, ...valueStyles[key]}}
-                                    label={key + '=' + value}
-                                    onClick={handleClick(key, value)}
-                                />
-                            );
-                        })}
-                        {links.map(({href, label}) => (
-                            <Link
-                                key={label + href}
-                                style={{marginRight: 5}}
-                                href={href}
-                                target="_blank"
-                                rel="noreferrer noopener"
-                                onClick={(e) => e.stopPropagation()}>
-                                {label}
-                            </Link>
-                        ))}
-                    </div>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <div style={{width: '100%'}}>
-                        {content === '' ? '-- no content --' : <Markdown content={content} />}
-                    </div>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-        );
-    }
-);
 
 export default App;
