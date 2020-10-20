@@ -1,5 +1,15 @@
+.noteBody {
+    width: 100%;
+    max-width: 800px;
+    max-width: 80ch;
+    max-height: 95%;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
 .App {
-	margin: 0 auto;
-	width: 1000px;
+    margin: 0 auto;
+    width: 1000px;
 }
 
