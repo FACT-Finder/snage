@@ -3,6 +3,7 @@ import ReactMarkdown, {ReactMarkdownProps} from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {makeStyles} from '@material-ui/core/styles';
 import {Link} from '@material-ui/core';
+import {getStateFromURL, NavigateNote} from './state';
 
 const useStyles = makeStyles(
     (theme) => ({
@@ -20,19 +21,48 @@ const useStyles = makeStyles(
     {name: 'Markdown'}
 );
 
-export const Markdown = React.memo(({content}: {content: string}) => {
+export const Markdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => {
     const classes = useStyles();
-    return <ReactMarkdown source={content} renderers={renderers} className={classes.root + ' markdown-body'} />;
+    return (
+        <ReactMarkdown
+            source={content}
+            renderers={renderers(navigateNote)}
+            className={classes.root + ' markdown-body'}
+        />
+    );
 });
 
 const MarkdownCodeBlock: React.FC<{language?: string; value: string}> = ({value, language}) => (
     <SyntaxHighlighter language={language}>{value}</SyntaxHighlighter>
 );
-const MarkdownLink: React.FC<any> = (props) => <Link {...props} onClick={stopPropagation} />;
 
-const stopPropagation = (e: React.MouseEvent): void => e.stopPropagation();
-
-const renderers: ReactMarkdownProps['renderers'] = {
-    code: MarkdownCodeBlock,
-    link: MarkdownLink,
+const toNoteURL = (href: string): string => {
+    const {query} = getStateFromURL(window.location.search);
+    return `/?q=${encodeURIComponent(query)}&n=${href}`;
 };
+
+const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> = (navigateNote) => (props) => {
+    const href = props?.href ?? '';
+    const isNoteLink = !href.includes('://') && !href.startsWith('//') && !href.startsWith('/');
+
+    const hrefWithNote = isNoteLink ? toNoteURL(href) : href;
+
+    return (
+        <Link
+            {...props}
+            href={hrefWithNote}
+            onClick={(e) => {
+                e.stopPropagation();
+                if (isNoteLink) {
+                    e.preventDefault();
+                    navigateNote(href);
+                }
+            }}
+        />
+    );
+};
+
+const renderers: (n: NavigateNote) => ReactMarkdownProps['renderers'] = (navigateNote) => ({
+    code: MarkdownCodeBlock,
+    link: MarkdownLink(navigateNote),
+});

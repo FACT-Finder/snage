@@ -1,4 +1,4 @@
-import React, {SetStateAction} from 'react';
+import React from 'react';
 import './App.css';
 import {ApiNote, ApiParseError} from '../../shared/type';
 import axios, {AxiosError} from 'axios';
@@ -9,51 +9,12 @@ import Export from '@material-ui/icons/FileCopy';
 import {ExportDialog} from './ExportDialog';
 import {ErrorTooltip, ErrorTooltipBody} from './ErrorTooltip';
 import {FullNote, SummaryNote} from './Note';
+import {NavigateNote, useUrlChangableState} from './state';
 
 type FQuery = (x: string) => void;
-const getStateFromURL = (search: string): State => {
-    const pairs = search.slice(1).split('&');
-    const query = pairs.find((param) => param.startsWith('q='))?.split('=')[1] ?? '';
-    const note = pairs.find((param) => param.startsWith('n='))?.split('=')[1] ?? '';
-    return {
-        query: decodeURIComponent(query),
-        note: note === '' ? undefined : decodeURIComponent(note),
-    };
-};
-
-type State = {query: string; note?: string};
-
-const useUrlChangableState = (): [State, React.Dispatch<SetStateAction<State>>] => {
-    const [state, setState] = React.useState<State>(() => getStateFromURL(window.location.search));
-    React.useEffect(() => {
-        const onChange = (): void => setState(getStateFromURL(window.location.search));
-        window.addEventListener('popstate', onChange);
-        return () => window.removeEventListener('popstate', onChange);
-    }, [setState]);
-
-    const setStateAndUrl = React.useCallback(
-        (stateF: SetStateAction<State>) => {
-            setState((old) => {
-                const newState = typeof stateF === 'function' ? stateF(old) : stateF;
-                const params = [`q=${encodeURIComponent(newState.query)}`];
-                if (newState.note) {
-                    params.push(`n=${encodeURIComponent(newState.note)}`);
-                }
-
-                const newSearch = `?${params.join('&')}`;
-                if (newSearch !== window.location.search) {
-                    window.history.pushState(newState, '', newSearch);
-                }
-                return newState;
-            });
-        },
-        [setState]
-    );
-
-    return [state, setStateAndUrl];
-};
 
 const App: React.FC = () => {
+    const firstRender = React.useRef(true);
     const [{notes, fieldOrder, groupByFields, error}, setEntries] = React.useState<{
         notes: ApiNote[];
         fieldOrder: string[];
@@ -65,7 +26,6 @@ const App: React.FC = () => {
 
     const executeQuery = React.useCallback(
         (query: string) => {
-            setState({query});
             axios
                 .get(`/note?query=${encodeURIComponent(query)}`)
                 .then((resp) => {
@@ -79,12 +39,16 @@ const App: React.FC = () => {
                     }
                 });
         },
-        [setEntries, setState]
+        [setEntries]
     );
 
     React.useEffect(() => {
-        setState(({query}) => ({query, note: selectedNote?.id}));
-    }, [selectedNote]);
+        // skip on first render, because the state is already set
+        if (!firstRender.current) {
+            setState(({query}) => ({query, note: selectedNote?.id}));
+        }
+        firstRender.current = false;
+    }, [selectedNote, setState]);
 
     const onChipClick = React.useCallback(
         (key: string, value: string | string[]) => (e: React.MouseEvent) => {
@@ -95,10 +59,8 @@ const App: React.FC = () => {
         [executeQuery]
     );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useEffect(() => {
-        executeQuery(query);
-        if (note) {
+    const navigateNote: NavigateNote = React.useCallback(
+        (note) => {
             axios
                 .get(`/note?query=${encodeURIComponent('id=' + note)}`)
                 .then((resp) => {
@@ -113,27 +75,32 @@ const App: React.FC = () => {
                 .catch(() => {
                     setState(({query}) => ({query}));
                 });
+        },
+        [setState]
+    );
+
+    React.useEffect(() => {
+        if (!note) {
+            setSelectedNote(undefined);
+        } else if (typeof note === 'string') {
+            navigateNote(note);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [note, setSelectedNote, navigateNote]);
 
-
+    React.useEffect(() => {
+        executeQuery(query);
+    }, [query, executeQuery]);
 
     return (
         <div className="App">
             <h1 style={{textAlign: 'center'}}>Changelog</h1>
-            <Search
-                query={query}
-                setQuery={(query) => setState({query})}
-                executeQuery={executeQuery}
-                error={error}
-                groupByFields={groupByFields}
-            />
+            <Search query={query} setQuery={(query) => setState({query})} error={error} groupByFields={groupByFields} />
             <div>
                 {notes.map((entry) => (
                     <SummaryNote
                         key={entry.id}
                         entry={entry}
+                        navigateNote={navigateNote}
                         selectNote={setSelectedNote}
                         fieldOrder={fieldOrder}
                         onChipClick={onChipClick}
@@ -147,6 +114,7 @@ const App: React.FC = () => {
                             <FullNote
                                 note={selectedNote}
                                 fieldOrder={fieldOrder}
+                                navigateNote={navigateNote}
                                 onChipClick={onChipClick}
                                 close={() => {
                                     setSelectedNote(undefined);
@@ -162,14 +130,22 @@ const App: React.FC = () => {
 
 interface SearchProps {
     query: string;
-    executeQuery: FQuery;
     setQuery: FQuery;
     error?: ApiParseError & {query: string};
     groupByFields: string[];
 }
 
-const Search: React.FC<SearchProps> = ({query, executeQuery, setQuery, error, groupByFields}) => {
+const Search: React.FC<SearchProps> = ({query, setQuery, error, groupByFields}) => {
     const [exportOpen, setExportOpen] = React.useState(false);
+    const [tempQuery, setTempQuery] = React.useState(query);
+
+    React.useEffect(() => {
+        if (query !== tempQuery) {
+            setTempQuery(query);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [query]);
+
     return (
         <div style={{textAlign: 'center', padding: 30}}>
             <ErrorTooltip
@@ -185,15 +161,15 @@ const Search: React.FC<SearchProps> = ({query, executeQuery, setQuery, error, gr
                     value={query}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            executeQuery(query);
+                            setQuery(query);
                         }
                     }}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => setTempQuery(e.target.value)}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
                                 {query !== '' ? (
-                                    <IconButton onClick={() => executeQuery('')} size="small">
+                                    <IconButton onClick={() => setQuery('')} size="small">
                                         <CloseIcon />
                                     </IconButton>
                                 ) : null}
