@@ -2,7 +2,7 @@ import {createMatcher, MatcherNote} from './match';
 import {createParser} from './parser';
 import semver from 'semver/preload';
 import {Field} from '../config/type';
-import {NoteValues} from '../note/note';
+import {NoteValues, partialNote} from '../note/note';
 import {fold} from 'fp-ts/lib/Either';
 import {pipe} from 'fp-ts/lib/pipeable';
 import {LocalDate} from '@js-joda/core';
@@ -48,7 +48,7 @@ const fields: Field[] = [
 describe('match', () => {
     const parser = createParser(fields);
     const createTest = (expression: string, note: NoteValues, result: boolean): (() => void) =>
-        createFullTest(expression, {content: '', summary: '', values: note}, result);
+        createFullTest(expression, partialNote({values: note}), result);
     const createFullTest = (expression: string, note: MatcherNote, result: boolean) => () => {
         test(`${expression} + ${JSON.stringify(note)} => ${result ? 'true' : 'false'}`, () => {
             pipe(
@@ -64,17 +64,19 @@ describe('match', () => {
     };
 
     [
-        createFullTest('summary = "cool story"', {summary: 'cool story', content: 'irrelevant', values: {}}, true),
+        createFullTest('summary = "cool story"', partialNote({summary: 'cool story', content: 'irrelevant'}), true),
         createFullTest(
             'content ~ "ClassCastException"',
-            {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}},
+            partialNote({summary: 'hello', content: 'my\nClassCastException\nerror'}),
             true
         ),
         createFullTest(
             'content ~ "ClassCastExcption"',
-            {summary: 'hello', content: 'my\nClassCastException\nerror', values: {}},
+            partialNote({summary: 'hello', content: 'my\nClassCastException\nerror'}),
             false
         ),
+        createFullTest('id = "5-user.md"', partialNote({id: '5-user.md'}), true),
+        createFullTest('id = "5-user.md"', partialNote({id: '6-user.md'}), false),
 
         createTest('booleanName absent', {booleanName: true}, false),
         createTest('booleanName present', {booleanName: true}, true),
