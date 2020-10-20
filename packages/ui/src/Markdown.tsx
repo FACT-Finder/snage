@@ -43,7 +43,8 @@ const toNoteURL = (href: string): string => {
 
 const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> = (navigateNote) => (props) => {
     const href = props?.href ?? '';
-    const isNoteLink = !href.includes('://') && !href.startsWith('//') && !href.startsWith('/');
+    const isNoteLink =
+        !href.includes('://') && !href.startsWith('//') && !href.startsWith('/') && !href.startsWith('#');
 
     const hrefWithNote = isNoteLink ? toNoteURL(href) : href;
 
@@ -62,7 +63,17 @@ const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> = (navigateNot
     );
 };
 
+const flatten = (text, child): any =>
+    typeof child === 'string' ? text + child : React.Children.toArray(child.props.children).reduce(flatten, text);
+
+const HeadingRenderer: React.FC<any> = ({level, children}) => {
+    const text = children.reduce(flatten, '');
+    const slug = text.toLowerCase().replace(/\W/g, '-');
+    return React.createElement('h' + level, {id: slug}, React.Children.toArray(children));
+};
+
 const renderers: (n: NavigateNote) => ReactMarkdownProps['renderers'] = (navigateNote) => ({
     code: MarkdownCodeBlock,
     link: MarkdownLink(navigateNote),
+    heading: HeadingRenderer,
 });

@@ -18,6 +18,14 @@ export const FullNote: React.FC<{
         close();
         onChipClick(key, value)(e);
     };
+
+    React.useEffect(() => {
+        const hash = window.location.hash;
+        if (hash) {
+            document.getElementById(hash.slice(1))?.scrollIntoView();
+        }
+    }, []);
+
     return (
         <>
             <Markdown content={'# ' + summary} navigateNote={navigateNote} />
