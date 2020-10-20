@@ -3,22 +3,24 @@ import {ApiNote} from '../../shared/type';
 import {Markdown} from './Markdown';
 import Chip from '@material-ui/core/Chip';
 import {Link, Paper, Typography} from '@material-ui/core';
+import {NavigateNote} from './state';
 
 type ChipClick = (key: string, value: string | string[]) => (e: React.MouseEvent) => void;
 
-export const FullNote: React.FC<{note: ApiNote; fieldOrder: string[]; onChipClick: ChipClick; close: () => void}> = ({
-    close,
-    note: {summary, values, valueStyles, content, links},
-    fieldOrder,
-    onChipClick,
-}) => {
+export const FullNote: React.FC<{
+    note: ApiNote;
+    fieldOrder: string[];
+    onChipClick: ChipClick;
+    close: () => void;
+    navigateNote: NavigateNote;
+}> = ({close, note: {summary, values, valueStyles, content, links}, fieldOrder, navigateNote, onChipClick}) => {
     const closeAndChipClick: ChipClick = (key, value) => (e) => {
         close();
         onChipClick(key, value)(e);
     };
     return (
         <>
-            <Markdown content={'# ' + summary} />
+            <Markdown content={'# ' + summary} navigateNote={navigateNote} />
             <div style={{marginBottom: 30}}>
                 <FieldChips
                     fieldOrder={fieldOrder}
@@ -33,7 +35,7 @@ export const FullNote: React.FC<{note: ApiNote; fieldOrder: string[]; onChipClic
                     NO CONTENT
                 </Typography>
             ) : (
-                <Markdown content={content} />
+                <Markdown content={content} navigateNote={navigateNote} />
             )}
         </>
     );
@@ -83,16 +85,18 @@ export const SummaryNote = React.memo(
         onChipClick,
         selectNote,
         fieldOrder,
+        navigateNote,
     }: {
         entry: ApiNote;
         selectNote: (note: ApiNote) => void;
+        navigateNote: NavigateNote;
         fieldOrder: string[];
         onChipClick: ChipClick;
     }) => {
         const {summary, values, links, style, valueStyles} = entry;
         return (
             <Paper style={{...style, padding: 10, paddingLeft: 20, marginBottom: 10}} onClick={() => selectNote(entry)}>
-                <Markdown content={'# ' + summary} />
+                <Markdown content={'# ' + summary} navigateNote={navigateNote} />
                 <FieldChips
                     fieldOrder={fieldOrder}
                     onChipClick={onChipClick}
