@@ -29,6 +29,9 @@ export const useUrlChangableState = (): [State, SetState] => {
         (stateF: SetStateAction<State>) => {
             setState((old) => {
                 const newState = typeof stateF === 'function' ? stateF(old) : stateF;
+                if (old.note === newState.note && old.query === newState.query) {
+                    return old;
+                }
                 const params = [`q=${encodeURIComponent(newState.query)}`];
                 if (newState.note) {
                     params.push(`n=${encodeURIComponent(noteId(newState.note))}`);
