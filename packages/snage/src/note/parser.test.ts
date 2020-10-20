@@ -18,7 +18,7 @@ describe('parseNote', () => {
 
     it('works', async () => {
         const rawNote: RawNote = {
-            file: 'filename',
+            file: '/home/someone/changelog/1234-fix.md',
             header: {
                 issue: 'xyz',
                 type: 'bugfix',
@@ -30,11 +30,11 @@ describe('parseNote', () => {
         };
 
         const expected: Note = {
-            id: 'filename',
+            id: '1234-fix.md',
             style: {background: 'green'},
             summary: 'cool summary line',
             content: 'body text\n\n**test**\n',
-            file: 'filename',
+            file: '/home/someone/changelog/1234-fix.md',
             valueStyles: {},
             links: [
                 {
