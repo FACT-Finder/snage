@@ -5,6 +5,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
+import path from 'path';
 import {Config, CSS, CSSProvider, Field, hasProvider, LinkProvider, ProvidedField} from '../config/type';
 import {Note, NoteValues} from './note';
 import {readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
@@ -98,9 +99,9 @@ export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEithe
         decodeHeader(fields, rawNote.header),
         TE.fromEither,
         TE.map((values) => ({
-            values: values,
+            values,
             valuesDocument: rawNote.headerDocument,
-            id: rawNote.file,
+            id: path.basename(rawNote.file),
             file: rawNote.file,
             links: [],
             style: {},
