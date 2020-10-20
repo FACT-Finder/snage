@@ -12,4 +12,10 @@ export const ContentField: Field = {
     styleProvider: () => ({}),
 };
 
-export const ImplicitFields = [SummaryField, ContentField];
+export const IdField: Field = {
+    name: 'id',
+    type: 'string',
+    styleProvider: () => ({}),
+};
+
+export const ImplicitFields = [SummaryField, ContentField, IdField];

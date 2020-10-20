@@ -13,11 +13,11 @@ import stringsimi from 'string-similarity';
 import {zip} from 'fp-ts/lib/Array';
 import {Field, FieldType} from '../config/type';
 import {Note} from '../note/note';
-import {ContentField, ImplicitFields, SummaryField} from './implicitfields';
+import {ContentField, IdField, ImplicitFields, SummaryField} from './implicitfields';
 import * as ORD from 'fp-ts/lib/Ord';
 import {getFieldOrdering} from './sort';
 
-export type MatcherNote = Pick<Note, 'content' | 'summary' | 'values'>;
+export type MatcherNote = Pick<Note, 'content' | 'summary' | 'values' | 'id'>;
 
 export interface Matcher {
     (n: MatcherNote): boolean;
@@ -63,6 +63,8 @@ const valueByName = (name: string, note: MatcherNote): undefined | unknown => {
             return note.content;
         case SummaryField.name:
             return note.summary;
+        case IdField.name:
+            return note.id;
         default:
             return note.values[name];
     }
