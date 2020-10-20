@@ -3,6 +3,7 @@ import ReactMarkdown, {ReactMarkdownProps} from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {makeStyles} from '@material-ui/core/styles';
 import {Link} from '@material-ui/core';
+import LinkIcon from '@material-ui/icons/Link';
 import {getStateFromURL, NavigateNote} from './state';
 
 const useStyles = makeStyles(
@@ -69,7 +70,19 @@ const flatten = (text, child): any =>
 const HeadingRenderer: React.FC<any> = ({level, children}) => {
     const text = children.reduce(flatten, '');
     const slug = text.toLowerCase().replace(/\W/g, '-');
-    return React.createElement('h' + level, {id: slug}, React.Children.toArray(children));
+    return React.createElement('h' + level, {id: slug}, [
+        ...React.Children.toArray(children),
+        <React.Fragment key="link">
+            {level !== 1 ? (
+                <>
+                    &nbsp;
+                    <a className="slug-link" href={`#${slug}`}>
+                        <LinkIcon fontSize="small" />
+                    </a>
+                </>
+            ) : null}
+        </React.Fragment>,
+    ]);
 };
 
 const renderers: (n: NavigateNote) => ReactMarkdownProps['renderers'] = (navigateNote) => ({
