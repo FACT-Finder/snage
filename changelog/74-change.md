@@ -7,7 +7,8 @@ components:
 ---
 # Split `filename` into `note.basedir` and `note.file`
 
-A config containing 
+A config containing
+
 ```yaml
 version: 0
 filename: "changelog/${issue}-${type}.md"
@@ -23,5 +24,5 @@ note:
 ```
 
 The snage commands `serve`, `lint`, `set` and `find` use `note.basedir` to find
-the directory containing the notes.  `snage create` uses `note.file` as a
+the directory containing the notes. `snage create` uses `note.file` as a
 template for the filename of the note it creates.

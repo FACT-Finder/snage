@@ -8,12 +8,15 @@ components:
 # Rename/reorder `.snage.yaml` properties
 
 Use
+
 ```bash
 $ snage migrate
 ```
+
 to migrate your config.
 
 Example changes:
+
 ```diff
 -version: 1
 +version: 2

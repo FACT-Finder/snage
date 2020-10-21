@@ -8,14 +8,17 @@ version: 0.0.2
 ---
 # Use `yarn dev-serve` and `yarn dev` for developing cli/server
 
-Bundling the snage cli required the change of start scripts inside `packages/snage`.
+Bundling the snage cli required the change of start scripts inside
+`packages/snage`.
 
 Start the auto reloading development server with `/.snage.yaml`.
+
 ```bash
 $ yarn dev-serve
-``` 
+```
 
 Use the CLI with:
+
 ```bash
 $ yarn dev create
 $ yarn dev lint

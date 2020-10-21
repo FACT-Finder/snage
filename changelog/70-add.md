@@ -9,12 +9,13 @@ components:
 # Add note links
 
 Config:
+
 ```yml
 fields:
-  # ...
+    # ...
 links:
-  - name: Issue#${issue}
-    link: https://github.com/FACT-Finder/snage/issues/${issue}
-  - name: PR#${pr}
-    link: https://github.com/FACT-Finder/snage/pull/${pr}
+    - name: Issue#${issue}
+      link: https://github.com/FACT-Finder/snage/issues/${issue}
+    - name: PR#${pr}
+      link: https://github.com/FACT-Finder/snage/pull/${pr}
 ```

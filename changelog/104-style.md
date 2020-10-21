@@ -7,8 +7,8 @@ components:
 ---
 # Add note styling
 
-You can define note styling inside your config.
-`css` will be applied to all notes for which the query `on` evaluates to `true`.
+You can define note styling inside your config. `css` will be applied to all
+notes for which the query `on` evaluates to `true`.
 
 **Only the first matching style will be applied.**
 

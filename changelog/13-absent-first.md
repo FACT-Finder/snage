@@ -9,10 +9,11 @@ components:
 
 ```yaml
 standard:
-  sort:
-    field: version
-    order: desc
-    absent: first
+    sort:
+        field: version
+        order: desc
+        absent: first
 ```
 
-`absent: first` sorts notes where `field` is absent to the start ignoring `order`.
+`absent: first` sorts notes where `field` is absent to the start ignoring
+`order`.
