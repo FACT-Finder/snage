@@ -54,9 +54,9 @@ const App: React.FC = () => {
         (key: string, value: string | string[]) => (e: React.MouseEvent) => {
             e.stopPropagation();
             const arrayValue = Array.isArray(value) ? value : [value];
-            executeQuery(arrayValue.map((v) => `${key}=${v}`).join(' or '));
+            setState({query: arrayValue.map((v) => `${key}=${v}`).join(' or ')});
         },
-        [executeQuery]
+        [setState]
     );
 
     const navigateNote: NavigateNote = React.useCallback(
@@ -160,10 +160,10 @@ const Search: React.FC<SearchProps> = ({query, setQuery, error, groupByFields}) 
                     error={!!error}
                     variant="outlined"
                     style={{maxWidth: 600, width: '100%'}}
-                    value={query}
+                    value={tempQuery}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            setQuery(query);
+                            setQuery(tempQuery);
                         }
                     }}
                     onChange={(e) => setTempQuery(e.target.value)}
@@ -192,7 +192,7 @@ const Search: React.FC<SearchProps> = ({query, setQuery, error, groupByFields}) 
                     }}
                 />
             </ErrorTooltip>
-            <ExportDialog groupByFields={groupByFields} query={query} open={exportOpen} setOpen={setExportOpen} />
+            <ExportDialog groupByFields={groupByFields} query={tempQuery} open={exportOpen} setOpen={setExportOpen} />
         </div>
     );
 };
