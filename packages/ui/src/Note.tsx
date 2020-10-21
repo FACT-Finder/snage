@@ -30,7 +30,7 @@ export const FullNote: React.FC<{
     return (
         <>
             <Markdown content={'# ' + summary} navigateNote={navigateNote} />
-            <div style={{marginBottom: 30}}>
+            <div style={{marginBottom: 15}}>
                 <FieldChips
                     fieldOrder={fieldOrder}
                     onChipClick={closeAndChipClick}
@@ -59,7 +59,7 @@ interface FieldChipsProps {
 }
 
 const FieldChips: React.FC<FieldChipsProps> = ({fieldOrder, onChipClick, values, valueStyles, links}) => (
-    <>
+    <div style={{display: 'flex', flexWrap: 'wrap'}}>
         {fieldOrder
             .filter((key) => values[key] !== null && values[key] !== undefined)
             .map((key) => {
@@ -68,7 +68,7 @@ const FieldChips: React.FC<FieldChipsProps> = ({fieldOrder, onChipClick, values,
                     <Chip
                         size="small"
                         key={key}
-                        style={{marginRight: 10, ...valueStyles[key]}}
+                        style={{marginBottom: 5, marginRight: 5, ...valueStyles[key]}}
                         label={key + '=' + value}
                         onClick={onChipClick(key, value)}
                     />
@@ -77,7 +77,7 @@ const FieldChips: React.FC<FieldChipsProps> = ({fieldOrder, onChipClick, values,
         {links.map(({href, label}) => (
             <Link
                 key={label + href}
-                style={{marginRight: 5}}
+                style={{marginBottom: 5, marginRight: 5}}
                 href={href}
                 target="_blank"
                 rel="noreferrer noopener"
@@ -85,7 +85,7 @@ const FieldChips: React.FC<FieldChipsProps> = ({fieldOrder, onChipClick, values,
                 {label}
             </Link>
         ))}
-    </>
+    </div>
 );
 
 export const SummaryNote = React.memo(
