@@ -37,6 +37,9 @@ export const sequenceKeepAllLefts = <L, R>(eithers: Array<E.Either<L, R>>): E.Ei
     return left.length ? E.left(left) : E.right(right);
 };
 
+export const TEsequenceKeepAllLefts = <L, R>(eithers: Array<TE.TaskEither<L, R>>): TE.TaskEither<L[], R[]> => () =>
+    Promise.all(eithers.map((either) => either())).then(sequenceKeepAllLefts);
+
 export const readdir = (directory: string): TE.TaskEither<string, string[]> =>
     pipe(
         TE.taskify<string, NodeJS.ErrnoException, string[]>(fs.readdir)(directory),

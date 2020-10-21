@@ -3,6 +3,14 @@ basedir: changelog
 template:
   file: ${issue}-${type}.md
 note:
+  lint:
+    prettier:
+      enabled: true
+      config:
+        printWidth: 80
+        useTabs: false
+        tabWidth: 4
+        proseWrap: always
   styles:
     - on: 'type = add'
       css:

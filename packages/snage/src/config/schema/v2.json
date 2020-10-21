@@ -104,6 +104,23 @@
           "type": "array",
           "items": { "$ref": "#/definitions/link" }
         },
+        "lint": {
+          "type": "object",
+          "properties": {
+            "prettier": {
+              "type": "object",
+              "properties": {
+                "enabled":{
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        },
         "styles": {
           "type": "array",
           "items": { "$ref": "#/definitions/styleDefinition" }

@@ -80,10 +80,7 @@ export interface RawNote {
 
 export const parseRawNote = (note: string, fileName: string): RawNote => {
     const [, head, ...content] = note.split('---');
-    const [summary, ...body] = content
-        .join('---')
-        .trim()
-        .split('\n\n');
+    const [summary, ...body] = content.join('---').trim().split('\n\n');
 
     return {
         file: fileName,

@@ -5,6 +5,11 @@ import * as ORD from 'fp-ts/lib/Ord';
 import {LocalDate} from '@js-joda/core';
 import {MatcherNote} from '../query/match';
 
+export interface PrettierConfig {
+    enabled: boolean;
+    config: Record<string, unknown>;
+}
+
 export type Config = {
     basedir: string;
     template: {
@@ -14,6 +19,9 @@ export type Config = {
     note: {
         styles: CSSProvider;
         links: LinkProvider;
+        lint: {
+            prettier: PrettierConfig;
+        };
     };
     fields: Field[];
     filterPresets: FilterPreset[];
@@ -44,6 +52,9 @@ export interface RawConfig {
     note: {
         styles: ConditionalStyle[];
         links: Link[];
+        lint?: {
+            prettier?: Partial<PrettierConfig>;
+        };
     };
     fields: RawField[];
     filterPresets: FilterPreset[];

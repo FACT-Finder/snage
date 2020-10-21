@@ -112,7 +112,18 @@ const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string,
                 E.map(({links, styles}) => ({
                     ...rawConfig,
                     basedir,
-                    note: {links, styles},
+                    note: {
+                        links,
+                        styles,
+                        lint: {
+                            prettier: {
+                                enabled: rawConfig.note.lint?.prettier?.enabled ?? false,
+                                config: {
+                                    ...rawConfig.note.lint?.prettier?.config,
+                                },
+                            },
+                        },
+                    },
                     fields,
                     standard: {sort: ordering},
                 })),
