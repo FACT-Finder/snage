@@ -11,7 +11,7 @@ export const getStateFromURL = (search: string): State => {
     };
 };
 
-export type State = {query: string; note?: ApiNote | string};
+export type State = {query: string; note?: ApiNote | string; hash?: string};
 export type NavigateNote = (note: string) => void;
 export type SetState = React.Dispatch<SetStateAction<State>>;
 
@@ -37,9 +37,10 @@ export const useUrlChangableState = (): [State, SetState] => {
                     params.push(`n=${encodeURIComponent(noteId(newState.note))}`);
                 }
 
+                const hash = newState.hash ? `#${newState.hash}` : '';
                 const newSearch = `?${params.join('&')}`;
                 if (newSearch !== window.location.search) {
-                    window.history.pushState(newState, '', newSearch);
+                    window.history.pushState(newState, '', newSearch + hash);
                 }
                 return newState;
             });

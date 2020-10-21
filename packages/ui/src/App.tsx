@@ -22,7 +22,7 @@ const App: React.FC = () => {
         error?: ApiParseError & {query: string};
     }>(() => ({notes: [], fieldOrder: [], groupByFields: []}));
     const [{query, note}, setState] = useUrlChangableState();
-    const [selectedNote, setSelectedNote] = React.useState<ApiNote>();
+    const [selectedNote, setSelectedNote] = React.useState<ApiNote & {hash?: string}>();
 
     const executeQuery = React.useCallback(
         (query: string) => {
@@ -45,7 +45,7 @@ const App: React.FC = () => {
     React.useEffect(() => {
         // skip on first render, because the state is already set
         if (!firstRender.current) {
-            setState(({query}) => ({query, note: selectedNote?.id}));
+            setState(({query}) => ({query, note: selectedNote?.id, hash: selectedNote?.hash}));
         }
         firstRender.current = false;
     }, [selectedNote, setState]);
@@ -61,12 +61,13 @@ const App: React.FC = () => {
 
     const navigateNote: NavigateNote = React.useCallback(
         (note) => {
+            const [withoutHash, hash] = note.split('#');
             axios
-                .get(`/note?query=${encodeURIComponent('id=' + note)}`)
+                .get(`/note?query=${encodeURIComponent('id=' + withoutHash)}`)
                 .then((resp) => {
                     const [respNote] = resp.data.notes;
                     if (respNote) {
-                        setSelectedNote(respNote);
+                        setSelectedNote({...respNote, hash});
                     } else {
                         setState(({query}) => ({query}));
                     }
@@ -112,6 +113,7 @@ const App: React.FC = () => {
                     <ClickAwayListener onClickAway={() => setSelectedNote(undefined)}>
                         <Paper className="noteBody">
                             <FullNote
+                                key={selectedNote.id}
                                 note={selectedNote}
                                 fieldOrder={fieldOrder}
                                 navigateNote={navigateNote}

@@ -8,22 +8,23 @@ import {NavigateNote} from './state';
 type ChipClick = (key: string, value: string | string[]) => (e: React.MouseEvent) => void;
 
 export const FullNote: React.FC<{
-    note: ApiNote;
+    note: ApiNote & {hash?: string};
     fieldOrder: string[];
     onChipClick: ChipClick;
     close: () => void;
     navigateNote: NavigateNote;
-}> = ({close, note: {summary, values, valueStyles, content, links}, fieldOrder, navigateNote, onChipClick}) => {
+}> = ({close, note: {hash, summary, values, valueStyles, content, links}, fieldOrder, navigateNote, onChipClick}) => {
     const closeAndChipClick: ChipClick = (key, value) => (e) => {
         close();
         onChipClick(key, value)(e);
     };
 
     React.useEffect(() => {
-        const hash = window.location.hash;
-        if (hash) {
-            document.getElementById(hash.slice(1))?.scrollIntoView();
+        const titleId = hash ?? window.location.hash.slice(1);
+        if (titleId) {
+            document.getElementById(titleId)?.scrollIntoView();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
