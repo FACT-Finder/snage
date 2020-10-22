@@ -104,7 +104,9 @@ export const SummaryNote = React.memo(
     }) => {
         const {summary, values, links, style, valueStyles} = entry;
         return (
-            <Paper style={{...style, padding: 10, paddingLeft: 20, marginBottom: 10}} onClick={() => selectNote(entry)}>
+            <Paper
+                style={{...style, cursor: 'pointer', padding: 10, paddingLeft: 20, margin: 5}}
+                onClick={() => selectNote(entry)}>
                 <Markdown content={'# ' + summary} navigateNote={navigateNote} />
                 <FieldChips
                     fieldOrder={fieldOrder}

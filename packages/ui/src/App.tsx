@@ -10,6 +10,7 @@ import {ExportDialog} from './ExportDialog';
 import {ErrorTooltip, ErrorTooltipBody} from './ErrorTooltip';
 import {FullNote, SummaryNote} from './Note';
 import {NavigateNote, useUrlChangableState} from './state';
+import {DynamicVirtualList} from './DynamicVirtualList';
 
 type FQuery = (x: string) => void;
 
@@ -97,16 +98,21 @@ const App: React.FC = () => {
             <h1 style={{textAlign: 'center'}}>Changelog</h1>
             <Search query={query} setQuery={(query) => setState({query})} error={error} groupByFields={groupByFields} />
             <div>
-                {notes.map((entry) => (
-                    <SummaryNote
-                        key={entry.id}
-                        entry={entry}
-                        navigateNote={navigateNote}
-                        selectNote={setSelectedNote}
-                        fieldOrder={fieldOrder}
-                        onChipClick={onChipClick}
-                    />
-                ))}
+                <DynamicVirtualList
+                    entries={notes}
+                    rowRenderer={(note, style) => (
+                        <div style={style} key={note.id}>
+                            <SummaryNote
+                                key={note.id}
+                                entry={note}
+                                navigateNote={navigateNote}
+                                selectNote={setSelectedNote}
+                                fieldOrder={fieldOrder}
+                                onChipClick={onChipClick}
+                            />
+                        </div>
+                    )}
+                />
             </div>
             {selectedNote ? (
                 <Backdrop open={true} style={{zIndex: 1}}>
