@@ -5,7 +5,10 @@ audience: user
 components:
   - server
   - config
+version: 0.4.0
+date: 2020-09-25
 ---
+
 # Add provider to fetch date from git tag
 
 You can configure snage to automatically fetch the commit date of a

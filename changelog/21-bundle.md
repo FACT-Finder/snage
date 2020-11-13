@@ -5,7 +5,9 @@ type: change
 components:
   - cli
 version: 0.0.2
+date: 2020-04-23
 ---
+
 # Bundle create and server into snage CLI
 
 You can start the server with:

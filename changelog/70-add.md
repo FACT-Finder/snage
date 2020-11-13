@@ -5,7 +5,10 @@ audience: user
 components:
   - ui
   - api
+version: 0.0.12
+date: 2020-05-25
 ---
+
 # Add note links
 
 Config:

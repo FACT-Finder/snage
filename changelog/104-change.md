@@ -4,7 +4,10 @@ type: change
 audience: user
 components:
   - config
+version: 0.1.0
+date: 2020-06-12
 ---
+
 # Rename/reorder `.snage.yaml` properties
 
 Use

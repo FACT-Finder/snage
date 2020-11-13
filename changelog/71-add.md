@@ -4,7 +4,10 @@ issue: 71
 audience: user
 components:
   - cli
+version: 0.2.0
+date: 2020-06-24
 ---
+
 # Add `snage export`
 
 ```
