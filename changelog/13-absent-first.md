@@ -4,7 +4,10 @@ type: add
 audience: user
 components:
   - ui
+version: 0.2.0
+date: 2020-06-24
 ---
+
 # Add support for sorting with absent values first or last
 
 ```yaml

@@ -5,7 +5,9 @@ type: add
 audience: user
 components:
   - server
+version: 0.0.8
 ---
+
 # Add provider to fetch version from git tag
 
 You can configure snage to automatically fetch the release version of a

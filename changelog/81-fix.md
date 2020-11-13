@@ -4,7 +4,10 @@ type: fix
 audience: user
 components:
   - cli
+version: 0.0.12
+date: 2020-05-25
 ---
+
 # Correctly parse notes created by `snage create`
 
 `snage create` creates notes which contain unquoted date strings, e.g.

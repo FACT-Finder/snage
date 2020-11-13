@@ -4,7 +4,10 @@ type: fix
 audience: user
 components:
   - server
+version: 0.0.9
+date: 2020-05-05
 ---
+
 # Add `git` binary to docker image
 
 Fixes

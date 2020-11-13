@@ -5,7 +5,9 @@ audience: user
 components:
   - cli
 date: 2020-07-22
+version: 0.3.0
 ---
+
 # Add `snage fill [field..]`
 
 ```bash

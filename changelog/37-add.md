@@ -4,7 +4,10 @@ type: add
 audience: user
 components:
   - cli
+version: 0.0.7
+date: 2020-04-28
 ---
+
 # Allow setting change log note values via `snage set`
 
 ```bash

@@ -4,7 +4,10 @@ issue: 149
 audience: user
 components:
   - ui
+version: 0.5.0
+date: 2020-10-21
 ---
+
 # Add relative links in notes
 
 ```markdown
@@ -225,4 +228,3 @@ duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore Stet
 clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut vero
 voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
 consetetur
-
