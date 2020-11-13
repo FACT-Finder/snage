@@ -12,12 +12,13 @@ export const toYamlString = (fieldValues: YamlNoteValues, fields: Field[], fileT
                 return field.optional ? builder : builder.appendYamlComment(field.name);
             }
         }, new YamlStringBuilder())
-        .appendContent(fileText)
+        .appendContent(`\n${fileText}`)
         .build();
 
 export const toYamlFromDocument = (document: YAML.Document, fileText: string): string =>
     `---
 ${document.toString()}---
+
 ${fileText}`;
 
 export const summaryWithContent = (summary: string, content: string): string => {

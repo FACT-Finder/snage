@@ -23,6 +23,7 @@ describe('updateNotes', () => {
                     content: `---
 bool: true
 ---
+
 # one
 `,
                 },
@@ -48,6 +49,7 @@ bool: true
 issue: "#22"
 bool: true
 ---
+
 # one
 `,
                 },
@@ -77,6 +79,7 @@ bool: true
 issue: "#22"
 bool: false
 ---
+
 # two
 `,
                 },
@@ -86,6 +89,7 @@ bool: false
 issue: "#22"
 bool: false
 ---
+
 # three
 `,
                 },
@@ -113,6 +117,7 @@ issue:
   - "#1"
 bool: true
 ---
+
 # one
 `,
                 },
