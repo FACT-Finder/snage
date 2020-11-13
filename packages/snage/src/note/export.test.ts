@@ -64,6 +64,7 @@ describe('export', () => {
             "---
             hello: value
             ---
+
             # My headline
 
             my content
@@ -71,6 +72,7 @@ describe('export', () => {
             ---
             hello: value
             ---
+
             # No body"
         `);
     });
@@ -95,6 +97,7 @@ describe('export', () => {
                 ---
                 hello: value
                 ---
+
                 # My headline
 
                 my content
@@ -102,6 +105,7 @@ describe('export', () => {
                 ---
                 hello: value
                 ---
+
                 # No body
 
                 ##############################
@@ -113,6 +117,7 @@ describe('export', () => {
                 ---
                 hello: other
                 ---
+
                 # cool second
 
                 is this library?"
