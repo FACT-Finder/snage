@@ -21,7 +21,7 @@ jobs:
           restore-keys: ${{ runner.os }}-node_modules-
       - run: yarn --frozen-lockfile
       - name: Get Version
-        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       - run: yarn docs build
       - run: yarn lerna run build
         env:

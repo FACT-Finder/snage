@@ -21,7 +21,7 @@ jobs:
           restore-keys: ${{ runner.os }}-node_modules-
       - run: yarn --frozen-lockfile
       - name: Get Version
-        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       - run: yarn lerna run build
         env:
           BUILD_VERSION: ${{ env.VERSION }}
@@ -41,7 +41,7 @@ jobs:
           name: build
           path: packages/snage/build/npm
       - name: Get Version
-        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       - name: Publish Release to Docker and NPM
         run: |
           echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
@@ -89,7 +89,7 @@ jobs:
         with:
           name: build
       - name: Get Version
-        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       - name: Publish to Archlinux User Repository
         run: |
           mkdir $HOME/.ssh
