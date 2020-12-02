@@ -64,7 +64,7 @@ jobs:
           name: build
           path: packages/snage/build/npm
       - name: Get Version
-        run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       - name: Create release artifact
         run: |
           mkdir -p packages/snage/build/github/snage-${VERSION}
