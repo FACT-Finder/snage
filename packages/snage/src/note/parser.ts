@@ -4,6 +4,7 @@ import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
+import fs from 'fs';
 import {pipe} from 'fp-ts/lib/pipeable';
 import path from 'path';
 import {Config, CSS, CSSProvider, Field, hasProvider, LinkProvider, ProvidedField} from '../config/type';
@@ -26,7 +27,9 @@ const readNotes = (
     files: string[]
 ): TE.TaskEither<string[], Note[]> =>
     pipe(
-        A.array.traverse(T.task)(files, (file) => readNote(fields, linkProvider, styleProvider, file)),
+        files,
+        A.filter((file) => fs.lstatSync(file).isFile()),
+        (files) => A.array.traverse(T.task)(files, (file) => readNote(fields, linkProvider, styleProvider, file)),
         T.map(sequenceKeepAllLefts),
         TE.mapLeft(A.flatten)
     );
