@@ -81,7 +81,7 @@ jobs:
           name: docs
           path: site
       - name: Deploy Docs
-        uses: JamesIves/github-pages-deploy-action@51f4ac3
+        uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           BRANCH: gh-pages
           FOLDER: site
