@@ -20,7 +20,6 @@ parserOptions:
   sourceType: module
 plugins:
   - "@typescript-eslint"
-  - "@typescript-eslint/tslint"
   - react
   - import
   - unicorn
