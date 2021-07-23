@@ -48,8 +48,10 @@ export const fillInHeader =
         return note;
     };
 
-export const canFill = (fieldNames: string[]) => (note: Note) =>
-    fieldNames.some((name) => note.values[name] !== note.valuesDocument.get(name, false));
+export const canFill =
+    (fieldNames: string[]) =>
+    (note: Note): boolean =>
+        fieldNames.some((name) => note.values[name] !== note.valuesDocument.get(name, false));
 
 const writeNote = (note: Note): TE.TaskEither<string, void> =>
     pipe(
