@@ -5,7 +5,7 @@ import {RawConfig} from './type';
 
 describe('parseConfig', () => {
     it('throws when filename is missing', () => {
-        expect(parseRawConfig(document({}))).toMatchObject(left("data should have required property 'filename'"));
+        expect(parseRawConfig(document({}))).toMatchObject(left("data must have required property 'filename'"));
     });
     const minimal: Partial<RawConfig> = {
         version: 2,
@@ -41,6 +41,6 @@ describe('parseConfig', () => {
                     fields: [{name: 'summary', type: 'boolean'}],
                 })
             )
-        ).toMatchObject(left('data.fields[0].name should match pattern "^((?!summary|content).+)$"'));
+        ).toMatchObject(left('data/fields/0/name must match pattern "^((?!summary|content).+)$"'));
     });
 });
