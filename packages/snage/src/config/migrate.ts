@@ -2,7 +2,7 @@ import {migrateV1} from './migration/v1';
 import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {Document} from 'yaml';
 import {Pair, YAMLMap} from 'yaml/types';
 import {findPair} from 'yaml/util';

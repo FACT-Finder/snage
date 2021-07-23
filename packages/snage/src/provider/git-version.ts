@@ -3,7 +3,7 @@ import * as O from 'fp-ts/lib/Option';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import {ProviderFactory, requireArgument, ValueProvider} from './provider';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import path from 'path';
 import {tryExec} from './exec';
 import {decodeValue} from '../note/convert';

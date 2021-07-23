@@ -4,7 +4,7 @@ import {parseNotes} from '../note/parser';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import {DefaultCli, printAndExit} from './common';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 
 export const lint: yargs.CommandModule<DefaultCli, DefaultCli> = {
     command: 'lint',

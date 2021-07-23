@@ -7,7 +7,7 @@ import * as E from 'fp-ts/lib/Either';
 import * as R from 'fp-ts/lib/Record';
 import {LocalDate} from '@js-joda/core';
 import {toRecord} from '../fp/fp';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {NoteValues, StringNoteValues, YamlFieldValue, YamlNoteValues} from './note';
 import {ReportMode, stringifyErrors} from './reporter';
 

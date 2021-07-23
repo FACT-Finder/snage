@@ -7,7 +7,7 @@ import {createMatcher} from '../query/match';
 import path from 'path';
 import {DefaultCli, printAndExit} from './common';
 import {Note} from '../note/note';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as IO from 'fp-ts/lib/IO';
 import * as T from 'fp-ts/lib/Task';

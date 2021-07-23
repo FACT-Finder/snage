@@ -2,7 +2,7 @@ import yargs from 'yargs';
 import {getConfigFile, parseYAMLDocument} from '../config/load';
 import * as E from 'fp-ts/lib/Either';
 import {DefaultCli, printAndExit} from './common';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {migrateConfig} from '../config/validator';
 import fs from 'fs';
 

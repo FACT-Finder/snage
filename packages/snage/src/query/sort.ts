@@ -6,7 +6,7 @@ import * as R from 'fp-ts/lib/Record';
 import * as ORD from 'fp-ts/lib/Ord';
 import semver from 'semver';
 import {expectNever, requiredFFVersionRegex} from '../util/util';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {LocalDate} from '@js-joda/core';
 import {sign} from 'fp-ts/lib/Ordering';
 import {identity} from 'fp-ts/lib/function';

@@ -4,7 +4,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as E from 'fp-ts/lib/Either';
 import {Field, FieldValue, PrimitiveFieldValue} from '../config/type';
 import {expectNever} from './util';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {decodeStringValue} from '../note/convert';
 import {LocalDate} from '@js-joda/core';
 import {assertRight, merge, toRecord} from '../fp/fp';

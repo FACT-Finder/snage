@@ -1,5 +1,5 @@
 import {createParser} from './parser';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import * as E from 'fp-ts/lib/Either';
 import {createMatcher} from './match';
 import {Config} from '../config/type';

@@ -2,7 +2,7 @@ import yargs from 'yargs';
 import {DefaultCli, print, printAndExit} from './common';
 import {getConfig, getConfigOrExit} from '../config/load';
 import {replacePlaceholders} from '../util/fieldExtractor';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as E from 'fp-ts/lib/Either';
 import * as T from 'fp-ts/lib/Task';

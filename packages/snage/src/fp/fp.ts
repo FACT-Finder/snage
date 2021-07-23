@@ -5,8 +5,8 @@ import * as IOE from 'fp-ts/lib/IOEither';
 import fs from 'fs';
 import path from 'path';
 import {defaultEditor, getEditor} from 'env-editor';
-import {pipe} from 'fp-ts/lib/pipeable';
-import {getFirstSemigroup} from 'fp-ts/lib/Semigroup';
+import {pipe} from 'fp-ts/lib/function';
+import {first} from 'fp-ts/lib/Semigroup';
 import * as R from 'fp-ts/lib/Record';
 import {spawn} from 'child_process';
 
@@ -66,12 +66,12 @@ export const writeFile = (fileName: string, content: string): TE.TaskEither<stri
     );
 
 export const toRecord = <V>(values: Array<[string, V]>): Record<string, V> => {
-    const First = getFirstSemigroup<V>();
+    const First = first<V>();
     return R.fromFoldable(First, A.array)(values);
 };
 
 export const merge = <V>(a: Record<string, V>, b: Record<string, V>): Record<string, V> => {
-    const First = getFirstSemigroup<V>();
+    const First = first<V>();
     return R.getMonoid(First).concat(a, b);
 };
 
