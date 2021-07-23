@@ -24,10 +24,12 @@ export const migrate =
         if (!(yamlDoc.contents instanceof YAMLMap)) {
             throw new Error(`expected MAP, got ${yamlDoc.contents === null ? 'undefined' : yamlDoc.contents.type}`);
         }
-        A.range(from, to - 1).reduce<YAMLMap>(
-            (c, version) => setVersion(version + 1, getMigration(version)(c)),
-            yamlDoc.contents as any
-        );
+        if (from < to) {
+            A.range(from, to - 1).reduce<YAMLMap>(
+                (c, version) => setVersion(version + 1, getMigration(version)(c)),
+                yamlDoc.contents as any
+            );
+        }
         return yamlDoc;
     };
 
