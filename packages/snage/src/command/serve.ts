@@ -53,75 +53,78 @@ export const serve: yargs.CommandModule<DefaultCli, DefaultCli & {port: number}>
         )(),
 };
 
-export const startExpress = (port: number) => ([config, notes]: [Config, Note[]]): IO.IO<void> => () => {
-    const parser = createParser(config.fields);
-    const app = express();
-    app.use(express.text({type: '*/*', limit: '10gb'}));
-    app.disable('x-powered-by');
-    app.use((_, res, next) => {
-        res.setHeader('X-Powered-By', 'FACT-Finder Changelog');
-        next();
-    });
+export const startExpress =
+    (port: number) =>
+    ([config, notes]: [Config, Note[]]): IO.IO<void> =>
+    () => {
+        const parser = createParser(config.fields);
+        const app = express();
+        app.use(express.text({type: '*/*', limit: '10gb'}));
+        app.disable('x-powered-by');
+        app.use((_, res, next) => {
+            res.setHeader('X-Powered-By', 'FACT-Finder Changelog');
+            next();
+        });
 
-    totalNotes.set(notes.length);
+        totalNotes.set(notes.length);
 
-    app.get('/note', ({query: {query}}, res) => {
-        const endTimer = startRequestTimer('note');
-        pipe(
-            parser(query),
-            filterNotes(config, notes),
-            E.map(A.sort(config.standard.sort)),
-            E.map(A.map((note) => convertToApiNote(note, config.fields))),
-            E.fold(
-                identity,
-                (notes): Response => ({
-                    status: 200,
-                    body: {
-                        notes,
-                        fieldOrder: config.fields.map((f) => f.name),
-                        groupByFields: config.fields.filter((field) => !field.list).map((f) => f.name),
-                    },
-                })
-            ),
-            ({status, body}) => {
-                res.status(status).json(body);
-                endTimer(status);
-            }
-        );
-    });
-    app.get('/export', ({query: {query, tags = 'true', groupBy}}, res) => {
-        const endTimer = startRequestTimer('export');
-        pipe(
-            parser(query),
-            filterNotes(config, notes),
-            E.map(A.sort(config.standard.sort)),
-            E.chain((notes) =>
-                E.either.mapLeft(groupByFieldNameMaybe(config, groupBy)(notes), (e) => ({status: 400, body: e}))
-            ),
-            E.map((notes) => exportToString(notes, config.fields, {tags: tags === 'true'})),
-            E.fold(identity, (notes): Response => ({status: 200, body: notes})),
-            ({status, body}) => {
-                if (status === 200) {
-                    res.set('Content-disposition', `attachment; filename=export.${LocalDate.now().toString()}.md`).set(
-                        'Content-Type',
-                        'text/plain'
-                    );
+        app.get('/note', ({query: {query}}, res) => {
+            const endTimer = startRequestTimer('note');
+            pipe(
+                parser(query),
+                filterNotes(config, notes),
+                E.map(A.sort(config.standard.sort)),
+                E.map(A.map((note) => convertToApiNote(note, config.fields))),
+                E.fold(
+                    identity,
+                    (notes): Response => ({
+                        status: 200,
+                        body: {
+                            notes,
+                            fieldOrder: config.fields.map((f) => f.name),
+                            groupByFields: config.fields.filter((field) => !field.list).map((f) => f.name),
+                        },
+                    })
+                ),
+                ({status, body}) => {
+                    res.status(status).json(body);
+                    endTimer(status);
                 }
-                res.status(status).send(body);
-                endTimer(status);
-            }
-        );
-    });
+            );
+        });
+        app.get('/export', ({query: {query, tags = 'true', groupBy}}, res) => {
+            const endTimer = startRequestTimer('export');
+            pipe(
+                parser(query),
+                filterNotes(config, notes),
+                E.map(A.sort(config.standard.sort)),
+                E.chain((notes) =>
+                    E.either.mapLeft(groupByFieldNameMaybe(config, groupBy)(notes), (e) => ({status: 400, body: e}))
+                ),
+                E.map((notes) => exportToString(notes, config.fields, {tags: tags === 'true'})),
+                E.fold(identity, (notes): Response => ({status: 200, body: notes})),
+                ({status, body}) => {
+                    if (status === 200) {
+                        res.set(
+                            'Content-disposition',
+                            `attachment; filename=export.${LocalDate.now().toString()}.md`
+                        ).set('Content-Type', 'text/plain');
+                    }
+                    res.status(status).send(body);
+                    endTimer(status);
+                }
+            );
+        });
 
-    app.use(express.static(path.join(__dirname, 'ui')));
-    app.get('/metrics', (req, res) => {
-        res.set('Content-Type', register.contentType);
-        res.end(register.metrics());
-    });
-    app.listen(port, () => console.log(`Listening on ${port}`));
+        app.use(express.static(path.join(__dirname, 'ui')));
+        app.get('/metrics', (req, res) => {
+            res.set('Content-Type', register.contentType);
+            res.end(register.metrics());
+        });
+        app.listen(port, () => console.log(`Listening on ${port}`));
 
-    collectDefaultMetrics({prefix: 'snage_'});
-};
+        collectDefaultMetrics({prefix: 'snage_'});
+    };
 
 const filterNotes = (
     config: Config,

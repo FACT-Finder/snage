@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import * as E from 'fp-ts/lib/Either';
 import {RawConfig} from './type';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {currentSchema, currentVersion, getSchema} from './schema';
 import {migrate} from './migrate';
 import {Document} from 'yaml';
@@ -41,7 +41,7 @@ export const migrateConfig = (yamlDoc: Document): E.Either<string, Document> =>
     );
 
 export const validateConfig = (schema: object, config: Document): E.Either<string, Document> => {
-    const ajv = Ajv();
+    const ajv = new Ajv();
     const validateFunction = ajv.compile(schema);
     const valid = validateFunction(config.toJSON());
     if (!valid) {

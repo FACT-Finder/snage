@@ -125,29 +125,32 @@ const convert = (rawConfig: RawConfig, configFilePath: string): E.Either<string,
 const createLinkProvider = (fields: Field[], links: Link[]): E.Either<string, LinkProvider> =>
     E.either.map(A.array.traverseWithIndex(E.either)(links, createSingleLinkProvider(fields)), mergeProviders);
 
-const createSingleLinkProvider = (fields: Field[]) => (index: number, link: Link): Either<string, LinkProvider> => {
-    const requiredFields = extractFieldNamesFromTemplateString(link.name).concat(
-        extractFieldNamesFromTemplateString(link.link)
-    );
-    return pipe(
-        getFields(fields, requiredFields),
-        E.chain(fieldsNot('list')),
-        E.bimap(
-            (error) => `error in links/${index}: ${error}`,
-            (fields): LinkProvider => (values) => {
-                if (fields.every((field) => values[field.name] !== undefined)) {
-                    return [
-                        {
-                            href: replacePlaceholders(values, fields, link.link),
-                            label: replacePlaceholders(values, fields, link.name),
-                        },
-                    ];
-                }
-                return [];
-            }
-        )
-    );
-};
+const createSingleLinkProvider =
+    (fields: Field[]) =>
+    (index: number, link: Link): Either<string, LinkProvider> => {
+        const requiredFields = extractFieldNamesFromTemplateString(link.name).concat(
+            extractFieldNamesFromTemplateString(link.link)
+        );
+        return pipe(
+            getFields(fields, requiredFields),
+            E.chain(fieldsNot('list')),
+            E.bimap(
+                (error) => `error in links/${index}: ${error}`,
+                (fields): LinkProvider =>
+                    (values) => {
+                        if (fields.every((field) => values[field.name] !== undefined)) {
+                            return [
+                                {
+                                    href: replacePlaceholders(values, fields, link.link),
+                                    label: replacePlaceholders(values, fields, link.name),
+                                },
+                            ];
+                        }
+                        return [];
+                    }
+            )
+        );
+    };
 
 const createStyleProvider = (
     fields: Array<ParserField & MatcherField>,
@@ -163,26 +166,34 @@ const createStyleProvider = (
                 (expression) => ({matcher: createMatcher(expression, fields), css} as const)
             )
         ),
-        E.map((providers): CSSProvider => (values) => providers.find(({matcher}) => matcher(values))?.css)
+        E.map(
+            (providers): CSSProvider =>
+                (values) =>
+                    providers.find(({matcher}) => matcher(values))?.css
+        )
     );
 };
 
-const mergeProviders = (providers: LinkProvider[]): LinkProvider => (values) =>
-    providers.reduce((all: NoteLink[], func: LinkProvider) => [...all, ...func(values)], []);
+const mergeProviders =
+    (providers: LinkProvider[]): LinkProvider =>
+    (values) =>
+        providers.reduce((all: NoteLink[], func: LinkProvider) => [...all, ...func(values)], []);
 
-const toField = (fields: RawField[]) => (field: RawField): E.Either<string, Field> => {
-    const partial = E.either.map(
-        createStyleProvider(fields, field.styles ?? []),
-        (styleProvider): Field => ({...field, styleProvider})
-    );
-    if (!hasProvided(field)) {
-        return partial;
-    }
-    return pipe(
-        getValueProvider(field),
-        E.chain((valueProvider) => E.either.map(partial, (f) => ({...f, valueProvider})))
-    );
-};
+const toField =
+    (fields: RawField[]) =>
+    (field: RawField): E.Either<string, Field> => {
+        const partial = E.either.map(
+            createStyleProvider(fields, field.styles ?? []),
+            (styleProvider): Field => ({...field, styleProvider})
+        );
+        if (!hasProvided(field)) {
+            return partial;
+        }
+        return pipe(
+            getValueProvider(field),
+            E.chain((valueProvider) => E.either.map(partial, (f) => ({...f, valueProvider})))
+        );
+    };
 
 const resolveBasedir = (basedir: string, configFilePath: string): string => {
     const configDir = path.dirname(configFilePath);
@@ -198,14 +209,16 @@ const validateNoteFileTemplate = (config: Config): E.Either<string, Config> =>
             () => config
         )
     );
-export const fieldsNot = (...checks: Array<'optional' | 'list'>) => (fields: Field[]): Either<string, Field[]> => {
-    for (const field of fields) {
-        if (checks.includes('optional') && field.optional) {
-            return left(`Referenced field '${field.name}' is optional. Only required fields may be used.`);
+export const fieldsNot =
+    (...checks: Array<'optional' | 'list'>) =>
+    (fields: Field[]): Either<string, Field[]> => {
+        for (const field of fields) {
+            if (checks.includes('optional') && field.optional) {
+                return left(`Referenced field '${field.name}' is optional. Only required fields may be used.`);
+            }
+            if (checks.includes('list') && field.list) {
+                return left(`Referenced field '${field.name}' is a list type. Only non list types may be used.`);
+            }
         }
-        if (checks.includes('list') && field.list) {
-            return left(`Referenced field '${field.name}' is a list type. Only non list types may be used.`);
-        }
-    }
-    return right(fields);
-};
+        return right(fields);
+    };

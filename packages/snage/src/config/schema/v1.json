@@ -58,7 +58,6 @@
         "by": {"type": "string"},
         "arguments": { "type": "object" }
       },
-      "additionalItems": false,
       "required": ["by"]
     }
   },
@@ -71,7 +70,6 @@
         "basedir": { "type": "string" },
         "file": {"type":  "string"}
       },
-      "additionalItems": false,
       "required": ["basedir", "file"]
     },
     "fields": {

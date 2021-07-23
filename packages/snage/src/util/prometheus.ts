@@ -11,5 +11,5 @@ const requestHistogram = new Histogram({
 export const startRequestTimer = (path: string): ((status: number) => void) => {
     const endTimer = requestHistogram.startTimer({path});
 
-    return (status: number): void => endTimer({status});
+    return (status: number): void => void endTimer({status});
 };

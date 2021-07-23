@@ -76,7 +76,6 @@
         "by": {"type": "string"},
         "arguments": { "type": "object" }
       },
-      "additionalItems": false,
       "required": ["by"]
     }
   },
@@ -90,7 +89,6 @@
         "file": {"type": "string"},
         "text": {"type": "string"}
       },
-      "additionalItems": false,
       "required": ["file"]
     },
     "fields": {

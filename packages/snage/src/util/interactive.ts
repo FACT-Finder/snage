@@ -11,15 +11,17 @@ import {assertRight, merge, toRecord} from '../fp/fp';
 import {NoteValues} from '../note/note';
 import * as O from 'fp-ts/lib/Option';
 
-export const askForMissingValues = (fields: Field[]) => (values: NoteValues): TE.TaskEither<string, NoteValues> => {
-    const existing = Object.keys(values);
-    const missingFields = fields.filter((f) => !existing.includes(f.name) && !f.provided);
-    return pipe(
-        A.array.traverse(TE.taskEitherSeq)(missingFields, (f) => askValueTuple(f)),
-        TE.map(A.filterMap((x) => x)),
-        TE.map((xs) => merge(values, toRecord(xs)))
-    );
-};
+export const askForMissingValues =
+    (fields: Field[]) =>
+    (values: NoteValues): TE.TaskEither<string, NoteValues> => {
+        const existing = Object.keys(values);
+        const missingFields = fields.filter((f) => !existing.includes(f.name) && !f.provided);
+        return pipe(
+            A.array.traverse(TE.taskEitherSeq)(missingFields, (f) => askValueTuple(f)),
+            TE.map(A.filterMap((x) => x)),
+            TE.map((xs) => merge(values, toRecord(xs)))
+        );
+    };
 
 const askValueTuple = (field: Field): TE.TaskEither<string, O.Option<[string, FieldValue]>> =>
     pipe(askValue(field), TE.map(O.map((v) => [field.name, v])));
@@ -77,30 +79,34 @@ const label = ({name, type, list, optional, enum: fenum}: Field, format?: string
     return `${prefix}Enter ${name} (${flags.join(', ')}):`;
 };
 
-const validate = (field: Field) => (value: string): string | boolean => {
-    if (value === '') {
-        if (field.optional) {
-            return true;
+const validate =
+    (field: Field) =>
+    (value: string): string | boolean => {
+        if (value === '') {
+            if (field.optional) {
+                return true;
+            }
+            return 'value is required';
         }
-        return 'value is required';
-    }
-    return pipe(
-        decodeStringValue(field, field.list ? value.split(',').map((v) => v.trim()) : value),
-        E.fold(
-            (e) => e.join(', '),
-            () => true as string | boolean
-        )
-    );
-};
+        return pipe(
+            decodeStringValue(field, field.list ? value.split(',').map((v) => v.trim()) : value),
+            E.fold(
+                (e) => e.join(', '),
+                () => true as string | boolean
+            )
+        );
+    };
 
-const parse = (field: Field) => (value: string): O.Option<FieldValue> => {
-    if (value === '' && field.optional) {
-        return O.none;
-    }
-    const parsed = decodeStringValue(field, field.list ? value.split(',').map((v) => v.trim()) : value);
-    assertRight(parsed);
-    return O.some(parsed.right);
-};
+const parse =
+    (field: Field) =>
+    (value: string): O.Option<FieldValue> => {
+        if (value === '' && field.optional) {
+            return O.none;
+        }
+        const parsed = decodeStringValue(field, field.list ? value.split(',').map((v) => v.trim()) : value);
+        assertRight(parsed);
+        return O.some(parsed.right);
+    };
 
 const askInputAndParse = (
     message: string,
@@ -128,9 +134,8 @@ const askMultiSelect = <T extends PrimitiveFieldValue>(
     message: string,
     choices: Array<Choice<T>>
 ): TE.TaskEither<string, O.Option<T[]>> =>
-    TE.taskEither.map(
-        ask<T[]>({type: 'checkbox', message, choices}),
-        (value) => (value.length === 0 ? O.none : O.some(value))
+    TE.taskEither.map(ask<T[]>({type: 'checkbox', message, choices}), (value) =>
+        value.length === 0 ? O.none : O.some(value)
     );
 
 const NoChoice: Choice<undefined> = {name: '[no value]', value: undefined};
