@@ -7,7 +7,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as E from 'fp-ts/lib/Either';
 import * as T from 'fp-ts/lib/Task';
 import {identity} from 'fp-ts/lib/function';
-import {createDirectoryOfFile, openInEditor, toRecord, writeFile} from '../fp/fp';
+import {createDirectoryOfFile, openInEditor, toRecord, writeFile, findUnusedFile} from '../fp/fp';
 import * as A from 'fp-ts/lib/Array';
 import {decodeStringHeader, encodeHeader} from '../note/convert';
 import {StringNoteValues} from '../note/note';
@@ -63,7 +63,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
             TE.chain((values) =>
                 pipe(
                     replacePlaceholders(values, config.fields, config.template.file),
-                    (file) => path.join(config.basedir, file),
+                    (file) => findUnusedFile(config.basedir, file),
                     TE.right,
                     TE.chainFirst(createDirectoryOfFile),
                     TE.chain((file) =>

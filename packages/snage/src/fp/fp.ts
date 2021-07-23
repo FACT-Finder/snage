@@ -75,6 +75,22 @@ export const merge = <V>(a: Record<string, V>, b: Record<string, V>): Record<str
     return R.getMonoid(First).concat(a, b);
 };
 
+export const findUnusedFile = (folder: string, fileName: string): string => {
+    if (!fs.existsSync(path.join(folder, fileName))) {
+        return path.join(folder, fileName);
+    }
+    const lastDot = fileName.lastIndexOf('.') === -1 ? fileName.length : fileName.lastIndexOf('.');
+    const prefix = fileName.substring(0, lastDot);
+    const suffix = fileName.substring(lastDot, fileName.length);
+
+    for (let i = 2; ; i++) {
+        const newFileName = `${prefix}${i}${suffix}`;
+        if (!fs.existsSync(path.join(folder, newFileName))) {
+            return path.join(folder, newFileName);
+        }
+    }
+};
+
 export const createDirectoryOfFile = (fileName: string): TE.TaskEither<string, void> => {
     const directory = path.dirname(fileName);
     return pipe(
