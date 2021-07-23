@@ -86,7 +86,7 @@ describe('sort', () => {
                     ['2.0.1', '2.0.0', '1.1.0', '1.12.5', '1.2.0'],
                     A.map((v) => semver.parse(v)),
                     A.sort(getFieldOrdering('semver')),
-                    A.map((v) => v.format())
+                    A.map((v) => v?.format())
                 )
             ).toStrictEqual(['1.1.0', '1.2.0', '1.12.5', '2.0.0', '2.0.1']);
         });
