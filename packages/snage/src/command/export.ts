@@ -4,7 +4,7 @@ import {getConfigOrExit} from '../config/load';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import * as A from 'fp-ts/lib/Array';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {exportToString} from '../note/export';
 import {parseNotes} from '../note/parser';
 import {filterNotes} from '../query/filter';

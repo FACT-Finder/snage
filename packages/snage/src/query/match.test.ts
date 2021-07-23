@@ -4,7 +4,7 @@ import semver from 'semver/preload';
 import {Field} from '../config/type';
 import {NoteValues, partialNote} from '../note/note';
 import {fold} from 'fp-ts/lib/Either';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {LocalDate} from '@js-joda/core';
 
 const fields: Field[] = [

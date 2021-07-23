@@ -2,7 +2,7 @@ import yargs from 'yargs';
 import {DefaultCli, printAndExit} from './common';
 import {getConfig} from '../config/load';
 import {parseNotes} from '../note/parser';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
 import * as A from 'fp-ts/lib/Array';

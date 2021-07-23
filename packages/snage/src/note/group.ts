@@ -1,7 +1,7 @@
 import {Config} from '../config/type';
 import {Note} from './note';
 import * as E from 'fp-ts/lib/Either';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import * as A from 'fp-ts/lib/Array';
 import {encodeStringValue} from './convert';
 

@@ -3,7 +3,7 @@ import {DefaultCli, printAndExit} from './common';
 import {getConfigOrExit} from '../config/load';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as T from 'fp-ts/lib/Task';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {parseNotes} from '../note/parser';
 import {filterNotes} from '../query/filter';
 

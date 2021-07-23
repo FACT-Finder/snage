@@ -5,7 +5,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
 import fs from 'fs';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import path from 'path';
 import {Config, CSS, CSSProvider, Field, hasProvider, LinkProvider, ProvidedField} from '../config/type';
 import {Note, NoteValues} from './note';

@@ -17,7 +17,7 @@ import * as E from 'fp-ts/lib/Either';
 import {Either, left, right} from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
 import * as O from 'fp-ts/lib/Option';
-import {pipe} from 'fp-ts/lib/pipeable';
+import {pipe} from 'fp-ts/lib/function';
 import {getValueProvider} from '../provider/provider';
 import {getOrdering} from '../query/sort';
 import {ConfigParameterName, printAndExit} from '../command/common';
