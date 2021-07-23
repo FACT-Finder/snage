@@ -1,10 +1,11 @@
 import React from 'react';
-import ReactMarkdown, {ReactMarkdownProps} from 'react-markdown';
+import ReactMarkdown, {ReactMarkdownOptions} from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {makeStyles} from '@material-ui/core/styles';
 import {Link} from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 import {getStateFromURL, NavigateNote} from './state';
+import {CodeComponent} from 'react-markdown/src/ast-to-react';
 
 const useStyles = makeStyles(
     (theme) => ({
@@ -25,17 +26,22 @@ const useStyles = makeStyles(
 export const Markdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => {
     const classes = useStyles();
     return (
-        <ReactMarkdown
-            source={content}
-            renderers={renderers(navigateNote)}
-            className={classes.root + ' markdown-body'}
-        />
+        <ReactMarkdown components={renderers(navigateNote)} className={classes.root + ' markdown-body'}>
+            {content}
+        </ReactMarkdown>
     );
 });
 
-const MarkdownCodeBlock: React.FC<{language?: string; value: string}> = ({value, language}) => (
-    <SyntaxHighlighter language={language}>{value}</SyntaxHighlighter>
-);
+const MarkdownCodeBlock: CodeComponent = ({node, inline, className, children, ...props}) => {
+    const match = /language-(\w+)/.exec(className || '');
+    return !inline && match ? (
+        <SyntaxHighlighter language={match[1]} PreTag="div" children={String(children).replace(/\n$/, '')} {...props} />
+    ) : (
+        <code className={className} {...props}>
+            {children}
+        </code>
+    );
+};
 
 const toNoteURL = (href: string): string => {
     const {query} = getStateFromURL(window.location.search);
@@ -85,8 +91,13 @@ const HeadingRenderer: React.FC<any> = ({level, children}) => {
     ]);
 };
 
-const renderers: (n: NavigateNote) => ReactMarkdownProps['renderers'] = (navigateNote) => ({
+const renderers: (n: NavigateNote) => ReactMarkdownOptions['components'] = (navigateNote) => ({
     code: MarkdownCodeBlock,
-    link: MarkdownLink(navigateNote),
-    heading: HeadingRenderer,
+    a: MarkdownLink(navigateNote),
+    h1: HeadingRenderer,
+    h2: HeadingRenderer,
+    h3: HeadingRenderer,
+    h4: HeadingRenderer,
+    h5: HeadingRenderer,
+    h6: HeadingRenderer,
 });
