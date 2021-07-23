@@ -69,7 +69,7 @@ const FieldChips: React.FC<FieldChipsProps> = ({fieldOrder, onChipClick, values,
                         size="small"
                         key={key}
                         style={{marginBottom: 5, marginRight: 5, ...valueStyles[key]}}
-                        label={key + '=' + value}
+                        label={key + '=' + value.toString()}
                         onClick={onChipClick(key, value)}
                     />
                 );

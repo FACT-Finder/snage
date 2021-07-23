@@ -33,9 +33,11 @@ export const Markdown = React.memo(({content, navigateNote}: {content: string; n
 });
 
 const MarkdownCodeBlock: CodeComponent = ({node, inline, className, children, ...props}) => {
-    const match = /language-(\w+)/.exec(className || '');
+    const match = /language-(\w+)/.exec(className ?? '');
     return !inline && match ? (
-        <SyntaxHighlighter language={match[1]} PreTag="div" children={String(children).replace(/\n$/, '')} {...props} />
+        <SyntaxHighlighter language={match[1]} PreTag="div" {...props}>
+            {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
     ) : (
         <code className={className} {...props}>
             {children}
@@ -48,34 +50,38 @@ const toNoteURL = (href: string): string => {
     return `/?q=${encodeURIComponent(query)}&n=${href}`;
 };
 
-const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> = (navigateNote) => (props) => {
-    const href = props?.href ?? '';
-    const isNoteLink =
-        !href.includes('://') && !href.startsWith('//') && !href.startsWith('/') && !href.startsWith('#');
+const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> =
+    (navigateNote) =>
+    ({href: nullableHref, ...props}) => {
+        const href = nullableHref ?? '';
+        const isNoteLink =
+            !href.includes('://') && !href.startsWith('//') && !href.startsWith('/') && !href.startsWith('#');
 
-    const hrefWithNote = isNoteLink ? toNoteURL(href) : href;
+        const hrefWithNote = isNoteLink ? toNoteURL(href) : href;
 
-    return (
-        <Link
-            {...props}
-            href={hrefWithNote}
-            onClick={(e) => {
-                e.stopPropagation();
-                if (isNoteLink) {
-                    e.preventDefault();
-                    navigateNote(href);
-                }
-            }}
-        />
-    );
-};
+        return (
+            <Link
+                {...props}
+                href={hrefWithNote}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (isNoteLink) {
+                        e.preventDefault();
+                        navigateNote(href);
+                    }
+                }}
+            />
+        );
+    };
 
 const flatten = (text, child): any =>
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
     typeof child === 'string' ? text + child : React.Children.toArray(child.props.children).reduce(flatten, text);
 
 const HeadingRenderer: React.FC<any> = ({level, children}) => {
     const text = children.reduce(flatten, '');
     const slug = text.toLowerCase().replace(/\W/g, '-');
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
     return React.createElement('h' + level, {id: slug}, [
         ...React.Children.toArray(children),
         <React.Fragment key="link">
