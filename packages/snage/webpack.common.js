@@ -13,7 +13,7 @@ const config = {
         __dirname: false,
     },
     plugins: [
-        new CopyWebpackPlugin([{from: '../ui/build', to: 'ui'}]),
+        new CopyWebpackPlugin({patterns: [{from: '../ui/build', to: 'ui'}]}),
         new webpack.BannerPlugin({banner: '#!/usr/bin/env node', raw: true}),
     ],
     resolve: {

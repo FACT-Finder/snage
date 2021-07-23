@@ -58,7 +58,6 @@
         "by": {"type": "string"},
         "arguments": { "type": "object" }
       },
-      "additionalItems": false,
       "required": ["by"]
     }
   },

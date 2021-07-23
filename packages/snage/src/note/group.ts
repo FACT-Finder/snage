@@ -15,22 +15,22 @@ export const groupByFieldNameMaybe = (
     return groupByFieldName(config, fieldName);
 };
 
-export const groupByFieldName = (config: Config, fieldName: string) => (
-    notes: Note[]
-): E.Either<string, Record<string, Note[]>> =>
-    pipe(
-        config.fields,
-        A.findFirst(({name}) => name === fieldName),
-        E.fromOption(() => `field ${fieldName} does not exist`),
-        E.filterOrElse(
-            (field) => !field.list,
-            () => `field ${fieldName} cannot be grouped because it is type list`
-        ),
-        E.map((field) =>
-            notes.reduce((grouped, note) => {
-                const value = note.values[field.name];
-                const key = value ? encodeStringValue(field.type, field, value).toString() : 'no value';
-                return {...grouped, [key]: [...(grouped[key] ?? []), note]};
-            }, {})
-        )
-    );
+export const groupByFieldName =
+    (config: Config, fieldName: string) =>
+    (notes: Note[]): E.Either<string, Record<string, Note[]>> =>
+        pipe(
+            config.fields,
+            A.findFirst(({name}) => name === fieldName),
+            E.fromOption(() => `field ${fieldName} does not exist`),
+            E.filterOrElse(
+                (field) => !field.list,
+                () => `field ${fieldName} cannot be grouped because it is type list`
+            ),
+            E.map((field) =>
+                notes.reduce((grouped, note) => {
+                    const value = note.values[field.name];
+                    const key = value ? encodeStringValue(field.type, field, value).toString() : 'no value';
+                    return {...grouped, [key]: [...(grouped[key] ?? []), note]};
+                }, {})
+            )
+        );

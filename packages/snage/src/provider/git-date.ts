@@ -13,10 +13,11 @@ import {ConvertField, decodeValue, stringEncodeHeader} from '../note/convert';
 export const providerFactory: ProviderFactory = (field: RawProvidedField): E.Either<string, ValueProvider> =>
     pipe(
         requireArgument(field, 'version-tag', 'string'),
-        E.map((versionTagTemplate: string) => (file: string, fields: Field[], values: NoteValues): TE.TaskEither<
-            string,
-            FieldValue | undefined
-        > => getDate(versionTagTemplate, file, fields, values, field))
+        E.map(
+            (versionTagTemplate: string) =>
+                (file: string, fields: Field[], values: NoteValues): TE.TaskEither<string, FieldValue | undefined> =>
+                    getDate(versionTagTemplate, file, fields, values, field)
+        )
     );
 
 const getDate = (
@@ -49,11 +50,11 @@ const getVersionTag = (versionTagTemplate: string, fields: Field[], values: Note
     }, O.some(versionTagTemplate));
 };
 
-const extractDate = (field: ConvertField, directory: string) => (
-    tag: string
-): TE.TaskEither<string, FieldValue | undefined> =>
-    pipe(
-        tryExec(`git log -1 --date=short --format=%cd ${tag}`, {cwd: directory}),
-        TE.map((date) => date.trim()),
-        TE.chainEitherK((date) => E.either.mapLeft(decodeValue(field, date), (errors) => errors.join('\n')))
-    );
+const extractDate =
+    (field: ConvertField, directory: string) =>
+    (tag: string): TE.TaskEither<string, FieldValue | undefined> =>
+        pipe(
+            tryExec(`git log -1 --date=short --format=%cd ${tag}`, {cwd: directory}),
+            TE.map((date) => date.trim()),
+            TE.chainEitherK((date) => E.either.mapLeft(decodeValue(field, date), (errors) => errors.join('\n')))
+        );

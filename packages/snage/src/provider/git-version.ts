@@ -11,8 +11,10 @@ import {decodeValue} from '../note/convert';
 export const providerFactory: ProviderFactory = (field: RawProvidedField): E.Either<string, ValueProvider> =>
     pipe(
         requireArgument(field, 'version-regex', 'string'),
-        E.map((versionRegex) => (file: string): TE.TaskEither<string, FieldValue | undefined> =>
-            getVersion(versionRegex, file, field)
+        E.map(
+            (versionRegex) =>
+                (file: string): TE.TaskEither<string, FieldValue | undefined> =>
+                    getVersion(versionRegex, file, field)
         )
     );
 

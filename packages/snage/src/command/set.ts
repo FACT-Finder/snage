@@ -124,22 +124,19 @@ const filterNotes = (condition: string | undefined, fields: Field[], notes: Note
         )
     );
 
-const setValue = (value: unknown, fieldName: string, fields: Field[]) => ({
-    file,
-    summary,
-    content,
-    valuesDocument,
-}: Note): FileResult => {
-    if (value === undefined) {
-        valuesDocument.delete(fieldName);
-    } else {
-        valuesDocument.set(fieldName, encodeValue(fields.find((field) => field.name === fieldName)!, value as any));
-    }
-    return {
-        file: file,
-        content: toYamlFromDocument(valuesDocument, summaryWithContent(summary, content)),
+const setValue =
+    (value: unknown, fieldName: string, fields: Field[]) =>
+    ({file, summary, content, valuesDocument}: Note): FileResult => {
+        if (value === undefined) {
+            valuesDocument.delete(fieldName);
+        } else {
+            valuesDocument.set(fieldName, encodeValue(fields.find((field) => field.name === fieldName)!, value as any));
+        }
+        return {
+            file: file,
+            content: toYamlFromDocument(valuesDocument, summaryWithContent(summary, content)),
+        };
     };
-};
 
 const writeNotes = (files: FileResult[]): T.Task<string[]> =>
     pipe(
@@ -156,17 +153,19 @@ const writeNote = (file: FileResult): TE.TaskEither<string, string> =>
         TE.map(() => `${file.file}`)
     );
 
-const reportResult = (result: E.Either<string, string>): IOE.IOEither<string, string> => () =>
-    pipe(
-        result,
-        E.bimap(
-            (error) => {
-                console.error(error);
-                return error;
-            },
-            (writtenFile) => {
-                console.log(writtenFile);
-                return writtenFile;
-            }
-        )
-    );
+const reportResult =
+    (result: E.Either<string, string>): IOE.IOEither<string, string> =>
+    () =>
+        pipe(
+            result,
+            E.bimap(
+                (error) => {
+                    console.error(error);
+                    return error;
+                },
+                (writtenFile) => {
+                    console.log(writtenFile);
+                    return writtenFile;
+                }
+            )
+        );

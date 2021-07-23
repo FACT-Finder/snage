@@ -18,16 +18,18 @@ const migrations: Record<string, Migration> = {
 /**
  * @throws if called with invalid schema version numbers
  */
-export const migrate = (from: number, to: number) => (yamlDoc: Document): Document => {
-    if (!(yamlDoc.contents instanceof YAMLMap)) {
-        throw new Error(`expected MAP, got ${yamlDoc.contents === null ? 'undefined' : yamlDoc.contents.type}`);
-    }
-    A.range(from, to - 1).reduce<YAMLMap>(
-        (c, version) => setVersion(version + 1, getMigration(version)(c)),
-        yamlDoc.contents as any
-    );
-    return yamlDoc;
-};
+export const migrate =
+    (from: number, to: number) =>
+    (yamlDoc: Document): Document => {
+        if (!(yamlDoc.contents instanceof YAMLMap)) {
+            throw new Error(`expected MAP, got ${yamlDoc.contents === null ? 'undefined' : yamlDoc.contents.type}`);
+        }
+        A.range(from, to - 1).reduce<YAMLMap>(
+            (c, version) => setVersion(version + 1, getMigration(version)(c)),
+            yamlDoc.contents as any
+        );
+        return yamlDoc;
+    };
 
 const setVersion = (to: number, contents: YAMLMap): YAMLMap => upsert(contents, 'version', new Pair('version', to), 0);
 
@@ -67,9 +69,7 @@ export const findIndex = (contents: YAMLMap, key: string): O.Option<number> => {
 const getMigration = (from: number): Migration =>
     pipe(
         R.lookup(from.toString(), migrations),
-        O.getOrElse(
-            (): Migration => {
-                throw new Error(`no migration from version ${from} found`);
-            }
-        )
+        O.getOrElse((): Migration => {
+            throw new Error(`no migration from version ${from} found`);
+        })
     );

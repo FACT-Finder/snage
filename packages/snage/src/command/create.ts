@@ -21,9 +21,7 @@ export const create: yargs.CommandModule<DefaultCli, DefaultCli> = {
     builder: (y) => {
         y.example('$0', 'create');
         y.example('$0', 'create --no-interactive --issue 12345');
-        y.boolean('editor')
-            .describe('editor', 'Open the created note inside your $EDITOR.')
-            .default('editor', true);
+        y.boolean('editor').describe('editor', 'Open the created note inside your $EDITOR.').default('editor', true);
         y.boolean('interactive')
             .describe('interactive', 'Ask for missing values interactively.')
             .default('interactive', true);

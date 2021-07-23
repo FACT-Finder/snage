@@ -36,15 +36,17 @@ export const fill: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fi
         )(),
 };
 
-export const fillInHeader = (fields: Field[], fieldNames: string[]) => (note: Note): Note => {
-    fieldNames.forEach((name) => {
-        const value = note.values[name];
-        if (value !== undefined) {
-            note.valuesDocument.set(name, encodeValue(fields.find((field) => field.name === name)!, value));
-        }
-    });
-    return note;
-};
+export const fillInHeader =
+    (fields: Field[], fieldNames: string[]) =>
+    (note: Note): Note => {
+        fieldNames.forEach((name) => {
+            const value = note.values[name];
+            if (value !== undefined) {
+                note.valuesDocument.set(name, encodeValue(fields.find((field) => field.name === name)!, value));
+            }
+        });
+        return note;
+    };
 
 export const canFill = (fieldNames: string[]) => (note: Note) =>
     fieldNames.some((name) => note.values[name] !== note.valuesDocument.get(name, false));
