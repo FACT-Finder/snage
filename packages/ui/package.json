@@ -4,26 +4,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.9.8",
-    "@material-ui/icons": "^4.9.1",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.11.2",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^13.2.0",
     "@types/axios": "^0.14.0",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "axios": "^0.19.2",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.4.1",
+    "@types/react": "^17.0.14",
+    "@types/react-dom": "^17.0.9",
+    "axios": "^0.21.1",
     "github-markdown-css": "^4.0.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-markdown": "^4.3.1",
-    "react-scripts": "3.4.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-markdown": "^6.0.2",
+    "react-scripts": "4.0.3",
     "react-syntax-highlighter": "^12.2.1",
-    "react-virtualized": "^9.22.2",
-    "typescript": "~3.7.2",
-    "use-debounce": "^3.4.2"
+    "react-virtualized": "^9.22.3",
+    "typescript": "~4.3.5",
+    "use-debounce": "^7.0.0"
   },
   "scripts": {
     "lint-check": "eslint -c \"../../eslint.yaml\" \"src/**/*.ts\" \"src/**/*.tsx\"",
@@ -53,9 +53,9 @@
     ]
   },
   "devDependencies": {
-    "@types/react-syntax-highlighter": "^11.0.4",
-    "@types/react-virtualized": "^9.21.10",
-    "prettier": "^2.0.5",
+    "@types/react-syntax-highlighter": "^13.5.2",
+    "@types/react-virtualized": "^9.21.12",
+    "prettier": "^2.3.2",
     "rimraf": "^3.0.2"
   }
 }
