@@ -137,14 +137,16 @@ date: 2020-05-20
 
 content
 `;
-        expect(parseRawNote(note, 'file')).toMatchObject({
-            file: 'file',
-            header: {
-                date: '2020-05-20',
-            },
-            summary: 'summary',
-            content: 'content',
-        });
+        expect(parseRawNote(note, 'file')).toMatchObject(
+            right({
+                file: 'file',
+                header: {
+                    date: '2020-05-20',
+                },
+                summary: 'summary',
+                content: 'content',
+            })
+        );
     });
     it('parses multiline content', () => {
         const note = `---
@@ -156,13 +158,27 @@ content
 
 content2
 `;
-        expect(parseRawNote(note, 'file')).toMatchObject({
-            file: 'file',
-            header: {
-                date: '2020-05-20',
-            },
-            summary: 'summary',
-            content: 'content\n\ncontent2',
-        });
+        expect(parseRawNote(note, 'file')).toMatchObject(
+            right({
+                file: 'file',
+                header: {
+                    date: '2020-05-20',
+                },
+                summary: 'summary',
+                content: 'content\n\ncontent2',
+            })
+        );
+    });
+    it('fails on invalid yaml (tab for indent)', () => {
+        const note = `---
+type: bugfix
+nested:
+	date: 2020-05-20
+---
+# summary
+`;
+        expect(parseRawNote(note, 'file')).toStrictEqual(
+            left('ParseError: YAMLSemanticError: Plain value cannot start with a tab character')
+        );
     });
 });

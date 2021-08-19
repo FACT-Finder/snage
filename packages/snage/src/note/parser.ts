@@ -1,17 +1,19 @@
-import * as TE from 'fp-ts/lib/TaskEither';
-import * as T from 'fp-ts/lib/Task';
-import * as E from 'fp-ts/lib/Either';
 import * as A from 'fp-ts/lib/Array';
-import * as R from 'fp-ts/lib/Record';
-import * as O from 'fp-ts/lib/Option';
-import fs from 'fs';
+import * as E from 'fp-ts/lib/Either';
 import {pipe} from 'fp-ts/lib/function';
+import * as O from 'fp-ts/lib/Option';
+import * as R from 'fp-ts/lib/Record';
+import * as T from 'fp-ts/lib/Task';
+import * as TE from 'fp-ts/lib/TaskEither';
+import fs from 'fs';
 import path from 'path';
-import {Config, CSS, CSSProvider, Field, hasProvider, LinkProvider, ProvidedField} from '../config/type';
-import {Note, NoteValues} from './note';
-import {readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
-import {decodeHeader} from './convert';
 import YAML from 'yaml';
+
+import {Config, CSS, CSSProvider, Field, hasProvider, LinkProvider, ProvidedField} from '../config/type';
+import {readdir, readFile, sequenceKeepAllLefts, toRecord} from '../fp/fp';
+
+import {decodeHeader} from './convert';
+import {Note, NoteValues} from './note';
 
 export const parseNotes = (config: Config): TE.TaskEither<string[], Note[]> =>
     pipe(
@@ -43,7 +45,7 @@ export const readNote = (
     pipe(
         readFile(fileName),
         TE.mapLeft((e) => [e]),
-        TE.map((content) => parseRawNote(content, fileName)),
+        TE.chainEitherK((content) => E.Bifunctor.mapLeft(parseRawNote(content, fileName), (err) => [err])),
         TE.chain(parseNote(fields, linkProvider, styleProvider)),
         TE.mapLeft((errors) => errors.map((error) => `${fileName}: ${error}`))
     );
@@ -85,17 +87,21 @@ export interface RawNote {
     content: string;
 }
 
-export const parseRawNote = (note: string, fileName: string): RawNote => {
+export const parseRawNote = (note: string, fileName: string): E.Either<string, RawNote> => {
     const [, head, ...content] = note.split('---');
     const [summary, ...body] = content.join('---').trim().split('\n\n');
 
-    return {
-        file: fileName,
-        header: YAML.parse(head),
-        headerDocument: YAML.parseDocument(head),
-        summary: summary.trim().replace(/^\s*#\s*/, ''),
-        content: body.join('\n\n'),
-    };
+    try {
+        return E.right({
+            file: fileName,
+            header: YAML.parse(head),
+            headerDocument: YAML.parseDocument(head),
+            summary: summary.trim().replace(/^\s*#\s*/, ''),
+            content: body.join('\n\n'),
+        });
+    } catch (e) {
+        return E.left(`ParseError: ${e?.toString() ?? 'unknown'}`);
+    }
 };
 
 export const parseNoteValues = (fields: Field[], rawNote: RawNote): TE.TaskEither<string[], Note> =>
