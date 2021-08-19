@@ -1,6 +1,7 @@
 import {YamlStringBuilder} from './yamlStringBuilder';
 import {parseRawNote} from '../note/parser';
 import {summaryWithContent} from '../note/tostring';
+import {assertRight} from '../fp/fp';
 
 describe('create yaml string', () => {
     const content = 'Did you ever hear the Tragedy of Darth Plagueis the Wise?';
@@ -23,7 +24,9 @@ describe('create yaml string', () => {
         .appendYamlPair(listKey, list)
         .appendContent(summaryWithContent(summary, content))
         .build();
-    const {content: parsedContent, summary: parsedSummary, header} = parseRawNote(builder, 'filename');
+    const note = parseRawNote(builder, 'filename');
+    assertRight(note);
+    const {content: parsedContent, summary: parsedSummary, header} = note.right;
     it('file has expected content', () => {
         expect(parsedContent).toEqual(content);
         expect(parsedSummary).toEqual(summary);
