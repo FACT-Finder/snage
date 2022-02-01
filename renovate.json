@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "rangeStrategy": "pin",
+  "groupName": "all",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "on the 14 day of the month"
+    ],
+    "groupName": "all-lock"
+  },
+  "schedule": [
+    "on the 1 day of the month"
+  ]
+}
