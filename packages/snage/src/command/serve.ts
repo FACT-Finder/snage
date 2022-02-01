@@ -118,7 +118,7 @@ export const startExpress =
         app.use(express.static(path.join(__dirname, 'ui')));
         app.get('/metrics', (req, res) => {
             res.set('Content-Type', register.contentType);
-            res.end(register.metrics());
+            register.metrics().then((metrics) => res.send(metrics));
         });
         app.listen(port, () => console.log(`Listening on ${port}`));
 
