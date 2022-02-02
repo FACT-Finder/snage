@@ -31,7 +31,6 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "postbuild": "rimraf build/**/*.map",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --config \"../../prettier.config.js\" \"src/**/*.{ts,tsx}\" --write",
     "format-check": "prettier --config \"../../prettier.config.js\" \"src/**/*.{ts,tsx}\" --list-different"
