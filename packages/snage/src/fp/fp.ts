@@ -46,8 +46,10 @@ export const readdir = (directory: string): TE.TaskEither<string, string[]> =>
 
 export const readFile = (fileName: string): TE.TaskEither<string, string> =>
     pipe(
-        TE.taskify<string, string, NodeJS.ErrnoException, string>(fs.readFile)(fileName, 'utf8'),
-        TE.mapLeft((e: NodeJS.ErrnoException): string => `Could not read file ${fileName}: ${e}`)
+        TE.taskify<string, {encoding: 'utf8'}, NodeJS.ErrnoException | null, string>(fs.readFile)(fileName, {
+            encoding: 'utf8',
+        }),
+        TE.mapLeft((e: NodeJS.ErrnoException | null): string => `Could not read file ${fileName}: ${e}`)
     );
 
 export const readFileSync = (fileName: string): IOE.IOEither<string, string> =>
