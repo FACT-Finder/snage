@@ -16,9 +16,16 @@ const useStyles = makeStyles(
                 fontSize: '1.8em',
                 borderBottom: 0,
             },
+            '& pre': {
+                background: 'rgb(245, 242, 240)',
+            },
             '& a, & a code': {
                 color: theme.palette.primary.main,
             },
+        },
+        code: {
+            padding: '0 !important',
+            margin: '0 !important',
         },
     }),
     {name: 'Markdown'}
@@ -34,9 +41,10 @@ export const Markdown = React.memo(({content, navigateNote}: {content: string; n
 });
 
 const MarkdownCodeBlock: CodeComponent = ({node, inline, className, children, ...props}) => {
+    const classes = useStyles();
     const match = /language-(\w+)/.exec(className ?? '');
     return !inline && match ? (
-        <SyntaxHighlighter language={match[1]} PreTag="div" {...props}>
+        <SyntaxHighlighter className={classes.code} language={match[1]} PreTag="div" {...props}>
             {String(children).replace(/\n$/, '')}
         </SyntaxHighlighter>
     ) : (
