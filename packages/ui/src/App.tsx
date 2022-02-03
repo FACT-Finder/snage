@@ -160,7 +160,8 @@ const Search: React.FC<SearchProps> = ({query, setQuery, error, groupByFields}) 
                 open={!!error}
                 placement="bottom-start"
                 arrow={true}
-                title={error ? <ErrorTooltipBody error={error} /> : ''}>
+                title={error ? <ErrorTooltipBody error={error} /> : ''}
+            >
                 <TextField
                     type="text"
                     error={!!error}
@@ -185,7 +186,8 @@ const Search: React.FC<SearchProps> = ({query, setQuery, error, groupByFields}) 
                                     href="https://snage.dev/query"
                                     target="_blank"
                                     rel="noreferrer noopener"
-                                    size="small">
+                                    size="small"
+                                >
                                     <HelpIcon />
                                 </IconButton>
                                 <Tooltip title="Export">

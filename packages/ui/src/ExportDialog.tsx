@@ -88,7 +88,8 @@ export const ExportDialog = ({
                     href={href}
                     onClick={() => setOpen(false)}
                     target="_blank"
-                    rel="noreferrer noopener">
+                    rel="noreferrer noopener"
+                >
                     Export
                 </Button>
             </DialogActions>
