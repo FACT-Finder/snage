@@ -5,8 +5,6 @@ extends:
   - plugin:@typescript-eslint/recommended
   - plugin:@typescript-eslint/recommended-requiring-type-checking
   - plugin:react/recommended
-  - plugin:import/errors
-  - plugin:import/typescript
   - plugin:promise/recommended
   - plugin:jest/recommended
   - prettier
@@ -21,7 +19,6 @@ parserOptions:
 plugins:
   - "@typescript-eslint"
   - react
-  - import
   - unicorn
 settings:
   react:
@@ -32,13 +29,6 @@ rules:
   default-param-last: error
   no-loop-func: off
   arrow-body-style: [error, as-needed]
-
-  import/no-useless-path-segments: error
-  import/group-exports: off
-  import/extensions: [error, never]
-  import/no-duplicates: error
-  import/first: error
-  import/no-unused-modules: error
 
   unicorn/no-abusive-eslint-disable: error
   unicorn/no-array-instanceof: error
@@ -102,8 +92,6 @@ rules:
   "@typescript-eslint/no-non-null-assertion": off #we assert values because a lot of ff id's are optional, even though, they really aren't
   "@typescript-eslint/camelcase": off #we use _ in some of our variables and attributes
   "promise/catch-or-return": off #conflicts with handleApiError function that is used for error toasts
-  "import/no-unassigned-import": off #stuff in index.tsx, react-dates imports are unassigned
-  "import/no-default-export": off #only needed for forked TreeView, can be reenabled after using TreeView from material-ui
   "@typescript-eslint/ban-ts-ignore": off
   "no-case-declarations": off #case with {} just isn't good
 
