@@ -1,8 +1,8 @@
 import React from 'react';
 import {ApiNote} from '../../shared/type';
 import {Markdown} from './Markdown';
-import Chip from '@material-ui/core/Chip';
-import {Link, Paper, Typography} from '@material-ui/core';
+import Chip from '@mui/material/Chip';
+import {Link, Paper, Typography} from '@mui/material';
 import {NavigateNote} from './state';
 
 type ChipClick = (key: string, value: string | string[]) => (e: React.MouseEvent) => void;

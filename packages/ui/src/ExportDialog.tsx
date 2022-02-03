@@ -14,7 +14,7 @@ import {
     FormControl,
     MenuItem,
     InputLabel,
-} from '@material-ui/core';
+} from '@mui/material';
 
 export const ExportDialog = ({
     query,
@@ -66,8 +66,12 @@ export const ExportDialog = ({
                     />
                 </FormGroup>
                 <FormControl fullWidth>
-                    <InputLabel>Group By</InputLabel>
-                    <Select value={groupBy} onChange={({target: {value}}) => setGroupBy(value as string)}>
+                    <InputLabel id="group-by-label">Group By</InputLabel>
+                    <Select
+                        labelId="group-by-label"
+                        value={groupBy}
+                        onChange={({target: {value}}) => setGroupBy(value)}
+                    >
                         <MenuItem value="">
                             <em>None</em>
                         </MenuItem>

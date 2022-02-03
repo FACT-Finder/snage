@@ -2,10 +2,10 @@ import React from 'react';
 import './App.css';
 import {ApiNote, ApiParseError} from '../../shared/type';
 import axios, {AxiosError} from 'axios';
-import {Backdrop, ClickAwayListener, IconButton, InputAdornment, Paper, TextField, Tooltip} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import HelpIcon from '@material-ui/icons/Help';
-import Export from '@material-ui/icons/FileCopy';
+import {Backdrop, ClickAwayListener, IconButton, InputAdornment, Paper, TextField, Tooltip} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import HelpIcon from '@mui/icons-material/Help';
+import Export from '@mui/icons-material/FileCopy';
 import {ExportDialog} from './ExportDialog';
 import {ErrorTooltip, ErrorTooltipBody} from './ErrorTooltip';
 import {FullNote, SummaryNote} from './Note';
@@ -159,7 +159,6 @@ const Search: React.FC<SearchProps> = ({query, setQuery, error, groupByFields}) 
             <ErrorTooltip
                 open={!!error}
                 placement="bottom-start"
-                arrow={true}
                 title={error ? <ErrorTooltipBody error={error} /> : ''}
             >
                 <TextField

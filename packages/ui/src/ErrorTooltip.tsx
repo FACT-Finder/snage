@@ -1,7 +1,8 @@
 import React from 'react';
 import {ApiParseError} from '../../shared/type';
-import {Box, Tooltip, Typography, withStyles} from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
+import {Box, Tooltip, Typography} from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 export const ErrorTooltipBody = ({
     error: {index, expected, query},
@@ -53,13 +54,9 @@ export const ErrorTooltip = withStyles((theme) => ({
         backgroundColor: 'transparant',
         boxShadow: theme.shadows[3],
         fontSize: 11,
-        maxWidth: 450,
-        padding: 0,
+        maxWidth: '450 !important',
+        padding: '0 !important',
         pointerEvents: 'all !important' as 'all',
-    },
-    arrow: {
-        color: '#e74c3c',
-        left: 'calc(25% - 2em) !important',
     },
 }))(Tooltip);
 
