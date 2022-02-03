@@ -81,7 +81,8 @@ const FieldChips: React.FC<FieldChipsProps> = ({fieldOrder, onChipClick, values,
                 href={href}
                 target="_blank"
                 rel="noreferrer noopener"
-                onClick={(e) => e.stopPropagation()}>
+                onClick={(e) => e.stopPropagation()}
+            >
                 {label}
             </Link>
         ))}
@@ -106,7 +107,8 @@ export const SummaryNote = React.memo(
         return (
             <Paper
                 style={{...style, cursor: 'pointer', padding: 10, paddingLeft: 20, margin: 5}}
-                onClick={() => selectNote(entry)}>
+                onClick={() => selectNote(entry)}
+            >
                 <Markdown content={'# ' + summary} navigateNote={navigateNote} />
                 <FieldChips
                     fieldOrder={fieldOrder}
