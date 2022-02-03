@@ -70,7 +70,7 @@ export const startExpress =
         app.get('/note', ({query: {query}}, res) => {
             const endTimer = startRequestTimer('note');
             pipe(
-                parser(query),
+                parser(query as string),
                 filterNotes(config, notes),
                 E.map(A.sort(config.standard.sort)),
                 E.map(A.map((note) => convertToApiNote(note, config.fields))),
@@ -94,11 +94,14 @@ export const startExpress =
         app.get('/export', ({query: {query, tags = 'true', groupBy}}, res) => {
             const endTimer = startRequestTimer('export');
             pipe(
-                parser(query),
+                parser(query as string),
                 filterNotes(config, notes),
                 E.map(A.sort(config.standard.sort)),
                 E.chain((notes) =>
-                    E.either.mapLeft(groupByFieldNameMaybe(config, groupBy)(notes), (e) => ({status: 400, body: e}))
+                    E.either.mapLeft(groupByFieldNameMaybe(config, groupBy as string | undefined)(notes), (e) => ({
+                        status: 400,
+                        body: e,
+                    }))
                 ),
                 E.map((notes) => exportToString(notes, config.fields, {tags: tags === 'true'})),
                 E.fold(identity, (notes): Response => ({status: 200, body: notes})),
