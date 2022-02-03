@@ -1,11 +1,12 @@
 import React from 'react';
-import ReactMarkdown, {ReactMarkdownOptions} from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {makeStyles} from '@material-ui/core/styles';
 import {Link} from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 import {getStateFromURL, NavigateNote} from './state';
-import {CodeComponent} from 'react-markdown/src/ast-to-react';
+import {CodeComponent} from 'react-markdown/lib/ast-to-react';
+import {ReactMarkdownOptions} from 'react-markdown/lib/react-markdown';
 
 const useStyles = makeStyles(
     (theme) => ({
