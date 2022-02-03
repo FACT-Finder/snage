@@ -9,6 +9,14 @@
     ],
     "groupName": "all-lock"
   },
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "copy-webpack-plugin"
+      ],
+      "allowedVersions": "<=9.1.0"
+    }
+  ],
   "schedule": [
     "on the 1 day of the month"
   ]
