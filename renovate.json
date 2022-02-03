@@ -15,6 +15,12 @@
         "copy-webpack-plugin"
       ],
       "allowedVersions": "<=9.1.0"
+    },
+    {
+      "matchPackageNames": [
+        "env-editor"
+      ],
+      "allowedVersions": "<=0.5.0"
     }
   ],
   "schedule": [
