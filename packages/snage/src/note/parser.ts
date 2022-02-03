@@ -99,7 +99,7 @@ export const parseRawNote = (note: string, fileName: string): E.Either<string, R
             summary: summary.trim().replace(/^\s*#\s*/, ''),
             content: body.join('\n\n'),
         });
-    } catch (e) {
+    } catch (e: any) {
         return E.left(`ParseError: ${e?.toString() ?? 'unknown'}`);
     }
 };
