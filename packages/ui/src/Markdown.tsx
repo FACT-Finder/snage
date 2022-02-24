@@ -4,6 +4,7 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import makeStyles from '@mui/styles/makeStyles';
 import {Link, Theme} from '@mui/material';
 import LinkIcon from '@mui/icons-material/Link';
+import remarkGfm from 'remark-gfm';
 import {getStateFromURL, NavigateNote} from './state';
 import {CodeComponent} from 'react-markdown/lib/ast-to-react';
 import {ReactMarkdownOptions} from 'react-markdown/lib/react-markdown';
@@ -34,7 +35,11 @@ const useStyles = makeStyles(
 export const Markdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => {
     const classes = useStyles();
     return (
-        <ReactMarkdown components={renderers(navigateNote)} className={classes.root + ' markdown-body'}>
+        <ReactMarkdown
+            components={renderers(navigateNote)}
+            remarkPlugins={[remarkGfm]}
+            className={classes.root + ' markdown-body'}
+        >
             {content}
         </ReactMarkdown>
     );
