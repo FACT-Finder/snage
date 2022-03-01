@@ -24,7 +24,7 @@
     "eslint-plugin-jest": "26.0.0",
     "eslint-plugin-promise": "6.0.0",
     "eslint-plugin-react-hooks": "4.3.0",
-    "eslint-plugin-unicorn": "40.1.0",
+    "eslint-plugin-unicorn": "41.0.0",
     "lerna": "4.0.0"
   }
 }
