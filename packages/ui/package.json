@@ -58,7 +58,7 @@
   "devDependencies": {
     "@types/react-syntax-highlighter": "13.5.2",
     "@types/react-virtualized": "9.21.20",
-    "prettier": "2.6.1",
+    "prettier": "2.6.2",
     "rimraf": "3.0.2"
   }
 }
