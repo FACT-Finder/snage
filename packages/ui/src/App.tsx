@@ -36,7 +36,7 @@ const App: React.FC = () => {
                 .catch((error: AxiosError) => {
                     const data = error.response?.data;
                     if (data && error.response?.status === 400) {
-                        setEntries((current) => ({...current, error: {...data, query}}));
+                        setEntries((current) => ({...current, error: {...(data as ApiParseError), query}}));
                     }
                 });
         },
