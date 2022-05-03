@@ -21,6 +21,13 @@
         "env-editor"
       ],
       "allowedVersions": "<=0.5.0"
+    },
+    {
+      "matchPackageNames": [
+        "jest",
+        "@types/jest"
+      ],
+      "allowedVersions": "<=17"
     }
   ],
   "schedule": [
