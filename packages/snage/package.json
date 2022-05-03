@@ -31,7 +31,7 @@
     "semver": "7.3.7",
     "string-similarity": "4.0.4",
     "winston": "3.7.2",
-    "yaml": "1.10.2",
+    "yaml": "2.0.1",
     "yargs": "17.4.1"
   },
   "devDependencies": {
@@ -52,7 +52,7 @@
     "copy-webpack-plugin": "9.1.0",
     "env-editor": "0.5.0",
     "get-port": "6.1.2",
-    "jest": "27.5.1",
+    "jest": "28.0.3",
     "jest-junit": "13.2.0",
     "lerna": "4.0.0",
     "nock": "13.2.4",
