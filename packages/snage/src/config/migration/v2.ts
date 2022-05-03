@@ -1,6 +1,5 @@
 import {insertBefore, Migration, upsert} from '../migrate';
-import {Pair, YAMLMap} from 'yaml/types';
-import {createNode} from 'yaml';
+import {Pair, Document, YAMLMap} from 'yaml';
 
 export const migrateV2: Migration = (config) => {
     const links = config.get('links', true);
@@ -11,9 +10,9 @@ export const migrateV2: Migration = (config) => {
     const template: any = typeof text !== 'undefined' ? {file, text} : {file};
 
     insertBefore(config, 'note', new Pair('basedir', basedir));
-    insertBefore(config, 'note', new Pair('template', createNode(template)));
+    insertBefore(config, 'note', new Pair('template', new Document(template)));
     if (typeof links !== 'undefined') {
-        upsert(config, 'note', new Pair('note', createNode({links})));
+        upsert(config, 'note', new Pair('note', new Document({links})));
     } else {
         config.delete('note');
     }
