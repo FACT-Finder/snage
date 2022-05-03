@@ -178,7 +178,12 @@ nested:
 # summary
 `;
         expect(parseRawNote(note, 'file')).toStrictEqual(
-            left('ParseError: YAMLSemanticError: Plain value cannot start with a tab character')
+            left(`ParseError: YAMLParseError: Tabs are not allowed as indentation at line 4, column 1:
+
+nested:
+	date: 2020-05-20
+^
+`)
         );
     });
 });

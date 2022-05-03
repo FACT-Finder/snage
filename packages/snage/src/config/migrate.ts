@@ -3,8 +3,7 @@ import * as A from 'fp-ts/lib/Array';
 import * as R from 'fp-ts/lib/Record';
 import * as O from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/function';
-import {Document} from 'yaml';
-import {Pair, YAMLMap} from 'yaml/types';
+import {Document, YAMLMap, Pair} from 'yaml';
 import {findPair} from 'yaml/util';
 import {migrateV2} from './migration/v2';
 
@@ -22,7 +21,7 @@ export const migrate =
     (from: number, to: number) =>
     (yamlDoc: Document): Document => {
         if (!(yamlDoc.contents instanceof YAMLMap)) {
-            throw new Error(`expected MAP, got ${yamlDoc.contents === null ? 'undefined' : yamlDoc.contents.type}`);
+            throw new Error(`expected MAP, got ${yamlDoc.contents === null ? 'undefined' : yamlDoc.contents}`);
         }
         if (from < to) {
             A.range(from, to - 1).reduce<YAMLMap>(
@@ -64,7 +63,7 @@ export const insertBefore = (contents: YAMLMap, key: string, pair: Pair): void =
 };
 
 export const findIndex = (contents: YAMLMap, key: string): O.Option<number> => {
-    const index = contents.items.findIndex((item) => item.key && (item.key === key || item.key.value === key));
+    const index = contents.items.findIndex((item) => item.key === key);
     return index === -1 ? O.none : O.some(index);
 };
 

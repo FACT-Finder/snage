@@ -1,15 +1,15 @@
 import YAML from 'yaml';
-import {YAMLMap} from 'yaml/types';
 import {YamlFieldValue} from '../note/note';
 
 export class YamlStringBuilder {
     content: string[];
-    header: YAMLMap;
+    header: YAML.YAMLMap;
     comments: string[];
 
     constructor() {
         this.content = [];
-        this.header = YAML.createNode({}) as YAMLMap;
+        this.header = new YAML.Document().createNode({}) as YAML.YAMLMap;
+
         this.comments = [];
     }
 
@@ -19,8 +19,7 @@ export class YamlStringBuilder {
     }
 
     appendYamlPair(key: string, value: YamlFieldValue): YamlStringBuilder {
-        const node = YAML.createNode(key);
-        this.header.set(node, value);
+        this.header.set(key, value);
         return this;
     }
 
