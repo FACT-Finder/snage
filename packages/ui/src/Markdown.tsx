@@ -45,7 +45,7 @@ export const Markdown = React.memo(({content, navigateNote}: {content: string; n
     );
 });
 
-const MarkdownCodeBlock: CodeComponent = ({node, inline, className, children, ...props}) => {
+const MarkdownCodeBlock: CodeComponent = ({node, inline, className, children, style: _ignored, ...props}) => {
     const classes = useStyles();
     const match = /language-(\w+)/.exec(className ?? '');
     return !inline && match ? (
