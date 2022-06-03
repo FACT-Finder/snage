@@ -22,7 +22,7 @@
     "eslint-plugin-promise": "6.0.0",
     "eslint-plugin-react-hooks": "4.5.0",
     "eslint-plugin-unicorn": "42.0.0",
-    "lerna": "4.0.0"
+    "lerna": "5.0.0"
   },
   "resolutions": {
     "@types/react": "18.0.10",
