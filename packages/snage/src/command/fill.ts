@@ -20,7 +20,7 @@ export const fill: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fi
             .string('on')
             .example('$0', 'fill version')
             .positional('field', {type: 'string', describe: 'The field name', array: true}) as any,
-    handler: async ({field: fieldNames}) =>
+    handler: async ({field: fieldNames}) => {
         await pipe(
             TE.fromEither(getConfig()),
             TE.chain((config) =>
@@ -33,7 +33,8 @@ export const fill: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fi
                 )
             ),
             TE.mapLeft(T.fromIOK(printAndExit))
-        )(),
+        )();
+    },
 };
 
 export const fillInHeader =
