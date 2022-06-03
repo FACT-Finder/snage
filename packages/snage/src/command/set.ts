@@ -46,8 +46,8 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
                 type: 'string',
                 describe: 'The field values (Empty if unset)',
             }) as any,
-    handler: async ({field: fieldName, value: stringValue, on}) =>
-        pipe(
+    handler: async ({field: fieldName, value: stringValue, on}) => {
+        await pipe(
             TE.fromEither(getConfig()),
             TE.chain((config) =>
                 pipe(
@@ -65,7 +65,8 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
                 )
             ),
             TE.fold(T.fromIOK(printAndExit), writeNotes)
-        )(),
+        )();
+    },
 };
 
 const parseValue = (
