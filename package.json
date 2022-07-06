@@ -21,7 +21,7 @@
     "eslint-plugin-jest": "26.4.6",
     "eslint-plugin-promise": "6.0.0",
     "eslint-plugin-react-hooks": "4.5.0",
-    "eslint-plugin-unicorn": "42.0.0",
+    "eslint-plugin-unicorn": "43.0.0",
     "lerna": "5.0.0"
   },
   "resolutions": {
