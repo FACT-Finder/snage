@@ -4,13 +4,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "11.9.3",
-    "@emotion/styled": "11.9.3",
+    "@emotion/react": "11.10.0",
+    "@emotion/styled": "11.10.0",
     "@mui/icons-material": "5.8.4",
-    "@mui/material": "5.8.7",
-    "@mui/styles": "5.8.7",
+    "@mui/material": "5.9.2",
+    "@mui/styles": "5.9.2",
     "@types/axios": "0.14.0",
-    "@types/node": "18.0.3",
+    "@types/node": "18.6.3",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
     "axios": "0.27.2",
@@ -23,7 +23,7 @@
     "react-virtualized": "9.22.3",
     "remark-gfm": "3.0.1",
     "typescript": "4.7.4",
-    "use-debounce": "8.0.1"
+    "use-debounce": "8.0.3"
   },
   "scripts": {
     "lint-check": "eslint -c \"../../eslint.yaml\" \"src/**/*.ts\" \"src/**/*.tsx\"",
@@ -52,7 +52,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-syntax-highlighter": "15.5.2",
+    "@types/react-syntax-highlighter": "15.5.4",
     "@types/react-virtualized": "9.21.21",
     "prettier": "2.7.1",
     "rimraf": "3.0.2"
