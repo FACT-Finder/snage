@@ -29,6 +29,7 @@ rules:
   default-param-last: error
   no-loop-func: off
   arrow-body-style: [error, as-needed]
+  no-constant-condition: off
 
   unicorn/no-abusive-eslint-disable: error
   unicorn/no-array-instanceof: error

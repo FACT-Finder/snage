@@ -25,7 +25,6 @@ const getVersion = (
 ): TE.TaskEither<string, FieldValue | undefined> =>
     pipe(
         getFirstTagContainingFile(file, versionRegex),
-        TE.map(O.map((tag) => extractVersion(tag, versionRegex))),
         TE.mapLeft((error): string => `provider error on field '${field.name}': ${error}`),
         TE.chainEitherK(
             O.fold(
@@ -58,14 +57,31 @@ const fetchCommit = (directory: string, filename: string): TE.TaskEither<string,
         TE.map(O.fromPredicate((commit) => typeof commit !== 'undefined' && commit !== ''))
     );
 
-const getTag = (directory: string, commit: string, versionRegex: string): TE.TaskEither<string, O.Option<string>> =>
-    pipe(
-        tryExec(`git name-rev --tags --name-only "${commit}"`, {cwd: directory}),
-        TE.map((tag) => tag.trim()),
-        TE.map(O.fromPredicate((tag) => typeof tag !== 'undefined' && tag !== '' && tag !== 'undefined')),
-        TE.map(O.map((rawTag) => rawTag.replace(/[~^].*/, ''))),
-        TE.map(O.filter((tag) => RegExp(versionRegex).test(tag)))
-    );
+const getTag =
+    (directory: string, commit: string, versionRegex: string): TE.TaskEither<string, O.Option<string>> =>
+    async (): Promise<E.Either<string, O.Option<string>>> => {
+        const excludes: string[] = [];
+        while (true) {
+            const result = await pipe(
+                tryExec(`git name-rev --tags ${excludes.join(' ')} --name-only "${commit}"`, {cwd: directory}),
+                TE.map((tag) => tag.trim())
+            )();
 
-const extractVersion = (tag: string, versionRegex: string): string =>
-    tag.replace(RegExp(versionRegex), (match, version) => version);
+            if (E.isLeft(result)) {
+                return result;
+            }
+            const rawTag = result.right;
+            // name-rev returns the string undefined when there are no tags left
+            if (typeof rawTag === 'undefined' || rawTag === '' || rawTag === 'undefined') {
+                return E.right(O.none);
+            }
+            const tag = rawTag.replace(/[~^].*/, '');
+            if (tag) {
+                const match = RegExp(versionRegex).exec(tag);
+                if (match) {
+                    return E.right(O.some(match[1]));
+                }
+                excludes.push(`--exclude ${tag}`);
+            }
+        }
+    };
