@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
      <loc>https://snage.dev/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/install/arch/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/install/docker/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/install/npm/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/install/yarn/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/config/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/note/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/query/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/cmd/serve/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/cmd/create/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/cmd/lint/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/cmd/set/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/cmd/find/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/cmd/migrate/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/dev/setup/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://snage.dev/dev/build/</loc>
-     <lastmod>2022-08-16</lastmod>
+     <lastmod>2022-09-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
