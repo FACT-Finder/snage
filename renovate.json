@@ -21,6 +21,12 @@
         "env-editor"
       ],
       "allowedVersions": "<=0.5.0"
+    },
+    {
+      "matchPackageNames": [
+        "@types/inquirer"
+      ],
+      "allowedVersions": "=8"
     }
   ],
   "schedule": [
