@@ -22,7 +22,7 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn docs build
       - run: yarn lerna run test
-      - uses: codecov/codecov-action@v3.1.0
+      - uses: codecov/codecov-action@v3.1.1
       - run: yarn lerna run format-check
       - run: yarn lerna run lint-check
       - run: yarn lerna run build
