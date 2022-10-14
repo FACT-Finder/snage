@@ -1839,9 +1839,9 @@
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
 "@jridgewell/trace-mapping@^0.3.12", "@jridgewell/trace-mapping@^0.3.14", "@jridgewell/trace-mapping@^0.3.15", "@jridgewell/trace-mapping@^0.3.9":
-  version "0.3.16"
-  resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.16.tgz#a7982f16c18cae02be36274365433e5b49d7b23f"
-  integrity sha512-LCQ+NeThyJ4k1W2d+vIKdxuSt9R3pQSZ4P92m7EakaYuXcVWbHuT5bjNcqLd4Rdgi6xYWYDvBJZJLZSLanjDcA==
+  version "0.3.17"
+  resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.17.tgz#793041277af9073b0951a7fe0f0d8c4c98c36985"
+  integrity sha512-MCNzAp77qzKca9+W/+I0+sEpaUnZoeasnghNeVc41VZCEKaCH73Vq3BZZ/SzWIgrqE4H4ceI+p+b6C0mHf9T4g==
   dependencies:
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
@@ -5514,9 +5514,9 @@ css-what@^6.0.1:
   integrity sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==
 
 cssdb@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/cssdb/-/cssdb-7.0.1.tgz#3810a0c67ae06362982dfe965dbedf57a0f26617"
-  integrity sha512-pT3nzyGM78poCKLAEy2zWIVX2hikq6dIrjuZzLV98MumBg+xMTNYfHx7paUlfiRTgg91O/vR889CIf+qiv79Rw==
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/cssdb/-/cssdb-7.0.2.tgz#e1cadfe2be318797bd02ca929d2b3c7bac332abc"
+  integrity sha512-Vm4b6P/PifADu0a76H0DKRNVWq3Rq9xa/Nx6oEMUBJlwTUuZoZ3dkZxo8Gob3UEL53Cq+Ma1GBgISed6XEBs3w==
 
 cssesc@^3.0.0:
   version "3.0.0"
