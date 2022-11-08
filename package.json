@@ -18,14 +18,14 @@
   },
   "devDependencies": {
     "eslint-config-prettier": "8.5.0",
-    "eslint-plugin-jest": "27.1.0",
-    "eslint-plugin-promise": "6.0.1",
+    "eslint-plugin-jest": "27.1.4",
+    "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-react-hooks": "4.6.0",
-    "eslint-plugin-unicorn": "44.0.1",
+    "eslint-plugin-unicorn": "44.0.2",
     "lerna": "6.0.3"
   },
   "resolutions": {
-    "@types/react": "18.0.21",
-    "@types/react-dom": "18.0.6"
+    "@types/react": "18.0.25",
+    "@types/react-dom": "18.0.8"
   }
 }
