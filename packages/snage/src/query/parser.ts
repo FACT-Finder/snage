@@ -22,7 +22,7 @@ export type SingleExpression = {
 };
 export const StatusOP = '__status__' as const;
 const compareOperators = ['=', '<=', '>=', '!=', '<', '>'] as const;
-export type CompareOperator = typeof compareOperators[number];
+export type CompareOperator = (typeof compareOperators)[number];
 export type Operator = CompareOperator | '~' | '~~' | typeof StatusOP;
 
 export const isCompareOperator = (op: Operator): op is CompareOperator =>
