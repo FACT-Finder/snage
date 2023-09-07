@@ -52,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@types/react-syntax-highlighter": "15.5.7",
     "@types/react-virtualized": "9.21.22",
     "prettier": "2.8.8",
