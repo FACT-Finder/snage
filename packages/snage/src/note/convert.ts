@@ -92,7 +92,7 @@ const getSingletonStringType = <Type extends FieldType>(type: Type, field: Conve
         semver: semverType,
         ffversion: ffversionType,
         string: stringType(field),
-    }[type]);
+    })[type];
 
 const getSingletonType = <Type extends FieldType>(type: Type, field: ConvertField): IOType[Type] =>
     ({
@@ -102,7 +102,7 @@ const getSingletonType = <Type extends FieldType>(type: Type, field: ConvertFiel
         semver: semverType,
         ffversion: ffversionType,
         string: stringType(field),
-    }[type]);
+    })[type];
 
 const number = new t.Type<number, number, unknown>(
     'number',
