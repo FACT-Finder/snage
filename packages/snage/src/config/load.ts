@@ -162,7 +162,7 @@ const createStyleProvider = (
             E.either.bimap(
                 parser(on),
                 (e) => `Invalid expression "${on}" ${JSON.stringify(e)}`,
-                (expression) => ({matcher: createMatcher(expression, fields), css} as const)
+                (expression) => ({matcher: createMatcher(expression, fields), css}) as const
             )
         ),
         E.map(
