@@ -23,7 +23,7 @@
     "@js-joda/core": "5.6.2",
     "ajv": "8.12.0",
     "cross-env": "7.0.3",
-    "express": "4.18.3",
+    "express": "4.19.2",
     "fp-ts": "2.16.3",
     "io-ts": "2.2.21",
     "parsimmon": "1.18.1",
