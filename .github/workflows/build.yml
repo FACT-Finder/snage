@@ -8,11 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: git fetch --prune --unshallow
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: '21'
       - name: cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             node_modules
@@ -22,7 +22,7 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn docs build
       - run: yarn lerna run test
-      - uses: codecov/codecov-action@v3.1.6
+      - uses: codecov/codecov-action@v4.5.0
       - run: yarn lerna run format-check
       - run: yarn lerna run lint-check
       - run: yarn lerna run build
