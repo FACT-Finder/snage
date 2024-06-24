@@ -1,13 +1,11 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import makeStyles from '@mui/styles/makeStyles';
 import {Link, Theme} from '@mui/material';
 import LinkIcon from '@mui/icons-material/Link';
 import remarkGfm from 'remark-gfm';
 import {getStateFromURL, NavigateNote} from './state';
-import {CodeComponent} from 'react-markdown/lib/ast-to-react';
-import {ReactMarkdownOptions} from 'react-markdown/lib/react-markdown';
+import Markdown from 'react-markdown';
 
 const useStyles = makeStyles(
     (theme: Theme) => ({
@@ -32,20 +30,20 @@ const useStyles = makeStyles(
     {name: 'Markdown'}
 );
 
-export const Markdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => {
+export const ReactMarkdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => {
     const classes = useStyles();
     return (
-        <ReactMarkdown
+        <Markdown
             components={renderers(navigateNote)}
             remarkPlugins={[remarkGfm]}
             className={classes.root + ' markdown-body'}
         >
             {content}
-        </ReactMarkdown>
+        </Markdown>
     );
 });
 
-const MarkdownCodeBlock: CodeComponent = ({node, inline, className, children, style: _ignored, ...props}) => {
+const MarkdownCodeBlock: React.FC<any> = ({inline, className, children, ...props}) => {
     const classes = useStyles();
     const match = /language-(\w+)/.exec(className ?? '');
     return !inline && match ? (
@@ -111,7 +109,7 @@ const HeadingRenderer: React.FC<any> = ({level, children}) => {
     ]);
 };
 
-const renderers: (n: NavigateNote) => ReactMarkdownOptions['components'] = (navigateNote) => ({
+const renderers: (n: NavigateNote) => any = (navigateNote) => ({
     code: MarkdownCodeBlock,
     a: MarkdownLink(navigateNote),
     h1: HeadingRenderer,

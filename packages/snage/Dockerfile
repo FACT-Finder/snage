@@ -1,4 +1,4 @@
-FROM node:20.14.0-alpine
+FROM node:22.3.0-alpine
 RUN apk add --no-cache git
 WORKDIR /snage
 COPY build/npm/snage.js /snage

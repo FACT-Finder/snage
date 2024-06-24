@@ -1,6 +1,6 @@
 import React from 'react';
 import {ApiNote} from '../../shared/type';
-import {Markdown} from './Markdown';
+import {ReactMarkdown} from './ReactMarkdown';
 import Chip from '@mui/material/Chip';
 import {Link, Paper, Typography} from '@mui/material';
 import {NavigateNote} from './state';
@@ -29,7 +29,7 @@ export const FullNote: React.FC<{
 
     return (
         <>
-            <Markdown content={'# ' + summary} navigateNote={navigateNote} />
+            <ReactMarkdown content={'# ' + summary} navigateNote={navigateNote} />
             <div style={{marginBottom: 15}}>
                 <FieldChips
                     fieldOrder={fieldOrder}
@@ -44,7 +44,7 @@ export const FullNote: React.FC<{
                     NO CONTENT
                 </Typography>
             ) : (
-                <Markdown content={content} navigateNote={navigateNote} />
+                <ReactMarkdown content={content} navigateNote={navigateNote} />
             )}
         </>
     );
@@ -109,7 +109,7 @@ export const SummaryNote = React.memo(
                 style={{...style, cursor: 'pointer', padding: 10, paddingLeft: 20, margin: 5}}
                 onClick={() => selectNote(entry)}
             >
-                <Markdown content={'# ' + summary} navigateNote={navigateNote} />
+                <ReactMarkdown content={'# ' + summary} navigateNote={navigateNote} />
                 <FieldChips
                     fieldOrder={fieldOrder}
                     onChipClick={onChipClick}
