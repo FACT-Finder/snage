@@ -5,7 +5,8 @@ import {Link, Theme} from '@mui/material';
 import LinkIcon from '@mui/icons-material/Link';
 import remarkGfm from 'remark-gfm';
 import {getStateFromURL, NavigateNote} from './state';
-import Markdown from 'react-markdown';
+import Markdown, {Components, ExtraProps} from 'react-markdown';
+import {ElementContent} from 'react-markdown/lib';
 
 const useStyles = makeStyles(
     (theme: Theme) => ({
@@ -43,15 +44,17 @@ export const ReactMarkdown = React.memo(({content, navigateNote}: {content: stri
     );
 });
 
-const MarkdownCodeBlock: React.FC<any> = ({inline, className, children, ...props}) => {
+const MarkdownCodeBlock: (
+    props: React.JSX.IntrinsicElements['code'] & ExtraProps
+) => React.JSX.Element | string | null | undefined = ({node, className, children}) => {
     const classes = useStyles();
     const match = /language-(\w+)/.exec(className ?? '');
-    return !inline && match ? (
-        <SyntaxHighlighter className={classes.code} language={match[1]} PreTag="div" {...props}>
+    return !node?.properties?.inline && match ? (
+        <SyntaxHighlighter className={classes.code} language={match[1]} PreTag="div" {...node?.properties}>
             {String(children).replace(/\n$/, '')}
         </SyntaxHighlighter>
     ) : (
-        <code className={className} {...props}>
+        <code className={className} {...node?.properties}>
             {children}
         </code>
     );
@@ -62,9 +65,11 @@ const toNoteURL = (href: string): string => {
     return `/?q=${encodeURIComponent(query)}&n=${href}`;
 };
 
-const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> =
+const MarkdownLink: (
+    navigateNote: NavigateNote
+) => (props: React.JSX.IntrinsicElements['a'] & ExtraProps) => React.JSX.Element | string | null | undefined =
     (navigateNote) =>
-    ({href: nullableHref, ...props}) => {
+    ({href: nullableHref, node}) => {
         const href = nullableHref ?? '';
         const isNoteLink =
             !href.includes('://') && !href.startsWith('//') && !href.startsWith('/') && !href.startsWith('#');
@@ -73,7 +78,7 @@ const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> =
 
         return (
             <Link
-                {...props}
+                {...node?.properties}
                 href={hrefWithNote}
                 onClick={(e) => {
                     e.stopPropagation();
@@ -86,36 +91,40 @@ const MarkdownLink: (navigateNote: NavigateNote) => React.FC<any> =
         );
     };
 
-const flatten = (text, child): any =>
+const flatten = (text: string, child: ElementContent): string =>
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    typeof child === 'string' ? text + child : React.Children.toArray(child.props.children).reduce(flatten, text);
+    child.type === 'text' ? text + child.value : child.type === 'element' ? child.children.reduce(flatten, text) : '';
 
-const HeadingRenderer: React.FC<any> = ({level, children}) => {
-    const text = children.reduce(flatten, '');
-    const slug = text.toLowerCase().replace(/\W/g, '-');
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    return React.createElement('h' + level, {id: slug}, [
-        ...React.Children.toArray(children),
-        <React.Fragment key="link">
-            {level !== 1 ? (
-                <>
-                    &nbsp;
-                    <a className="slug-link" href={`#${slug}`}>
-                        <LinkIcon fontSize="small" />
-                    </a>
-                </>
-            ) : null}
-        </React.Fragment>,
-    ]);
-};
+const getHeadingRenderer =
+    <TagName extends keyof React.JSX.IntrinsicElements>(
+        level: number
+    ): ((props: React.JSX.IntrinsicElements[TagName] & ExtraProps) => React.JSX.Element | string | null | undefined) =>
+    ({node, children}) => {
+        const text = node?.children?.reduce(flatten, '');
+        const slug = text?.toLowerCase().replace(/\W/g, '-') ?? 'No headline text';
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+        return React.createElement('h' + level, {id: slug}, [
+            ...React.Children.toArray(children),
+            <React.Fragment key="link">
+                {level === 1 ? null : (
+                    <>
+                        &nbsp;
+                        <a className="slug-link" href={`#${slug}`}>
+                            <LinkIcon fontSize="small" />
+                        </a>
+                    </>
+                )}
+            </React.Fragment>,
+        ]);
+    };
 
-const renderers: (n: NavigateNote) => any = (navigateNote) => ({
+const renderers: (n: NavigateNote) => Components = (navigateNote) => ({
     code: MarkdownCodeBlock,
     a: MarkdownLink(navigateNote),
-    h1: HeadingRenderer,
-    h2: HeadingRenderer,
-    h3: HeadingRenderer,
-    h4: HeadingRenderer,
-    h5: HeadingRenderer,
-    h6: HeadingRenderer,
+    h1: getHeadingRenderer<'h1'>(1),
+    h2: getHeadingRenderer<'h2'>(2),
+    h3: getHeadingRenderer<'h3'>(3),
+    h4: getHeadingRenderer<'h4'>(4),
+    h5: getHeadingRenderer<'h5'>(5),
+    h6: getHeadingRenderer<'h6'>(6),
 });
