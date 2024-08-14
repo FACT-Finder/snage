@@ -41,7 +41,7 @@
     "@types/inquirer": "8.2.10",
     "@types/jest": "29.5.12",
     "@types/nock": "11.1.0",
-    "@types/node": "20.14.15",
+    "@types/node": "22.3.0",
     "@types/parsimmon": "1.10.9",
     "@types/query-string": "6.3.0",
     "@types/semver": "7.5.8",
