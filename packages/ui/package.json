@@ -4,16 +4,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "11.13.0",
+    "@emotion/react": "11.13.3",
     "@emotion/styled": "11.13.0",
     "@mui/icons-material": "5.16.7",
     "@mui/material": "5.16.7",
     "@mui/styles": "5.16.7",
     "@types/axios": "0.14.0",
-    "@types/node": "22.3.0",
-    "@types/react": "18.3.3",
+    "@types/node": "22.5.4",
+    "@types/react": "18.3.5",
     "@types/react-dom": "18.3.0",
-    "axios": "1.7.4",
+    "axios": "1.7.7",
     "github-markdown-css": "5.6.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -22,8 +22,8 @@
     "react-syntax-highlighter": "15.5.0",
     "react-virtualized": "9.22.5",
     "remark-gfm": "4.0.0",
-    "typescript": "5.5.4",
-    "use-debounce": "10.0.2"
+    "typescript": "5.6.2",
+    "use-debounce": "10.0.3"
   },
   "scripts": {
     "lint-check": "eslint -c \"../../eslint.yaml\" \"src/**/*.ts\" \"src/**/*.tsx\"",
