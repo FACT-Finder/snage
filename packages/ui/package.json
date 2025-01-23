@@ -4,26 +4,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "11.13.3",
-    "@emotion/styled": "11.13.0",
-    "@mui/icons-material": "6.1.0",
-    "@mui/material": "6.1.0",
-    "@mui/styles": "6.1.0",
-    "@types/axios": "0.14.0",
-    "@types/node": "22.5.4",
-    "@types/react": "18.3.5",
-    "@types/react-dom": "18.3.0",
-    "axios": "1.7.7",
-    "github-markdown-css": "5.6.1",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0",
+    "@mui/icons-material": "6.4.1",
+    "@mui/material": "6.4.1",
+    "@mui/styles": "6.4.1",
+    "@types/axios": "0.14.4",
+    "@types/node": "22.10.10",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
+    "axios": "1.7.9",
+    "github-markdown-css": "5.8.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-markdown": "9.0.1",
+    "react-markdown": "9.0.3",
     "react-scripts": "5.0.1",
-    "react-syntax-highlighter": "15.5.0",
-    "react-virtualized": "9.22.5",
+    "react-syntax-highlighter": "15.6.1",
+    "react-virtualized": "9.22.6",
     "remark-gfm": "4.0.0",
-    "typescript": "5.6.2",
-    "use-debounce": "10.0.3"
+    "typescript": "5.7.3",
+    "use-debounce": "10.0.4"
   },
   "scripts": {
     "lint-check": "eslint -c \"../../eslint.yaml\" \"src/**/*.ts\" \"src/**/*.tsx\"",
@@ -54,8 +54,8 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@types/react-syntax-highlighter": "15.5.13",
-    "@types/react-virtualized": "9.21.30",
-    "prettier": "3.3.3",
+    "@types/react-virtualized": "9.22.0",
+    "prettier": "3.4.2",
     "rimraf": "6.0.1"
   }
 }
