@@ -6,7 +6,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import remarkGfm from 'remark-gfm';
 import {getStateFromURL, NavigateNote} from './state';
 import Markdown, {Components, ExtraProps} from 'react-markdown';
-import {ElementContent} from 'react-markdown/lib';
+import {ElementContent} from 'hast';
 
 const useStyles = makeStyles(
     (theme: Theme) => ({
