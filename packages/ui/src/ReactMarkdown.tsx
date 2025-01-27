@@ -75,6 +75,8 @@ const MarkdownLink: (
             !href.includes('://') && !href.startsWith('//') && !href.startsWith('/') && !href.startsWith('#');
 
         const hrefWithNote = isNoteLink ? toNoteURL(href) : href;
+        const label =
+            node?.children?.map((child) => (child.type === 'text' ? child.value : '')).join('') ?? 'no link label';
 
         return (
             <Link
@@ -87,7 +89,9 @@ const MarkdownLink: (
                         navigateNote(href);
                     }
                 }}
-            />
+            >
+                {label}
+            </Link>
         );
     };
 
