@@ -27,6 +27,11 @@
         "@types/inquirer"
       ],
       "allowedVersions": "=8"
+    },
+    {
+      "matchFileNames": ["Dockerfile"],
+      "matchPackageNames": ["node"],
+      "allowedVersions": "!/^23.*/"
     }
   ],
   "schedule": [
