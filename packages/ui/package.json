@@ -6,23 +6,23 @@
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
-    "@mui/icons-material": "6.4.1",
-    "@mui/material": "6.4.1",
-    "@mui/styles": "6.4.1",
+    "@mui/icons-material": "6.4.11",
+    "@mui/material": "6.4.11",
+    "@mui/styles": "6.4.8",
     "@types/axios": "0.14.4",
-    "@types/node": "22.10.10",
-    "@types/react": "19.0.8",
-    "@types/react-dom": "19.0.3",
-    "axios": "1.7.9",
+    "@types/node": "22.15.3",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
+    "axios": "1.9.0",
     "github-markdown-css": "5.8.1",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-markdown": "9.0.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-markdown": "9.1.0",
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "15.6.1",
     "react-virtualized": "9.22.6",
-    "remark-gfm": "4.0.0",
-    "typescript": "5.7.3",
+    "remark-gfm": "4.0.1",
+    "typescript": "5.8.3",
     "use-debounce": "10.0.4"
   },
   "scripts": {
@@ -54,8 +54,8 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@types/react-syntax-highlighter": "15.5.13",
-    "@types/react-virtualized": "9.22.0",
-    "prettier": "3.4.2",
+    "@types/react-virtualized": "9.22.2",
+    "prettier": "3.5.3",
     "rimraf": "6.0.1"
   }
 }
