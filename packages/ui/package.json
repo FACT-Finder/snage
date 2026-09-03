@@ -13,7 +13,7 @@
     "@types/node": "22.15.3",
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
-    "axios": "1.9.0",
+    "axios": "1.15.2",
     "github-markdown-css": "5.8.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
