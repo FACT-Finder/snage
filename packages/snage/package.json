@@ -25,6 +25,7 @@
     "cross-env": "10.1.0",
     "express": "5.2.1",
     "fp-ts": "2.16.11",
+    "inquirer": "8.2.7",
     "io-ts": "2.2.22",
     "parsimmon": "1.18.1",
     "prom-client": "15.1.3",
