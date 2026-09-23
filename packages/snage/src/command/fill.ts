@@ -43,7 +43,13 @@ export const fillInHeader =
         fieldNames.forEach((name) => {
             const value = note.values[name];
             if (value !== undefined) {
-                note.valuesDocument.set(name, encodeValue(fields.find((field) => field.name === name)!, value));
+                note.valuesDocument.set(
+                    name,
+                    encodeValue(
+                        fields.find((field) => field.name === name)!,
+                        value
+                    )
+                );
             }
         });
         return note;

@@ -74,17 +74,14 @@ export const startExpress =
                 filterNotes(config, notes),
                 E.map(A.sort(config.standard.sort)),
                 E.map(A.map((note) => convertToApiNote(note, config.fields))),
-                E.fold(
-                    identity,
-                    (notes): Response => ({
-                        status: 200,
-                        body: {
-                            notes,
-                            fieldOrder: config.fields.map((f) => f.name),
-                            groupByFields: config.fields.filter((field) => !field.list).map((f) => f.name),
-                        },
-                    })
-                ),
+                E.fold(identity, (notes): Response => ({
+                    status: 200,
+                    body: {
+                        notes,
+                        fieldOrder: config.fields.map((f) => f.name),
+                        groupByFields: config.fields.filter((field) => !field.list).map((f) => f.name),
+                    },
+                })),
                 ({status, body}) => {
                     res.status(status).json(body);
                     endTimer(status);

@@ -131,7 +131,13 @@ const setValue =
         if (value === undefined) {
             valuesDocument.delete(fieldName);
         } else {
-            valuesDocument.set(fieldName, encodeValue(fields.find((field) => field.name === fieldName)!, value as any));
+            valuesDocument.set(
+                fieldName,
+                encodeValue(
+                    fields.find((field) => field.name === fieldName)!,
+                    value as any
+                )
+            );
         }
         return {
             file: file,
