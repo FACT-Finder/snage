@@ -1,4 +1,5 @@
 const yargs = require('yargs');
+const {hideBin} = require('yargs/helpers');
 const { spawn } = require('child_process');
 const IMAGE = 'squidfunk/mkdocs-material:5.2.2'
 
@@ -29,4 +30,4 @@ const build = {
     },
 };
 
-yargs.command(watch).command(build).demandCommand().argv;
+yargs(hideBin(process.argv)).command(watch).command(build).demandCommand().parse();
