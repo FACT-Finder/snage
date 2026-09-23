@@ -34,13 +34,11 @@ const useStyles = makeStyles(
 export const ReactMarkdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => {
     const classes = useStyles();
     return (
-        <Markdown
-            components={renderers(navigateNote)}
-            remarkPlugins={[remarkGfm]}
-            className={classes.root + ' markdown-body'}
-        >
-            {content}
-        </Markdown>
+        <div className={classes.root + ' markdown-body'}>
+            <Markdown components={renderers(navigateNote)} remarkPlugins={[remarkGfm]}>
+                {content}
+            </Markdown>
+        </div>
     );
 });
 
