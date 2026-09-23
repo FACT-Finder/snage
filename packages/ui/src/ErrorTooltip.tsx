@@ -1,64 +1,49 @@
 import React from 'react';
 import {ApiParseError} from '../../shared/type';
-import {Box, Tooltip, Typography} from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, styled, Tooltip, tooltipClasses, TooltipProps, Typography} from '@mui/material';
 
 export const ErrorTooltipBody = ({
     error: {index, expected, query},
 }: {
     error: ApiParseError & {query: string};
-}): React.ReactElement => {
-    const classes = useStyle();
-    return (
-        <>
-            <Typography className={classes.header}>
-                <b>Query Error</b>
-            </Typography>
-            <Typography component="div">
-                <pre
-                    className={classes.position}
-                    dangerouslySetInnerHTML={{
-                        __html: formatError(query, index.offset, {prefix: '<b>', suffix: '</b>'}),
-                    }}
-                />
-                <Box className={classes.expect}>expected {expected.join(', ')}</Box>
-            </Typography>
-        </>
-    );
-};
+}): React.ReactElement => (
+    <>
+        <Typography sx={{background: '#e74c3c', padding: '8px 14px', borderRadius: '4px 4px 0 0'}}>
+            <b>Query Error</b>
+        </Typography>
+        <Typography component="div">
+            <Box
+                component="pre"
+                sx={{padding: '6px 14px 0 14px', backgroundColor: 'rgb(245, 245, 245)', color: 'black', margin: 0}}
+                dangerouslySetInnerHTML={{
+                    __html: formatError(query, index.offset, {prefix: '<b>', suffix: '</b>'}),
+                }}
+            />
+            <Box
+                sx={{
+                    padding: '8px 14px',
+                    backgroundColor: 'rgb(235, 235, 235)',
+                    fontSize: '0.9rem',
+                    color: 'black',
+                    borderRadius: '0 0 4px 4px',
+                }}
+            >
+                expected {expected.join(', ')}
+            </Box>
+        </Typography>
+    </>
+);
 
-const useStyle = makeStyles(() => ({
-    header: {
-        background: '#e74c3c',
-        padding: '8px 14px',
-        borderRadius: '4px 4px 0 0',
-    },
-    position: {
-        padding: '6px 14px 0 14px',
-        backgroundColor: 'rgb(245, 245, 245)',
-        color: 'black',
-        margin: 0,
-    },
-    expect: {
-        padding: '8px 14px',
-        backgroundColor: 'rgb(235, 235, 235)',
-        fontSize: '0.9rem',
-        color: 'black',
-        borderRadius: '0 0 4px 4px',
-    },
-}));
-
-export const ErrorTooltip = withStyles((theme) => ({
-    tooltip: {
-        backgroundColor: 'transparant',
+export const ErrorTooltip = styled(({className, ...props}: TooltipProps) => (
+    <Tooltip {...props} classes={{popper: className}} />
+))(({theme}) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
         boxShadow: theme.shadows[3],
         fontSize: 11,
-        maxWidth: '450 !important',
-        padding: '0 !important',
-        pointerEvents: 'all !important' as 'all',
+        padding: 0,
+        pointerEvents: 'all',
     },
-}))(Tooltip);
+}));
 
 interface FormatOptions {
     prefix?: string;

@@ -1,56 +1,40 @@
 import React from 'react';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
-import makeStyles from '@mui/styles/makeStyles';
-import {Link, Theme} from '@mui/material';
+import {Link, styled} from '@mui/material';
 import LinkIcon from '@mui/icons-material/Link';
 import remarkGfm from 'remark-gfm';
 import {getStateFromURL, NavigateNote} from './state';
 import Markdown, {Components, ExtraProps} from 'react-markdown';
 import {ElementContent} from 'hast';
 
-const useStyles = makeStyles(
-    (theme: Theme) => ({
-        root: {
-            '& h1': {
-                ...theme.typography.h1,
-                fontSize: '1.8em',
-                borderBottom: 0,
-            },
-            '& pre': {
-                background: 'rgb(245, 242, 240)',
-            },
-            '& a, & a code': {
-                color: theme.palette.primary.main,
-            },
-        },
-        code: {
-            padding: '0 !important',
-            margin: '0 !important',
-        },
-    }),
-    {name: 'Markdown'}
-);
+const MarkdownRoot = styled('div')(({theme}) => ({
+    '& h1': {
+        ...theme.typography.h1,
+        fontSize: '1.8em',
+        borderBottom: 0,
+    },
+    '& pre': {
+        background: 'rgb(245, 242, 240)',
+    },
+    '& a, & a code': {
+        color: theme.palette.primary.main,
+    },
+}));
 
-export const ReactMarkdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => {
-    const classes = useStyles();
-    return (
-        <Markdown
-            components={renderers(navigateNote)}
-            remarkPlugins={[remarkGfm]}
-            className={classes.root + ' markdown-body'}
-        >
+export const ReactMarkdown = React.memo(({content, navigateNote}: {content: string; navigateNote: NavigateNote}) => (
+    <MarkdownRoot className="markdown-body">
+        <Markdown components={renderers(navigateNote)} remarkPlugins={[remarkGfm]}>
             {content}
         </Markdown>
-    );
-});
+    </MarkdownRoot>
+));
 
 const MarkdownCodeBlock: (
     props: React.JSX.IntrinsicElements['code'] & ExtraProps
 ) => React.JSX.Element | string | null | undefined = ({node, className, children}) => {
-    const classes = useStyles();
     const match = /language-(\w+)/.exec(className ?? '');
     return !node?.properties?.inline && match ? (
-        <SyntaxHighlighter className={classes.code} language={match[1]} PreTag="div" {...node?.properties}>
+        <SyntaxHighlighter language={match[1]} PreTag="div" {...node?.properties}>
             {String(children).replace(/\n$/, '')}
         </SyntaxHighlighter>
     ) : (

@@ -1,4 +1,5 @@
 import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers';
 import {serve} from './command/serve';
 import {init} from './command/init';
 import {lint} from './command/lint';
@@ -15,7 +16,7 @@ const handleExitSignal = (): void => process.exit(1);
 process.on('SIGINT', handleExitSignal);
 process.on('SIGTERM', handleExitSignal);
 
-yargs
+yargs(hideBin(process.argv))
     .version(process.env.BUILD_VERSION ?? 'development')
     .string(ConfigParameterName)
     .describe(ConfigParameterName, 'Path to the snage config.')
@@ -32,4 +33,5 @@ yargs
     .command(fill)
     .help()
     .demandCommand()
-    .recommendCommands().argv;
+    .recommendCommands()
+    .parse();

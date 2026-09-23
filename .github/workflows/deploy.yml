@@ -9,12 +9,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.4.0
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '22.23.2'
+          node-version: '24.19.0'
       - name: cache node_modules
-        uses: actions/cache@v4.3.0
+        uses: actions/cache@v6
         with:
           path: |
             node_modules
@@ -29,12 +29,12 @@ jobs:
         env:
           BUILD_VERSION: ${{ env.VERSION }}
       - name: upload build artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v7
         with:
           name: build
           path: packages/snage/build/npm
       - name: upload docs artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v7
         with:
           name: docs
           path: site
@@ -43,8 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4.4.0
-      - uses: actions/download-artifact@v4.3.0
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: build
           path: packages/snage/build/npm
@@ -61,8 +61,14 @@ jobs:
   deploy-snage-changelog:
     runs-on: ubuntu-latest
     needs: deploy-docker-unstable
+    # A normal deploy takes about a minute. Fail fast instead of hanging for
+    # the 6h default, and never let two deploys work on the server at once.
+    timeout-minutes: 15
+    concurrency:
+      group: deploy-snage-changelog
+      cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4.4.0
+      - uses: actions/checkout@v7
       - name: Deploy changelog.snage.dev
         run: |
           export ANSIBLE_PRIVATE_KEY_FILE="$HOME/id_rsa"
@@ -72,13 +78,16 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           ANSIBLE_HOST_KEY_CHECKING: false
+          # Ansible's default ssh args plus keepalives: long silent tasks (apt
+          # update_cache) otherwise lose the idle connection after ~5 minutes.
+          ANSIBLE_SSH_ARGS: -C -o ControlMaster=auto -o ControlPersist=60s -o ServerAliveInterval=30 -o ServerAliveCountMax=10
 
   deploy-github-pages:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4.4.0
-      - uses: actions/download-artifact@v4.3.0
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: docs
           path: site

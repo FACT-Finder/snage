@@ -24,14 +24,33 @@
     },
     {
       "matchPackageNames": [
+        "inquirer",
         "@types/inquirer"
       ],
-      "allowedVersions": "=8"
+      "allowedVersions": "=8",
+      "description": "inquirer 9+ is ESM-only with a new API; snage uses inquirer 8"
     },
     {
-      "matchFileNames": ["Dockerfile"],
-      "matchPackageNames": ["node"],
-      "allowedVersions": "!/^23.*/"
+      "description": "Keep CI, the Docker image and @types/node on the same Node major (24 LTS); raise it deliberately in one step",
+      "matchPackageNames": [
+        "node",
+        "@types/node"
+      ],
+      "allowedVersions": "<25"
+    },
+    {
+      "description": "ts-jest 29 supports only typescript <7",
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "allowedVersions": "<7"
+    },
+    {
+      "description": "eslint-plugin-unicorn 57+ requires ESLint 9.20+, but react-scripts pins ESLint 8",
+      "matchPackageNames": [
+        "eslint-plugin-unicorn"
+      ],
+      "allowedVersions": "<57"
     }
   ],
   "schedule": [
