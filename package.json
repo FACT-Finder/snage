@@ -25,7 +25,9 @@
     "lerna": "8.2.2"
   },
   "resolutions": {
+    "@types/hast": "3.0.4",
     "@types/react": "19.1.2",
-    "@types/react-dom": "19.1.2"
+    "@types/react-dom": "19.1.2",
+    "csstype": "3.1.3"
   }
 }
