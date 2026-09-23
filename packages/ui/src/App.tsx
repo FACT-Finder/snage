@@ -173,29 +173,31 @@ const Search: React.FC<SearchProps> = ({query, setQuery, error, groupByFields}) 
                         }
                     }}
                     onChange={(e) => setTempQuery(e.target.value)}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                {query !== '' ? (
-                                    <IconButton onClick={() => setQuery('')} size="small">
-                                        <CloseIcon />
+                    slotProps={{
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    {query !== '' ? (
+                                        <IconButton onClick={() => setQuery('')} size="small">
+                                            <CloseIcon />
+                                        </IconButton>
+                                    ) : null}
+                                    <IconButton
+                                        href="https://snage.dev/query"
+                                        target="_blank"
+                                        rel="noreferrer noopener"
+                                        size="small"
+                                    >
+                                        <HelpIcon />
                                     </IconButton>
-                                ) : null}
-                                <IconButton
-                                    href="https://snage.dev/query"
-                                    target="_blank"
-                                    rel="noreferrer noopener"
-                                    size="small"
-                                >
-                                    <HelpIcon />
-                                </IconButton>
-                                <Tooltip title="Export">
-                                    <IconButton size="small" onClick={() => setExportOpen(true)} disabled={!!error}>
-                                        <Export />
-                                    </IconButton>
-                                </Tooltip>
-                            </InputAdornment>
-                        ),
+                                    <Tooltip title="Export">
+                                        <IconButton size="small" onClick={() => setExportOpen(true)} disabled={!!error}>
+                                            <Export />
+                                        </IconButton>
+                                    </Tooltip>
+                                </InputAdornment>
+                            ),
+                        },
                     }}
                 />
             </ErrorTooltip>
