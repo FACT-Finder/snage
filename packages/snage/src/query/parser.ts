@@ -70,11 +70,11 @@ export const createParser = (fields: ParserField[]): ((q: string) => Either<Pars
         const create = (r: Language, op: Parser<any>, value: Parser<any>): Parser<any> =>
             P.alt(
                 P.seqObj<any>(['field', word(field.name)], ['op', op], ['value', value]),
-                P.seqMap(
-                    word(field.name),
-                    r.status,
-                    (field, status): SingleExpression => ({field, op: StatusOP, value: status})
-                )
+                P.seqMap(word(field.name), r.status, (field, status): SingleExpression => ({
+                    field,
+                    op: StatusOP,
+                    value: status,
+                }))
             );
         switch (field.type) {
             case 'boolean':

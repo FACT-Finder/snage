@@ -181,10 +181,10 @@ const mergeProviders =
 const toField =
     (fields: RawField[]) =>
     (field: RawField): E.Either<string, Field> => {
-        const partial = E.either.map(
-            createStyleProvider(fields, field.styles ?? []),
-            (styleProvider): Field => ({...field, styleProvider})
-        );
+        const partial = E.either.map(createStyleProvider(fields, field.styles ?? []), (styleProvider): Field => ({
+            ...field,
+            styleProvider,
+        }));
         if (!hasProvided(field)) {
             return partial;
         }
