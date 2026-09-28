@@ -123,6 +123,13 @@ Right aligned columns
 
 Autoconverted link https://github.com/nodeca/pica (enable linkify to see)
 
+### Formatted link labels
+
+- inline code: [`snage lint`](https://snage.dev/cmd/lint/)
+- bold: [**important**](https://snage.dev/note/)
+- mixed: [see **this** page](https://snage.dev/query/)
+- plain: [plain label](https://snage.dev/)
+
 ## Images
 
 ![Minion](https://octodex.github.com/images/minion.png)
@@ -142,10 +149,10 @@ Footnote 1 link[^first].
 
 Footnote 2 link[^second].
 
-Duplicated footnote reference[^second].
+Second reference to footnote 2[^second].
 
 [^first]: Footnote **can have markup**
 
     and multiple paragraphs.
 
-[^second]: Footnote text.
+[^second]: Footnote text. It is referenced twice, so it has two back-links at the end of this line: the first jumps back to "Footnote 2 link", the numbered one (2) to "Second reference to footnote 2".
