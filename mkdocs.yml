@@ -67,6 +67,8 @@ nav:
     - Lint: cmd/lint.md
     - Set: cmd/set.md
     - Find: cmd/find.md
+    - Export: cmd/export.md
+    - Fill: cmd/fill.md
     - Migrate: cmd/migrate.md
   - Development:
     - Setup: dev/setup.md
