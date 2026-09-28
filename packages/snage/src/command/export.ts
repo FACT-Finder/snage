@@ -20,7 +20,7 @@ export const exportCmd: yargs.CommandModule<
         y
             .example('$0', 'export')
             .example('$0', 'export --no-tags "issue = 21"')
-            .example('$0', 'export --group-by tag "issue = 21"')
+            .example('$0', 'export --group-by type "version = 0.0.2"')
             .option('tags', {
                 boolean: true,
                 description: 'Include note tags',
