@@ -53,14 +53,12 @@ const MarkdownLink: (
     navigateNote: NavigateNote
 ) => (props: React.JSX.IntrinsicElements['a'] & ExtraProps) => React.JSX.Element | string | null | undefined =
     (navigateNote) =>
-    ({href: nullableHref, node}) => {
+    ({href: nullableHref, node, children}) => {
         const href = nullableHref ?? '';
         const isNoteLink =
             !href.includes('://') && !href.startsWith('//') && !href.startsWith('/') && !href.startsWith('#');
 
         const hrefWithNote = isNoteLink ? toNoteURL(href) : href;
-        const label =
-            node?.children?.map((child) => (child.type === 'text' ? child.value : '')).join('') ?? 'no link label';
 
         return (
             <Link
@@ -74,7 +72,7 @@ const MarkdownLink: (
                     }
                 }}
             >
-                {label}
+                {children}
             </Link>
         );
     };
