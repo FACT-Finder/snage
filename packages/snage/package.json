@@ -1,5 +1,18 @@
 {
   "name": "snage",
+  "description": "Searchable changelog from one markdown file per change",
+  "keywords": [
+    "changelog",
+    "release-notes",
+    "markdown"
+  ],
+  "homepage": "https://snage.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FACT-Finder/snage.git",
+    "directory": "packages/snage"
+  },
+  "bugs": "https://github.com/FACT-Finder/snage/issues",
   "license": "MIT",
   "version": "0.0.1",
   "scripts": {

@@ -8,8 +8,9 @@ You can install the [snage](https://www.npmjs.com/package/snage) npmjs package v
 </div>
 
 !!! note
-    Make sure that your `$PATH` environment variable includes the output of
-    
+    Make sure that your `$PATH` environment variable includes the `bin`
+    directory below the output of
+
     ```bash
-    $ npm bin
+    $ npm prefix -g
     ```
