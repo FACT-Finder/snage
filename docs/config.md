@@ -113,22 +113,17 @@ fields it uses have a value. List fields can't be used.
 `note.styles` highlights notes in the web UI. `on` is a [query](query.md), `css`
 contains CSS properties in camelCase, e.g. `borderLeft` instead of
 `border-left`. Snage applies the first style whose query matches the note.
-
-```yaml
-note:
-  styles:
-    - on: 'type = security'
-      css:
-        borderLeft: '10px solid #e74c3c'
-```
+The sample config above highlights security notes with a red border.
 
 ## fields
 
 `fields` defines the fields you can set in the metadata of your notes.
+Don't name a field `summary`, `content` or `id`: every note already has these
+[built-in fields](query.md#field).
 
 | Key           | Description |
 | ------------- | ----------- |
-| `name`        | The name used in notes and [queries](query.md). `summary`, `content` and `id` are [built-in fields](query.md#field), don't use them. |
+| `name`        | The name used in notes and [queries](query.md). |
 | `type`        | The type of the value, see below. |
 | `description` | *Optional.* Shown by `snage create --help`. |
 | `optional`    | *Optional.* `true` if notes may leave out this field. Default: `false`. |
@@ -160,9 +155,9 @@ the note has no value for the field. [`snage fill`](cmd/fill.md) saves
 provided values in the notes.
 
 Snage has two providers, [`git-version`](#git-version) and
-[`git-date`](#git-date). Both read your git history, so snage needs `git` and
-the full history. In CI, a shallow clone isn't enough, e.g. run
-`git fetch --unshallow`.
+[`git-date`](#git-date). The sample config above uses both. They read your git
+history, so snage needs `git` and the full history. In CI, a shallow clone
+isn't enough, e.g. run `git fetch --unshallow`.
 
 #### git-version
 
@@ -171,31 +166,11 @@ containing that commit. `version-regex` must match the tag and extract the
 version with exactly one group. Notes that aren't released yet get no value, so
 make the field `optional`.
 
-```yaml
-- name: version
-  type: semver
-  optional: true
-  provided:
-    by: git-version
-    arguments:
-      version-regex: '^v(.*)$'
-```
-
 #### git-date
 
 `git-date` uses the commit date of a git tag. `version-tag` is the tag name,
 usually with the version as placeholder. Define the date field *after* the field
 it references, so that its value is known.
-
-```yaml
-- name: date
-  type: date
-  optional: true
-  provided:
-    by: git-date
-    arguments:
-      version-tag: 'v${version}'
-```
 
 ## standard
 
