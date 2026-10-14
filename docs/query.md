@@ -1,3 +1,7 @@
+You use queries to search in the [web UI](cmd/serve.md), with
+[`snage find`](cmd/find.md), [`snage export`](cmd/export.md) and
+[`snage set --on`](cmd/set.md), and for [styles](config.md#styles).
+
 !!! warning
     Queries are highly dependent on your field config,
     everything here is an example and must be adjusted to your config.
@@ -24,14 +28,14 @@ version > 0.0.7
 If you want to find all notes between two different versions you have to use the `and` operator to combine two conditions
 
 ```
-version >= 1.2.7 and version < 2.0.0
+version >= 0.0.7 and version < 0.0.10
 ```
 
 [Try it out](https://changelog.snage.dev/?q=version%3E%3D0.0.7%20and%20version%20%3C%200.0.10)
 
 ## Structure
 
-A simple note query consists either of a field name followed by a binary operator, and a value
+A simple note query consists either of a field name followed by a binary operator and a value
 
 ```
 field binaryOperator value
@@ -45,10 +49,16 @@ field unaryOperator
 
 ### Field
 
-Field may be any field name defined inside your [config](config.md#field).
+Field may be any field name defined inside your [config](config.md#fields),
+e.g. `issue`, `type` and `version` in Snage's config.
 
-Our config for Snage has fields like `issue`, `type` and `version`.
-Have a look at it here: [snage: ./snage.yaml](https://github.com/FACT-Finder/snage/blob/master/.snage.yaml).
+These built-in fields work with every config:
+
+| field     | description                        |
+| --------- | ---------------------------------- |
+| `summary` | The header of the note.            |
+| `content` | The text below the header.         |
+| `id`      | The file name, e.g. `21-lint.md`.  |
 
 ### Operator
 
@@ -73,17 +83,17 @@ Binary operators compare field values of a note with values provided in the quer
 | >=       | greater or equal                  | `date`, `number`, `semver`, `ffversion` |
 | <        | less                              | `date`, `number`, `semver`, `ffversion` |
 | <=       | less or equal                     | `date`, `number`, `semver`, `ffversion` |
-| ~        | string contains                   | `string`                                |
-| ~~       | string fuzzy search               | `string`                                |
+| ~        | contains, ignoring case           | `string`                                |
+| ~~       | similar words, tolerates typos    | `string`                                |
 
 ##### Version comparison
 
-Fields with type `semver` or `ffversion` aren't compared literally, if only part of the version is specified but instead will be seen as range.
+If you specify only part of a `semver` or `ffversion` value, Snage compares it as a range.
 
 For fields with type `semver` the following rules apply:
 
 - `semver = 1` is the same as `semver >= 1.0.0 and semver < 2.0.0`.
-- `semver 1.2` is the same as `semver >= 1.2.0 and semver < 1.3.0`.
+- `semver = 1.2` is the same as `semver >= 1.2.0 and semver < 1.3.0`.
 - `semver = 1.2.3` is compared literally.
 - `semver > 1` is compared with minor and patch version implicitly set to 0 `semver > 1.0.0`.
 
@@ -99,14 +109,18 @@ For fields with type `ffversion` the following rules apply:
 
 The value depends on the field type.
 When you query a number field, you are only allowed to specify a number.
+For fields with `enum`, only the allowed values work.
 Other values will result in a query parse error.
 
 ### Example
 
 ```bash
 issue = 50
-type = bugfix
+type = fix
+type != security
 date >= 2020-05-05
+summary ~ lint
+summary ~~ exprt
 date absent
 issue present
 ```
@@ -119,34 +133,34 @@ Simple queries can be combined via logical `and` and logical `or`.
 **`or`** requires either its left or right side to evaluate to true.
 
 ```bash
-issue = 5 and type = bugfix or type != bugfix
+issue = 5 and type = fix or type = security
 ```
 
 ### Precedence
 
-`and` takes precendence over `or`, meaning that in a query like
+`and` takes precedence over `or`, meaning that in a query like
 
 ```bash
-(type = bugfix and issue = 4) or (type = bugfix and issue = 5)
+(type = fix and issue = 4) or (type = fix and issue = 5)
 ```
 
 you can omit the parentheses and use
 
 ```bash
-type = bugfix and issue = 4 or type = bugfix and issue = 5
+type = fix and issue = 4 or type = fix and issue = 5
 ```
 
 instead.
-On the other hand parenthesis around `or` change the meaning of the query, e.g.
+On the other hand parentheses around `or` change the meaning of the query, e.g.
 
 ```bash
-type = bugfix and (issue = 4 or issue = 5)
+type = fix and (issue = 4 or issue = 5)
 ```
 
-is a different from
+is different from
 
 ```bash
-type = bugfix and issue = 4 or issue = 5.
+type = fix and issue = 4 or issue = 5
 ```
 
 ## Quoting

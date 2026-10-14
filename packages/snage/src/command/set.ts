@@ -36,7 +36,7 @@ export const set: yargs.CommandModule<DefaultCli, DefaultCli & {on?: string; fie
     builder: (y) =>
         y
             .string('on')
-            .example('$0', 'set --on "version unset" version 1.0.0')
+            .example('$0', 'set --on "version absent" version 1.0.0')
             .example('$0', 'set --on "issue = #22"   issue "#33"')
             .example('$0', 'set --on "issue = #22"   issue   # unset issue field')
             .describe('on', 'Condition for setting values')

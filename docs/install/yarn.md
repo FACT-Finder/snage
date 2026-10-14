@@ -1,6 +1,6 @@
 You can install the [snage](https://www.npmjs.com/package/snage) npmjs package via yarn.
 
-<div id="term-npm" data-termynal data-ty-typeDelay="40" data-ty-lineDelay="700">
+<div id="term-yarn" data-termynal data-ty-typeDelay="40" data-ty-lineDelay="700">
     <span data-ty="input" data-ty-prompt="$">yarn global add snage</span>
     <span data-ty="progress" data-ty-progressChar="·"></span>
     <span data-ty="input" data-ty-prompt="$">snage help</span>
@@ -9,7 +9,7 @@ You can install the [snage](https://www.npmjs.com/package/snage) npmjs package v
 
 !!! note
     Make sure that your `$PATH` environment variable includes the output of
-    
+
     ```bash
     $ yarn global bin
     ```

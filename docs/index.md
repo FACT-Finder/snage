@@ -77,8 +77,10 @@ You can install Snage in many different ways:
 * `snage serve`: Start the Snage server. [read more](https://snage.dev/cmd/serve)
 * `snage create`: Interactively create a new note. [read more](https://snage.dev/cmd/create)
 * `snage lint`: Check for errors in notes. [read more](https://snage.dev/cmd/lint)
-* `snage set`: Set field values. [read more](https://snage.dev/cmd/set)
 * `snage find`: Find notes. [read more](https://snage.dev/cmd/find)
+* `snage set`: Set field values. [read more](https://snage.dev/cmd/set)
+* `snage fill`: Save provided values in the notes. [read more](https://snage.dev/cmd/fill)
+* `snage export`: Export notes as one markdown document. [read more](https://snage.dev/cmd/export)
 * `snage migrate`: Migrate the `.snage.yaml`. [read more](https://snage.dev/cmd/migrate)
 
 ## Contributing
