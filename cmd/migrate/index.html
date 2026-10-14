@@ -388,6 +388,30 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -484,7 +508,20 @@
                 
                   <h1>Migrate</h1>
                 
-                <p>TODO</p>
+                <p><code>snage migrate</code> updates your <code>.snage.yaml</code> to the current
+<a href="../../config/">config</a> format and saves it in place.</p>
+<div class="highlight"><pre><span></span><code>$ snage migrate
+Migrated /home/me/project/.snage.yaml.
+</code></pre></div>
+
+<p>Snage still reads configs in an older format, it converts them on the fly
+every time it starts. Run <code>snage migrate</code> once to update the file itself, e.g.
+before you use options that only exist in the current format.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Commit your config before you migrate it, so you can review the changes
+with <code>git diff</code>.</p>
+</div>
                 
               
               
@@ -503,7 +540,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../find/" title="Find" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../fill/" title="Fill" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -512,7 +549,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Find
+                Fill
               </div>
             </div>
           </a>

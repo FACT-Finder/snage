@@ -53,6 +53,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#where-the-note-is-stored" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -348,9 +353,47 @@
     <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Create
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
     <a href="./" title="Create" class="md-nav__link md-nav__link--active">
       Create
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-the-note-is-stored" class="md-nav__link">
+    Where the note is stored
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    Options
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -387,6 +430,30 @@
   <li class="md-nav__item">
     <a href="../find/" title="Find" class="md-nav__link">
       Find
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../fill/" title="Fill" class="md-nav__link">
+      Fill
     </a>
   </li>
 
@@ -469,6 +536,43 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-the-note-is-stored" class="md-nav__link">
+    Where the note is stored
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    Options
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
@@ -484,7 +588,60 @@
                 
                   <h1>Create</h1>
                 
-                <p>TODO</p>
+                <p><code>snage create</code> creates a new <a href="../../note/">note</a>. It asks for the value of each
+field defined in your <a href="../../config/#fields">config</a> and then opens the note in
+your editor (<code>$EDITOR</code>), so you can write the headline and description.</p>
+<p>The examples use the fields of the <a href="../../config/">sample config</a>: <code>issue</code>,
+<code>audience</code>, <code>components</code> and <code>type</code>, the kind of change, e.g. <code>add</code> or <code>fix</code>.</p>
+<div class="highlight"><pre><span></span><code>$ snage create
+? Enter issue <span class="o">(</span>number<span class="o">)</span>: <span class="m">21</span>
+? Select type: add
+? Select audience: user
+...
+</code></pre></div>
+
+<p>Lines starting with <code>?</code> are snage's questions, followed by your answer.</p>
+<p>You can also pass values as options. Snage only asks for the missing ones.
+Repeat an option to set several values of a list field.</p>
+<div class="highlight"><pre><span></span><code>$ snage create --issue <span class="m">21</span> --type add --audience user --components cli --components ui
+</code></pre></div>
+
+<h2 id="where-the-note-is-stored">Where the note is stored<a class="headerlink" href="#where-the-note-is-stored" title="Permanent link">&para;</a></h2>
+<p>The file name comes from <a href="../../config/#template"><code>template.file</code></a> inside
+<a href="../../config/#basedir"><code>basedir</code></a>, e.g. <code>changelog/21-add.md</code>. If that file
+exists already, snage appends a number: <code>changelog/21-add2.md</code>.
+The new note starts with the text from <a href="../../config/#template"><code>template.text</code></a>.</p>
+<h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--&lt;field&gt;</code></td>
+<td></td>
+<td>A value for the field <code>&lt;field&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>--no-interactive</code></td>
+<td></td>
+<td>Don't ask for missing values.</td>
+</tr>
+<tr>
+<td><code>--no-editor</code></td>
+<td></td>
+<td>Don't open the note in your editor.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code>snage create --help</code> lists all fields of your config as options.</p>
+</div>
                 
               
               

@@ -525,6 +525,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../cmd/export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cmd/fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../cmd/migrate/" title="Migrate" class="md-nav__link">
       Migrate
     </a>
@@ -736,7 +760,10 @@
                 
                   <h1>Query</h1>
                 
-                <div class="admonition warning">
+                <p>You use queries to search in the <a href="../cmd/serve/">web UI</a>, with
+<a href="../cmd/find/"><code>snage find</code></a>, <a href="../cmd/export/"><code>snage export</code></a> and
+<a href="../cmd/set/"><code>snage set --on</code></a>, and for <a href="../config/#styles">styles</a>.</p>
+<div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Queries are highly dependent on your field config,
 everything here is an example and must be adjusted to your config.</p>
@@ -754,12 +781,12 @@ everything here is an example and must be adjusted to your config.</p>
 
 <p><a href="https://changelog.snage.dev/?q=version%3E0.0.7">Try it out</a></p>
 <p>If you want to find all notes between two different versions you have to use the <code>and</code> operator to combine two conditions</p>
-<div class="highlight"><pre><span></span><code>version &gt;= 1.2.7 and version &lt; 2.0.0
+<div class="highlight"><pre><span></span><code>version &gt;= 0.0.7 and version &lt; 0.0.10
 </code></pre></div>
 
 <p><a href="https://changelog.snage.dev/?q=version%3E%3D0.0.7%20and%20version%20%3C%200.0.10">Try it out</a></p>
 <h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
-<p>A simple note query consists either of a field name followed by a binary operator, and a value</p>
+<p>A simple note query consists either of a field name followed by a binary operator and a value</p>
 <div class="highlight"><pre><span></span><code>field binaryOperator value
 </code></pre></div>
 
@@ -768,9 +795,31 @@ everything here is an example and must be adjusted to your config.</p>
 </code></pre></div>
 
 <h3 id="field">Field<a class="headerlink" href="#field" title="Permanent link">&para;</a></h3>
-<p>Field may be any field name defined inside your <a href="../config/#field">config</a>.</p>
-<p>Our config for Snage has fields like <code>issue</code>, <code>type</code> and <code>version</code>.
-Have a look at it here: <a href="https://github.com/FACT-Finder/snage/blob/master/.snage.yaml">snage: ./snage.yaml</a>.</p>
+<p>Field may be any field name defined inside your <a href="../config/#fields">config</a>,
+e.g. <code>issue</code>, <code>type</code> and <code>version</code> in Snage's config.</p>
+<p>These built-in fields work with every config:</p>
+<table>
+<thead>
+<tr>
+<th>field</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>summary</code></td>
+<td>The header of the note.</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>The text below the header.</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>The file name, e.g. <code>21-lint.md</code>.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="operator">Operator<a class="headerlink" href="#operator" title="Permanent link">&para;</a></h3>
 <h4 id="unary">Unary<a class="headerlink" href="#unary" title="Permanent link">&para;</a></h4>
 <p>Unary operators don't have a value.</p>
@@ -838,22 +887,22 @@ Have a look at it here: <a href="https://github.com/FACT-Finder/snage/blob/maste
 </tr>
 <tr>
 <td>~</td>
-<td>string contains</td>
+<td>contains, ignoring case</td>
 <td><code>string</code></td>
 </tr>
 <tr>
 <td>~~</td>
-<td>string fuzzy search</td>
+<td>similar words, tolerates typos</td>
 <td><code>string</code></td>
 </tr>
 </tbody>
 </table>
 <h5 id="version-comparison">Version comparison<a class="headerlink" href="#version-comparison" title="Permanent link">&para;</a></h5>
-<p>Fields with type <code>semver</code> or <code>ffversion</code> aren't compared literally, if only part of the version is specified but instead will be seen as range.</p>
+<p>If you specify only part of a <code>semver</code> or <code>ffversion</code> value, Snage compares it as a range.</p>
 <p>For fields with type <code>semver</code> the following rules apply:</p>
 <ul>
 <li><code>semver = 1</code> is the same as <code>semver &gt;= 1.0.0 and semver &lt; 2.0.0</code>.</li>
-<li><code>semver 1.2</code> is the same as <code>semver &gt;= 1.2.0 and semver &lt; 1.3.0</code>.</li>
+<li><code>semver = 1.2</code> is the same as <code>semver &gt;= 1.2.0 and semver &lt; 1.3.0</code>.</li>
 <li><code>semver = 1.2.3</code> is compared literally.</li>
 <li><code>semver &gt; 1</code> is compared with minor and patch version implicitly set to 0 <code>semver &gt; 1.0.0</code>.</li>
 </ul>
@@ -868,11 +917,15 @@ Have a look at it here: <a href="https://github.com/FACT-Finder/snage/blob/maste
 <h3 id="value">Value<a class="headerlink" href="#value" title="Permanent link">&para;</a></h3>
 <p>The value depends on the field type.
 When you query a number field, you are only allowed to specify a number.
+For fields with <code>enum</code>, only the allowed values work.
 Other values will result in a query parse error.</p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="nv">issue</span> <span class="o">=</span> <span class="m">50</span>
-<span class="nb">type</span> <span class="o">=</span> bugfix
+<span class="nb">type</span> <span class="o">=</span> fix
+<span class="nb">type</span> !<span class="o">=</span> security
 date &gt;<span class="o">=</span> <span class="m">2020</span>-05-05
+summary ~ lint
+summary ~~ exprt
 date absent
 issue present
 </code></pre></div>
@@ -881,25 +934,25 @@ issue present
 <p>Simple queries can be combined via logical <code>and</code> and logical <code>or</code>.</p>
 <p><strong><code>and</code></strong> requires both its left and right side to evaluate to true.
 <strong><code>or</code></strong> requires either its left or right side to evaluate to true.</p>
-<div class="highlight"><pre><span></span><code><span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span> and <span class="nb">type</span> <span class="o">=</span> bugfix or <span class="nb">type</span> !<span class="o">=</span> bugfix
+<div class="highlight"><pre><span></span><code><span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span> and <span class="nb">type</span> <span class="o">=</span> fix or <span class="nb">type</span> <span class="o">=</span> security
 </code></pre></div>
 
 <h3 id="precedence">Precedence<a class="headerlink" href="#precedence" title="Permanent link">&para;</a></h3>
-<p><code>and</code> takes precendence over <code>or</code>, meaning that in a query like</p>
-<div class="highlight"><pre><span></span><code><span class="o">(</span><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span><span class="o">)</span> or <span class="o">(</span><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span><span class="o">)</span>
+<p><code>and</code> takes precedence over <code>or</code>, meaning that in a query like</p>
+<div class="highlight"><pre><span></span><code><span class="o">(</span><span class="nb">type</span> <span class="o">=</span> fix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span><span class="o">)</span> or <span class="o">(</span><span class="nb">type</span> <span class="o">=</span> fix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span><span class="o">)</span>
 </code></pre></div>
 
 <p>you can omit the parentheses and use</p>
-<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span>
+<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> fix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nb">type</span> <span class="o">=</span> fix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span>
 </code></pre></div>
 
 <p>instead.
-On the other hand parenthesis around <code>or</code> change the meaning of the query, e.g.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="o">(</span><span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span><span class="o">)</span>
+On the other hand parentheses around <code>or</code> change the meaning of the query, e.g.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> fix and <span class="o">(</span><span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span><span class="o">)</span>
 </code></pre></div>
 
-<p>is a different from</p>
-<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> bugfix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span>.
+<p>is different from</p>
+<div class="highlight"><pre><span></span><code><span class="nb">type</span> <span class="o">=</span> fix and <span class="nv">issue</span> <span class="o">=</span> <span class="m">4</span> or <span class="nv">issue</span> <span class="o">=</span> <span class="m">5</span>
 </code></pre></div>
 
 <h2 id="quoting">Quoting<a class="headerlink" href="#quoting" title="Permanent link">&para;</a></h2>

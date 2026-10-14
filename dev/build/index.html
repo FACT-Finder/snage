@@ -388,6 +388,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../cmd/export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../cmd/fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../cmd/migrate/" title="Migrate" class="md-nav__link">
       Migrate
     </a>
@@ -484,9 +508,29 @@
                 
                   <h1>Build</h1>
                 
-                <ul>
-<li>git clone ...</li>
-</ul>
+                <p>You need <a href="https://git-scm.com/">git</a>, <a href="https://nodejs.org/">Node.js</a>
+(see <code>node-version</code> in
+<a href="https://github.com/FACT-Finder/snage/blob/master/.github/workflows/build.yml">build.yml</a>)
+and <a href="https://classic.yarnpkg.com/">Yarn 1</a>.</p>
+<div class="highlight"><pre><span></span><code>$ git clone https://github.com/FACT-Finder/snage.git
+$ <span class="nb">cd</span> snage
+$ yarn install --frozen-lockfile
+$ yarn lerna run build
+</code></pre></div>
+
+<p>The build creates <code>packages/snage/build/npm/snage.js</code>, which includes the web
+UI. Run it with Node.js:</p>
+<div class="highlight"><pre><span></span><code>$ node packages/snage/build/npm/snage.js <span class="nb">help</span>
+snage &lt;command&gt;
+...
+</code></pre></div>
+
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The build doesn't delete old files. Run
+<code>rm -rf packages/snage/build packages/ui/build</code> before it
+to get a clean build.</p>
+</div>
                 
               
               

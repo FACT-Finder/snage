@@ -397,6 +397,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../migrate/" title="Migrate" class="md-nav__link">
       Migrate
     </a>
@@ -484,7 +508,27 @@
                 
                   <h1>Set</h1>
                 
-                <p>TODO</p>
+                <p><code>snage set</code> changes a field value in many notes at once.</p>
+<div class="highlight"><pre><span></span><code>snage <span class="nb">set</span> <span class="o">[</span>--on &lt;query&gt;<span class="o">]</span> &lt;field&gt; <span class="o">[</span>value..<span class="o">]</span>
+</code></pre></div>
+
+<p>Snage updates all notes matching the <a href="../../query/">query</a> given with <code>--on</code>,
+or all notes if you leave out <code>--on</code>. It prints the path of every changed note.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Set the version of all unreleased notes</span>
+$ snage <span class="nb">set</span> --on <span class="s2">&quot;version absent&quot;</span> version <span class="m">1</span>.0.0
+
+<span class="c1"># Move notes from issue 22 to issue 33</span>
+$ snage <span class="nb">set</span> --on <span class="s2">&quot;issue = 22&quot;</span> issue <span class="m">33</span>
+
+<span class="c1"># Replace all values of a list field</span>
+$ snage <span class="nb">set</span> --on <span class="s2">&quot;issue = 33&quot;</span> components cli ui
+
+<span class="c1"># Remove the field: pass no value (only for optional fields)</span>
+$ snage <span class="nb">set</span> --on <span class="s2">&quot;issue = 33&quot;</span> components
+</code></pre></div>
+
+<p>Snage checks the new value against your <a href="../../config/#fields">field config</a>
+and changes nothing if it's invalid.</p>
                 
               
               

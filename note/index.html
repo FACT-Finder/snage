@@ -472,6 +472,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../cmd/export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cmd/fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../cmd/migrate/" title="Migrate" class="md-nav__link">
       Migrate
     </a>
@@ -630,8 +654,10 @@
                 
                   <h1>Note</h1>
                 
-                <p>A note is the analog of an item in a <code>CHANGELOG.md</code>. 
-Use it to describe a single change. Add metadata to give context.</p>
+                <p>A note is the analog of an item in a <code>CHANGELOG.md</code>.
+Use it to describe a single change. Add metadata to give context.
+Each note is a markdown file in your <a href="../config/#basedir"><code>basedir</code></a>.
+<a href="../cmd/create/"><code>snage create</code></a> creates one for you.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>---
 issue: 21
@@ -654,48 +680,35 @@ $ snage lint
 <a href="https://github.com/FACT-Finder/snage/tree/master/changelog">./changelog</a></p>
 <h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
 <h3 id="1-metadata">1. Metadata<a class="headerlink" href="#1-metadata" title="Permanent link">&para;</a></h3>
-<p>The header of the notes must start with a YAML front matter block. 
-The block starts and ends with a triple-dashed line <code>---</code>.
-Inside the block you can set values for fields
-that are defined inside the <a href="../config/#fields">Snage config</a>.</p>
-<p>This examples uses the config we use for the snage changelog
+<p>The note starts with a YAML front matter block between two <code>---</code> lines.
+It sets values for the <a href="../config/#fields">fields in your config</a>. The example
+uses Snage's own config
 <a href="https://github.com/FACT-Finder/snage/blob/master/.snage.yaml">.snage.yaml</a>.</p>
-<div class="highlight"><pre><span></span><code><span class="nn">---</span>
-<span class="nt">issue</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">21</span>
-<span class="nt">date</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2020-04-23</span>
-<span class="nt">audience</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">user</span>
-<span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">add</span>
-<span class="nt">components</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cli</span>
-<span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0.2</span>
-<span class="nn">---</span>
-</code></pre></div>
-
+<p>You can leave out fields that are <a href="../config/#providers">provided</a>, like
+<code>version</code> and <code>date</code> in Snage's config. Snage fills them in from your git
+history.</p>
 <div class="admonition info">
 <p class="admonition-title">Validation</p>
 <p>Snage checks metadata for invalid values.
 See <a href="../cmd/lint/"><code>snage lint</code></a>.</p>
 </div>
 <h3 id="2-header">2. Header<a class="headerlink" href="#2-header" title="Permanent link">&para;</a></h3>
-<p>After the metadata a markdown header must follow. 
+<p>After the metadata a markdown header must follow.
 The header is the summary for the whole change log note.</p>
-<div class="highlight"><pre><span></span><code># Add `snage-lint` command
+<div class="highlight"><pre><span></span><code># Add `snage lint` command
 </code></pre></div>
 
 <h3 id="3-content">3. Content<a class="headerlink" href="#3-content" title="Permanent link">&para;</a></h3>
-<p>The <em>optional</em> content should describe the change in more detail.
-If present, content and header must be separated by an empty line.
-<div class="highlight"><pre><span></span><code># Add `snage lint` command
-<span class="hll">
-</span>You can lint all change log notes using:
-```bash
-$ snage lint
-```
-</code></pre></div>
-The content will be interpreted as markdown.</p>
+<p>The <em>optional</em> content describes the change in more detail.
+Separate it from the header with an empty line.
+Snage renders it as markdown.</p>
+<p>To link to another note, use its file name as link target,
+e.g. <code>[see the lint note](21-lint.md)</code>.</p>
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Use active language ("Use <code>ABC</code> to configure feature X" 
+<li>Write from the audience's point of view, e.g. include the error message
+  the user has seen.</li>
+<li>Use active language ("Use <code>ABC</code> to configure feature X"
   instead of "Feature X can be configured using <code>ABC</code>")</li>
 <li>Use present tense ("Remove support for ..." instead of "Removed support for ...")</li>
 <li>Don't exceed 80 characters in the <a href="#2-header">header</a></li>

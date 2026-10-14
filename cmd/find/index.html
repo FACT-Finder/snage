@@ -397,6 +397,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../migrate/" title="Migrate" class="md-nav__link">
       Migrate
     </a>
@@ -484,7 +508,19 @@
                 
                   <h1>Find</h1>
                 
-                <p>TODO</p>
+                <p><code>snage find</code> prints the paths of all notes that match a <a href="../../query/">query</a>.
+Without a query, it prints all notes.</p>
+<div class="highlight"><pre><span></span><code>$ snage find <span class="s2">&quot;issue = 21&quot;</span>
+/home/me/project/changelog/21-add.md
+$ snage find <span class="s2">&quot;version absent and audience = user&quot;</span>
+/home/me/project/changelog/104-add.md
+/home/me/project/changelog/104-change.md
+</code></pre></div>
+
+<p>Quote the query, so your shell passes it as one argument.</p>
+<p>The output works well with other tools, e.g. to open all matching notes:</p>
+<div class="highlight"><pre><span></span><code>$ snage find <span class="s2">&quot;version absent&quot;</span> <span class="p">|</span> xargs <span class="nv">$EDITOR</span>
+</code></pre></div>
                 
               
               
@@ -518,13 +554,13 @@
           </a>
         
         
-          <a href="../migrate/" title="Migrate" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../export/" title="Export" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Migrate
+                Export
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

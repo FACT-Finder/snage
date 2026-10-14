@@ -397,6 +397,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../cmd/export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../cmd/fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../cmd/migrate/" title="Migrate" class="md-nav__link">
       Migrate
     </a>
@@ -490,6 +514,13 @@ Replace <code>$VERSION</code> with the latest version. Currently: <span class="l
     <span data-ty="input" data-ty-prompt="$">docker run --rm snage/snage:$VERSION help</span>
     <span data-ty>snage &lt;command&gt; ...</span>
 </div>
+
+<p>To work with your notes, mount your project into the container and run snage
+as your own user. Otherwise git refuses to read the repository
+("dubious ownership") and the <a href="../../config/#providers">providers</a> fail.</p>
+<div class="highlight"><pre><span></span><code>$ docker run --rm -u <span class="s2">&quot;</span><span class="k">$(</span>id -u<span class="k">)</span><span class="s2">:</span><span class="k">$(</span>id -g<span class="k">)</span><span class="s2">&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/repo&quot;</span> -w /repo snage/snage:<span class="nv">$VERSION</span> lint
+$ docker run --rm -u <span class="s2">&quot;</span><span class="k">$(</span>id -u<span class="k">)</span><span class="s2">:</span><span class="k">$(</span>id -g<span class="k">)</span><span class="s2">&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/repo&quot;</span> -w /repo -p <span class="m">8080</span>:8080 snage/snage:<span class="nv">$VERSION</span> serve
+</code></pre></div>
                 
               
               

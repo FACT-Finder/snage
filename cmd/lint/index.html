@@ -397,6 +397,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../export/" title="Export" class="md-nav__link">
+      Export
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../fill/" title="Fill" class="md-nav__link">
+      Fill
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../migrate/" title="Migrate" class="md-nav__link">
       Migrate
     </a>
@@ -484,7 +508,24 @@
                 
                   <h1>Lint</h1>
                 
-                <p>todo</p>
+                <p><code>snage lint</code> checks your config and all notes for errors.</p>
+<div class="highlight"><pre><span></span><code>$ snage lint
+All good :D
+</code></pre></div>
+
+<p>It reports, for example:</p>
+<ul>
+<li>notes without YAML front matter or with invalid YAML</li>
+<li>missing values for required fields</li>
+<li>values that don't match the field type or the allowed <code>enum</code> values</li>
+<li>errors from <a href="../../config/#providers">providers</a>, e.g. when git isn't available</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$ snage lint
+/home/me/project/changelog/21-add.md: Missing value <span class="k">for</span> required field audience
+</code></pre></div>
+
+<p>Snage exits with status <code>1</code> if it finds an error, so you can run
+<code>snage lint</code> in your CI pipeline to reject invalid notes.</p>
                 
               
               
