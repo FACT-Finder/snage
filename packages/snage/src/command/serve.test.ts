@@ -105,10 +105,13 @@ describe('serve', () => {
         expect(response.text).toBe('# A normal change\n\nDetails');
     });
 
-    it('exports groups and rejects unknown grouping fields', async () => {
+    it('exports groups', async () => {
         const response = await request(app).get('/export').query({query: '', groupBy: 'type'}).expect(200);
         expect(response.text).toContain('# fix');
         expect(response.text).toContain('# add');
+    });
+
+    it('rejects unknown grouping fields', async () => {
         await request(app).get('/export').query({query: '', groupBy: 'unknown'}).expect(400);
     });
 

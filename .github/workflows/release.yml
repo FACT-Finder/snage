@@ -74,11 +74,12 @@ jobs:
           mkdir -p "packages/snage/build/github/snage-${VERSION}"
           cp -r LICENSE packages/snage/build/npm/snage.js packages/snage/build/npm/ui "packages/snage/build/github/snage-${VERSION}"
           tar -cvzf "snage-${VERSION}.tar.gz" -C packages/snage/build/github "snage-${VERSION}"
-          if ! gh release view "$GITHUB_REF_NAME" > /dev/null; then
-            gh release create "$GITHUB_REF_NAME" --verify-tag --title "Version${VERSION}" --generate-notes --latest=false
+          if gh release view "$GITHUB_REF_NAME" > /dev/null; then
+            gh release upload "$GITHUB_REF_NAME" "snage-${VERSION}.tar.gz" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "snage-${VERSION}.tar.gz" --verify-tag --title "Version ${VERSION}" --generate-notes --latest=false
           fi
-          gh release upload "$GITHUB_REF_NAME" "snage-${VERSION}.tar.gz" --clobber
-          gh release edit "$GITHUB_REF_NAME" --verify-tag --latest
+          gh release edit "$GITHUB_REF_NAME" --verify-tag --draft=false --latest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
