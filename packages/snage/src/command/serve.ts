@@ -58,7 +58,6 @@ export const startExpress =
     () => {
         const parser = createParser(config.fields);
         const app = express();
-        app.use(express.text({type: '*/*', limit: '10gb'}));
         app.disable('x-powered-by');
         app.use((_, res, next) => {
             res.setHeader('X-Powered-By', 'FACT-Finder Changelog');
