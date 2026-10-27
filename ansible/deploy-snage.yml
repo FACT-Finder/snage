@@ -10,9 +10,10 @@
     apt:
         pkg:
             - docker.io
-            - docker-compose
+            - docker-compose-v2
             - git
-            - python-pip
+            - python3-pip
+            - python3-docker
         update_cache: true
         state: present
 
@@ -21,17 +22,6 @@
         name: docker
         enabled: yes
         state: started
-
-  - name: pip install --upgrade pip
-    pip:
-        name: pip
-        extra_args: --upgrade
-        state: present
-
-  - name: pip install docker-py
-    pip:
-        name: docker-py
-        state: present
 
   - name: ensure traefik directory
     file:
