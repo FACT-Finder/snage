@@ -9,12 +9,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: '24.22.1'
       - name: cache node_modules
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           path: |
             node_modules
@@ -28,7 +28,7 @@ jobs:
         env:
           BUILD_VERSION: ${{ env.VERSION }}
       - name: upload build artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: build
           path: packages/snage/build/npm
@@ -37,8 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v8
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/download-artifact@v8.0.2
         with:
           name: build
           path: packages/snage/build/npm
@@ -62,8 +62,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v8
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/download-artifact@v8.0.2
         with:
           name: build
           path: packages/snage/build/npm
@@ -88,8 +88,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, release-artifact]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v8
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/download-artifact@v8.0.2
         with:
           name: build
       - name: Get Version
